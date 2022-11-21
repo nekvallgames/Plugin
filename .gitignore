@@ -1,0 +1,9 @@
+Plugin/packages/
+Plugin/Plugin/bin
+Plugin/Plugin/obj
+
+*.suo
+*.csproj
+*.sln
+*.config
+
