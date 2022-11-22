@@ -9,14 +9,27 @@ namespace Plugin.Runtime.Services
     /// </summary>
     public class PlotService : BaseStateMachine<IState, PlotStatesPrivateModel>
     {
-        public PlotService(PlotStatesPrivateModel plotStatesPrivateModel) : base(plotStatesPrivateModel)
-        {
+        private PlotStatesPrivateModel _model;
 
+        public PlotService(PlotStatesPrivateModel model) : base(model)
+        {
+            _model = model;
         }
 
         public void ChangeState(string nextStateName)
         {
             base.ChangeState(nextStateName);
+        }
+
+        public void Add(IState[] states)
+        {
+            foreach (var state in states)
+                Add(state);
+        }
+
+        public void Add(IState state)
+        {
+            _model.Add(state);
         }
     }
 }

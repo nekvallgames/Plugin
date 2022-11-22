@@ -6,7 +6,7 @@ namespace Plugin.Models.Private
     /// <summary>
     /// Приватна модель, котра зберігає в собі стейти для роботи стейт машини PlotService
     /// </summary>
-    public class PlotStatesPrivateModel : BaseStatesModel<IState>
+    public class PlotStatesPrivateModel : BaseStatesModel<IState>, IPrivateModel
     {
 
     }

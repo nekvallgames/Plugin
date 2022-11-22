@@ -68,7 +68,7 @@ namespace Plugin.Runtime.Services
 		/// <summary>
 		/// Создать сигнал
 		/// </summary>
-		public void Invoke(ISignal newEvent)
+		public void Fire(ISignal newEvent)
 		{
 			EventDelegate del;
 			if (delegates.TryGetValue(newEvent.GetType(), out del))

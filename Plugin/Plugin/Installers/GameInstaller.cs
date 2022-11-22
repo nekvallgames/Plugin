@@ -1,11 +1,15 @@
-﻿using Plugin.Interfaces;
+﻿using Plugin.Builders;
+using Plugin.Interfaces;
 using Plugin.Models.Private;
+using Plugin.Models.Public;
+using Plugin.Runtime.Providers;
 using Plugin.Runtime.Services;
 using Plugin.Runtime.Services.ExecuteAction;
 using Plugin.Runtime.Services.ExecuteAction.Action;
 using Plugin.Runtime.Services.ExecuteAction.Additional;
 using Plugin.Runtime.Services.Sync;
 using Plugin.Schemes;
+using System.Collections.Generic;
 
 namespace Plugin.Installers
 {
@@ -23,8 +27,6 @@ namespace Plugin.Installers
         public DeserializeOpService deserializeOpService;
         public SignalBus signalBus;
         public UnitsService unitsService;
-        public OpStockPrivateModel<OpScheme> opStockPrivateModel;
-        public GridsPrivateModel<GridScheme> gridsPrivateModel;
         public SortOpStepService sortOpStepService;
         public SyncService syncService;
         public ExecuteMoveService executeMoveService;
@@ -32,41 +34,62 @@ namespace Plugin.Installers
         public ExecuteActionService executeActionService;
         public SortTargetOnGridService sortTargetOnGridService;
         public ExecuteAdditionalService executeAdditionalService;
-
-        private UnitsPrivateModel<IUnit> _unitsPrivateModel;
-        private SyncPrivateModel<SyncScheme> _syncPrivateModel;
-        private PlotStatesPrivateModel _plotStatesPrivateModel;
-
+        public ActorsService actorsService;
+        public OpStockService opStockService;
+        public BroadcastService pushService;
+        public GridService gridService;
+        public PublicModelProvider publicModelProvider;
+        public PrivateModelProvider privateModelProvider;
+        public GridBuilder gridBuilder;
 
         public GameInstaller()
         {
             _instance = this;
 
-            InstallModels();
+            InstallBuilders();
+            InstallProviders();
             InstallServices();
         }
 
-        private void InstallModels()
+        private void InstallBuilders()
         {
-            _plotStatesPrivateModel = new PlotStatesPrivateModel();
-            _unitsPrivateModel = new UnitsPrivateModel<IUnit>();
-            opStockPrivateModel = new OpStockPrivateModel<OpScheme>();
-            _syncPrivateModel = new SyncPrivateModel<SyncScheme>();
+            gridBuilder = new GridBuilder();
+        }
+
+        private void InstallProviders()
+        {
+            publicModelProvider = new PublicModelProvider(new List<IPublicModel> 
+            {
+                new LocationsPublicModel<LocationScheme>() 
+            });
+
+            privateModelProvider = new PrivateModelProvider(new List<IPrivateModel>
+            {
+                new PlotStatesPrivateModel(),
+                new UnitsPrivateModel<IUnit>(),
+                new OpStockPrivateModel<OpScheme>(),
+                new SyncPrivateModel<SyncScheme>(),
+                new GridsPrivateModel<GridScheme>(),
+                new ActorsPrivateModel<ActorScheme>()
+            });
         }
 
         private void InstallServices()
         {
-            plotService = new PlotService(_plotStatesPrivateModel);
+            plotService = new PlotService(privateModelProvider.Get<PlotStatesPrivateModel>());
             signalBus = new SignalBus();
-            unitsService = new UnitsService(_unitsPrivateModel);
+            unitsService = new UnitsService(privateModelProvider.Get<UnitsPrivateModel<IUnit>>());
             deserializeOpService = new DeserializeOpService();
             sortOpStepService = new SortOpStepService();
-            syncService = new SyncService(_syncPrivateModel);
+            syncService = new SyncService(privateModelProvider.Get<SyncPrivateModel<SyncScheme>>());
             executeMoveService = new ExecuteMoveService();
             executeVipService = new ExecuteVipService();
             executeActionService = new ExecuteActionService();
             sortTargetOnGridService = new SortTargetOnGridService();
             executeAdditionalService = new ExecuteAdditionalService();
+            actorsService = new ActorsService(privateModelProvider.Get<ActorsPrivateModel<ActorScheme>>());
+            opStockService = new OpStockService(privateModelProvider.Get<OpStockPrivateModel<OpScheme>>());
+            gridService = new GridService(publicModelProvider, privateModelProvider, signalBus, gridBuilder);
         }
     }
 }

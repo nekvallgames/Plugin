@@ -8,9 +8,9 @@ namespace Plugin.Builders
     /// </summary>
     public class GridBuilder
     {
-        public GridScheme Create(int ownerActorId, int sizeGridW, int sizeGridH, int[] gridMask)
+        public GridScheme Create(int ownerActorId, Vector2Int sizeGrid, int[] gridMask)
         {
-            int countCells = sizeGridW * sizeGridH;
+            int countCells = sizeGrid.x * sizeGrid.y;
             var cells = new Cell[countCells];
 
             // Создаем все селлы
@@ -26,7 +26,7 @@ namespace Plugin.Builders
 
             for (int i = 0; i < cells.Length; i++)
             {
-                if (i > 0 && (i % sizeGridW) == 0)
+                if (i > 0 && (i % sizeGrid.x) == 0)
                 {
                     w = 0; // ширина
                     h++;   // высота   
@@ -36,17 +36,17 @@ namespace Plugin.Builders
                 cell.Initialize(
                                 w,
                                 h,
-                                GetBinaryMask(w, h, sizeGridW, sizeGridH, gridMask),
-                                GetCellNearMe(i, Enums.Direction.up, ref cells, sizeGridW, sizeGridH),
-                                GetCellNearMe(i, Enums.Direction.down, ref cells, sizeGridW, sizeGridH),
-                                GetCellNearMe(i, Enums.Direction.left, ref cells, sizeGridW, sizeGridH),
-                                GetCellNearMe(i, Enums.Direction.right, ref cells, sizeGridW, sizeGridH)
+                                GetBinaryMask(w, h, sizeGrid.x, sizeGrid.y, gridMask),
+                                GetCellNearMe(i, Enums.Direction.up, ref cells, sizeGrid.x, sizeGrid.y),
+                                GetCellNearMe(i, Enums.Direction.down, ref cells, sizeGrid.x, sizeGrid.y),
+                                GetCellNearMe(i, Enums.Direction.left, ref cells, sizeGrid.x, sizeGrid.y),
+                                GetCellNearMe(i, Enums.Direction.right, ref cells, sizeGrid.x, sizeGrid.y)
                 );
 
                 w++;
             }
 
-            return new GridScheme(ownerActorId, sizeGridW, sizeGridH, cells);
+            return new GridScheme(ownerActorId, sizeGrid.x, sizeGrid.y, cells);
         }
 
         /// <summary>

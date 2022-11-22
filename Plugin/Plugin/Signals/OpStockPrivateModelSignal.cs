@@ -6,7 +6,7 @@ namespace Plugin.Signals
     /// Событие, игрок прислал на GAME SERVER операцию 
     /// и положили ее на слад операций игрока
     /// </summary>
-    public struct OpPutOnStockSignal : ISignal
+    public struct OpStockPrivateModelSignal : ISignal
     {
 
     }

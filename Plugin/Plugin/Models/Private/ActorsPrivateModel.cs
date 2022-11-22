@@ -4,7 +4,7 @@ using Plugin.Templates;
 
 namespace Plugin.Models.Private
 {
-    public class SyncPrivateModel<T> : BaseModel<T>, IPrivateModel where T : struct
+    public class ActorsPrivateModel<T> : BaseModel<T>, IPrivateModel where T : ActorScheme
     {
 
     }

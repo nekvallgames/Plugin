@@ -6,7 +6,7 @@ namespace Plugin.Schemes
     /// <summary>
     /// Зберігає список дій, котрі гравець виконав на поточному кроці 
     /// </summary>
-    public class SyncScheme
+    public struct SyncScheme
     {
         /// <summary>
         /// ActorID игрока, которому принадлежит синхронизация

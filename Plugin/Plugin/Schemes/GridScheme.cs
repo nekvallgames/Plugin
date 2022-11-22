@@ -2,27 +2,28 @@
 
 namespace Plugin.Schemes
 {
-    public class GridScheme
+    public struct GridScheme
     {
         /// <summary>
         /// Список с селлами из которых создана игровая сетка
         /// </summary>
-        public Cell[] СellsList { get; protected set; }
+        public Cell[] СellsList { get; }
 
         /// <summary>
         /// Владелец игровой сетки
         /// </summary>
-        protected int ownerActorId;
+        public int ownerActorId { get; }
 
         /// <summary>
         /// Размер игровой сетки по ширине
         /// </summary>
-        protected int sizeGridW;
+        public int sizeGridW { get; }
 
         /// <summary>
         /// Размер игровой сетки по высоте
         /// </summary>
-        protected int sizeGridH;
+        public int sizeGridH { get; }
+
 
         public GridScheme(int ownerActorId, int sizeGridW, int sizeGridH, Cell[] cellsList)
         {

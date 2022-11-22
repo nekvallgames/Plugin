@@ -14,11 +14,9 @@ namespace Plugin
     {
         public override IGamePlugin CreatePlugin(string pluginName)
         {
-            new GameInstaller();
-
-            switch (pluginName)
-            {
-                case PVPPlugin.NAME:{
+            switch (pluginName){
+                case PVPPlugin.NAME:
+                    {
                         return new PVPPlugin();
                     }
                     break;
