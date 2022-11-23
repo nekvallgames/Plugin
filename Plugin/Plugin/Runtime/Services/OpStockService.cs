@@ -1,18 +1,18 @@
-﻿using Plugin.Models.Private;
-using Plugin.Schemes;
+﻿using Plugin.Interfaces;
+using Plugin.Models.Private;
 
 namespace Plugin.Runtime.Services
 {
     public class OpStockService
     {
-        private OpStockPrivateModel<OpScheme> _model;
+        private OpStockPrivateModel<IOpStockItem> _model;
 
-        public OpStockService(OpStockPrivateModel<OpScheme> model)
+        public OpStockService(OpStockPrivateModel<IOpStockItem> model)
         {
             _model = model;
         }
 
-        public void Add(OpScheme opScheme)
+        public void Add(IOpStockItem opScheme)
         {
             _model.Add(opScheme);
         }
@@ -23,6 +23,17 @@ namespace Plugin.Runtime.Services
         public int GetOpCount(byte operationCode)
         {
             return _model.Items.FindAll(x => x.OpCode == operationCode).Count;
+        }
+
+        /// <summary>
+        /// Отримати і видалити операцію зі складу 
+        /// </summary>
+        public IOpStockItem TakeOp(int actorId, byte opCode)
+        {
+            var item = _model.Items.Find(x => x.ActorId == actorId && x.OpCode == opCode);
+            _model.Items.Remove(item);
+
+            return item;
         }
     }
 }

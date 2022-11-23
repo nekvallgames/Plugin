@@ -6,7 +6,7 @@ namespace Plugin.Interfaces.Actions
     /// Выполнить действие - бросить гранату
     /// Интерфейс с гранатой разширяет интерфейс с огнестрельным оружием
     /// </summary>
-    public interface IGrenadeWeaponsAction : IWeaponsAction
+    public interface IGrenadeWeaponsAction : IDamageAction
     {
         /// <summary>
         /// Получить урон от гранаты на 1-й волне

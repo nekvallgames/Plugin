@@ -1,19 +1,20 @@
 ﻿using Plugin.Interfaces;
+using Plugin.Interfaces.Units;
 using Plugin.Runtime.Services.ExecuteAction.Action.Executors;
 
 namespace Plugin.Runtime.Services.ExecuteAction.Action
 {
     /// <summary>
-    /// Сервіс, который будет выполнять действия юнита
+    /// Сервіс, который будет выполнять основное действия юнита
     /// </summary>
-    public class ExecuteActionService
+    public class ActionService
     {
         /// <summary>
         /// Исполнители действий
         /// </summary>
         private IExecuteAction[] _executorsActions;
 
-        public ExecuteActionService()
+        public ActionService()
         {
             _executorsActions = new IExecuteAction[]
             {

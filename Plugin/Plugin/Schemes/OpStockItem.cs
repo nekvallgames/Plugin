@@ -2,9 +2,9 @@
 
 namespace Plugin.Schemes
 {
-    public struct OpScheme
+    public struct OpStockItem : IOpStockItem
     {
-        public int ActorId;
+        public int ActorId { get; }
 
         /// <summary>
         /// Код операции
@@ -16,7 +16,7 @@ namespace Plugin.Schemes
         /// </summary>
         public object Data { get; }
 
-        public OpScheme( int actorId, byte evCode, object data )
+        public OpStockItem( int actorId, byte evCode, object data )
         {
             ActorId = actorId;
             OpCode = evCode;

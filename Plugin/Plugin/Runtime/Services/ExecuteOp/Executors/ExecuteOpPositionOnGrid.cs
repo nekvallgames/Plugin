@@ -14,7 +14,7 @@ namespace Plugin.Runtime.Services.ExecuteOp.Executors
     public class ExecuteOpPositionOnGrid : IExecuteOp
     {
         private UnitsService _unitsService;
-        private ExecuteMoveService _executeMoveService;
+        private MoveService _executeMoveService;
 
         // Данные, которые нужны для восзоздания действия игрока
         private int _unitID;

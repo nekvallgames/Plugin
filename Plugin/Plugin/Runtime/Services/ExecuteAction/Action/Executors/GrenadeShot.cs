@@ -1,6 +1,7 @@
 ﻿using Plugin.Installers;
 using Plugin.Interfaces;
 using Plugin.Interfaces.Actions;
+using Plugin.Interfaces.Units;
 using Plugin.Runtime.Services.Sync;
 using Plugin.Runtime.Services.Sync.Groups;
 using Plugin.Tools;
@@ -56,18 +57,18 @@ namespace Plugin.Runtime.Services.ExecuteAction.Action.Executors
             // Проверяем, может ли юнит вытсрелить?
             var unitWithGrenade = (IGrenadeWeaponsAction)unit;
 
-            if (!unitWithGrenade.CanShot()){
-                throw new ArgumentException($"ExecuteActionService :: GrenadeShot :: Execute() ownerID = {unit.OwnerActorID}, unitID = {unit.UnitID}, instanceID = {unit.InstanceID}, targetActorID = {targetActorID}, posW = {posW}, posH = {posH}, I can't shot, maybe I don't have ammunition.");
+            if (!unitWithGrenade.CanExecute()){
+                throw new ArgumentException($"ExecuteActionService :: GrenadeShot :: Execute() ownerID = {unit.OwnerActorId}, unitID = {unit.UnitId}, instanceID = {unit.InstanceId}, targetActorID = {targetActorID}, posW = {posW}, posH = {posH}, I can't shot, maybe I don't have ammunition.");
             }
 
-            unitWithGrenade.Shot();     // делаем бросок гранаты. Юнит тратит 1-у гранату
+            unitWithGrenade.Execute();     // делаем бросок гранаты. Юнит тратит 1-у гранату
 
             // Синхронизировать выполненное действие юнита на игровой сетке
             var syncOnGrid = new SyncActionGroup(unit,
                                                  targetActorID,
                                                  posW,
                                                  posH);
-            _syncService.Add(unit.OwnerActorID, syncOnGrid);
+            _syncService.Add(unit.OwnerActorId, syncOnGrid);
 
 
             // 2 2 2 2 2
@@ -75,14 +76,14 @@ namespace Plugin.Runtime.Services.ExecuteAction.Action.Executors
             // 2 1 0 1 2
             // 2 1 1 1 2
             // 2 2 2 2 2
-            Vector2Int[] actionArea = unitWithGrenade.GetActionArea();
+            Int2[] actionArea = unitWithGrenade.GetArea();
 
             // Перебираем каждую ячейку поля взрыва
-            foreach (Vector2Int area in actionArea)
+            foreach (Int2 area in actionArea)
             {
                 // Найти урон, взависимости от волны взрыва гранаты
                 int waveIndex = CalculateWave(area.x, area.y);
-                int damage = CalculateDamage(unitWithGrenade.CurrDamage, unitWithGrenade, waveIndex);
+                int damage = CalculateDamage(unitWithGrenade.Power, unitWithGrenade, waveIndex);
 
                 int targetW = posW + area.x;
                 int targetH = posH + area.y;

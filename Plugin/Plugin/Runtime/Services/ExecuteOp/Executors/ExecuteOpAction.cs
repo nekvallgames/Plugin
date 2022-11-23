@@ -1,5 +1,6 @@
 ﻿using Plugin.Installers;
 using Plugin.Interfaces;
+using Plugin.Interfaces.Units;
 using Plugin.OpComponents;
 using Plugin.Runtime.Services.ExecuteAction.Action;
 using System;
@@ -14,7 +15,7 @@ namespace Plugin.Runtime.Services.ExecuteOp.Executors
     public class ExecuteOpAction : IExecuteOp
     {
         private UnitsService _unitsService;
-        private ExecuteActionService _executeActionService;
+        private ActionService _actionService;
 
         // Данные, которые нужны для восзоздания действия игрока
         private int _unitId;
@@ -29,7 +30,7 @@ namespace Plugin.Runtime.Services.ExecuteOp.Executors
             var gameInstaller = GameInstaller.GetInstance();
 
             _unitsService = gameInstaller.unitsService;
-            _executeActionService = gameInstaller.executeActionService;
+            _actionService = gameInstaller.executeActionService;
         }
 
         /// <summary>
@@ -49,23 +50,23 @@ namespace Plugin.Runtime.Services.ExecuteOp.Executors
         /// <summary>
         /// Выполнить действие игрока
         /// </summary>
-        public void Execute(int playerActorID, List<ISyncComponent> componentsGroup)
+        public void Execute(int actorId, List<ISyncComponent> componentsGroup)
         {
             // 1. Вытаскиваем нужные нам компоненты из списка
             if (!ParceData(componentsGroup)){
-                throw new ArgumentException($"ExecuteOpService :: ExecuteOpAction :: Execute() playerActorID = {playerActorID}. I can't parce data");
+                throw new ArgumentException($"ExecuteOpService :: ExecuteOpAction :: Execute() playerActorID = {actorId}. I can't parce data");
             }
 
             // 2. Найти юнита, который выполнил действие
-            IUnit unit = _unitsService.GetUnit(playerActorID, _unitId, _instanceId);
+            IUnit unit = _unitsService.GetUnit(actorId, _unitId, _instanceId);
 
             if (unit == null){
-                throw new ArgumentException($"ExecuteOpService :: ExecuteOpAction :: Execute() playerActorID = {playerActorID}, unitID = {_unitId}, instanceID = {_instanceId}. I don't find this unit for execute actions");
+                throw new ArgumentException($"ExecuteOpService :: ExecuteOpAction :: Execute() playerActorID = {actorId}, unitID = {_unitId}, instanceID = {_instanceId}. I don't find this unit for execute actions");
             }
 
             // 3. Отбращаемся к классу, который выполняет действия юнитов, и просим 
             // его, выполнять для текущего юнита действие
-            _executeActionService.ExecuteAction(unit, _targetActorId, _posW, _posH);
+            _actionService.ExecuteAction(unit, _targetActorId, _posW, _posH);
         }
 
         /// <summary>

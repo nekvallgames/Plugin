@@ -8,6 +8,13 @@ namespace Plugin.Signals
     /// </summary>
     public struct OpStockPrivateModelSignal : ISignal
     {
+        public int ActorId { get; }
+        public byte OpCode { get; }
 
+        public OpStockPrivateModelSignal(int actorId, byte opCode)
+        {
+            ActorId = actorId;
+            OpCode = opCode;
+        }
     }
 }

@@ -8,7 +8,7 @@ namespace Plugin.Builders
     /// </summary>
     public class GridBuilder
     {
-        public GridScheme Create(int ownerActorId, Vector2Int sizeGrid, int[] gridMask)
+        public GridScheme Create(int ownerActorId, Int2 sizeGrid, int[] gridMask)
         {
             int countCells = sizeGrid.x * sizeGrid.y;
             var cells = new Cell[countCells];

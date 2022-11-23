@@ -1,5 +1,6 @@
 ﻿using Plugin.Installers;
 using Plugin.Interfaces;
+using Plugin.Interfaces.Units;
 using Plugin.OpComponents;
 using Plugin.Runtime.Services.ExecuteAction;
 using System;
@@ -13,7 +14,7 @@ namespace Plugin.Runtime.Services.ExecuteOp.Executors
     public class ExecuteVip : IExecuteOp
     {
         private UnitsService _unitsService;
-        private ExecuteVipService _executeVipService;
+        private VipService _executeVipService;
 
         // Данные, которые нужны для восзоздания действия игрока
         private int _unitId;
@@ -45,18 +46,18 @@ namespace Plugin.Runtime.Services.ExecuteOp.Executors
         /// <summary>
         /// Выполнить действие игрока. Активировать/деактивировать VIP для юнита
         /// </summary>
-        public void Execute(int playerActorId, List<ISyncComponent> componentsGroup)
+        public void Execute(int actorId, List<ISyncComponent> componentsGroup)
         {
             // Вытаскиваем нужные нам компоненты из списка
             if (!ParceData(componentsGroup)){
-                throw new ArgumentException($"ExecuteOpService :: ExecuteVip() playerActorID = {playerActorId}, I can't parce data");
+                throw new ArgumentException($"ExecuteOpService :: ExecuteVip() actorID = {actorId}, I can't parce data");
             }
 
             // 2. Найти юнита, который выполнил действие
-            IUnit unit = _unitsService.GetUnit(playerActorId, _unitId, _instanceId);
+            IUnit unit = _unitsService.GetUnit(actorId, _unitId, _instanceId);
 
             if (unit == null){
-                throw new ArgumentException($"ExecuteOpService :: ExecuteVip() playerActorID = {playerActorId}, unitId = {_unitId}, instanceId = {_instanceId}. I don't find this unit for execute vip");
+                throw new ArgumentException($"ExecuteOpService :: ExecuteVip() actorID = {actorId}, unitId = {_unitId}, instanceId = {_instanceId}. I don't find this unit for execute vip");
             }
 
             // Обращаемся к классу, который активировать/деактивировать VIP для юнита, и просим 

@@ -1,5 +1,6 @@
 ﻿using Plugin.Builders;
 using Plugin.Interfaces;
+using Plugin.Interfaces.Units;
 using System.Collections.Generic;
 
 namespace Plugin.Runtime.Services.Sync.Groups
@@ -12,14 +13,14 @@ namespace Plugin.Runtime.Services.Sync.Groups
     {
         public List<ISyncComponent> SyncElements { get; }
 
-        public SyncVipGroup(IUnit unit, bool isVip)
+        public SyncVipGroup(IUnit unit)
         {
             SyncElements = new List<ISyncComponent>();
 
             var syncElements = SyncElementBuilder
                .Build(this)
-               .SyncUnitID(unit.UnitID, unit.InstanceID)
-               .SyncVip((unit as IVip).IsVip);
+               .SyncUnitID(unit.UnitId, unit.InstanceId)
+               .SyncVip((unit as IVip).Enable);
         }
     }
 }

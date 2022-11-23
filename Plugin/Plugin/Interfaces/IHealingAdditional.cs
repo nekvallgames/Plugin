@@ -28,6 +28,6 @@ namespace Plugin.Interfaces
         /// <summary>
         /// Получить рисунок экшена
         /// </summary>
-        Vector2Int[] GetAdditionalArea();
+        Int2[] GetAdditionalArea();
     }
 }

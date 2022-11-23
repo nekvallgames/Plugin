@@ -18,7 +18,7 @@ namespace Plugin.Runtime.Services.Sync.Groups
 
             var syncElements = SyncElementBuilder
                .Build(this)
-               .SyncUnitID(unit.UnitID, unit.InstanceID)
+               .SyncUnitID(unit.UnitId, unit.InstanceId)
                .SyncAction(positionOnGridW, positionOnGridH)
                .SyncTargetActorID(targetActorID);
         }

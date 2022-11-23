@@ -8,11 +8,11 @@ namespace Plugin.Interfaces
         /// <summary>
         /// Может ли сортировщик сортировать текущею схему?
         /// </summary>
-        bool CanSort(OpScheme scheme);
+        bool CanSort(OpStockItem scheme);
 
         /// <summary>
         /// Сортировать текущею схему
         /// </summary>
-        List<ISyncComponent> Sort(OpScheme scheme, int stepHistory, uint stepGroup);
+        List<ISyncComponent> Sort(OpStockItem scheme, int stepHistory, uint stepGroup);
     }
 }

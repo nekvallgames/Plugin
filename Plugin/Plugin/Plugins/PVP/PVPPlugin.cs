@@ -27,7 +27,7 @@ namespace Plugin.Plugins.PVP
 
 
             gameInstaller.plotService.Add(new IState[] { new AccumulateState(2, SyncChoosedUnitsState.NAME),
-                                                         new SyncChoosedUnitsState()});
+                                                         new SyncChoosedUnitsState(2, "")});
 
 
             gameInstaller.plotService.ChangeState(AccumulateState.NAME);

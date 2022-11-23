@@ -1,6 +1,7 @@
 ﻿using Plugin.Installers;
 using Plugin.Interfaces;
 using Plugin.Interfaces.Actions;
+using Plugin.Interfaces.Units;
 using Plugin.Runtime.Services.Sync;
 using Plugin.Runtime.Services.Sync.Groups;
 using Plugin.Tools;
@@ -40,7 +41,7 @@ namespace Plugin.Runtime.Services.ExecuteAction.Action.Executors
         /// Может ли текущий класс выполнить действие для юнита?
         /// </summary>
         public bool CanExecute(IUnit unit){
-            if (unit is IWeaponsAction){
+            if (unit is IDamageAction){
                 return true;
             }
 
@@ -53,13 +54,13 @@ namespace Plugin.Runtime.Services.ExecuteAction.Action.Executors
         public void Execute( IUnit unit, int targetActorID, int posW, int posH )
         {
             // Проверяем, может ли юнит вытсрелить?
-            var unitWithWeapon = (IWeaponsAction)unit;
+            var unitWithWeapon = (IDamageAction)unit;
 
-            if (!unitWithWeapon.CanShot()){
-                throw new ArgumentException($"ExecuteActionService :: WeaponShot :: Execute() ownerID = {unit.OwnerActorID}, unitID = {unit.UnitID}, instanceID = {unit.InstanceID}, targetActorID = {targetActorID}, posW = {posW}, posH = {posH}, I can't shot, maybe I don't have ammunition.");
+            if (!unitWithWeapon.CanExecute()){
+                throw new ArgumentException($"ExecuteActionService :: WeaponShot :: Execute() ownerID = {unit.OwnerActorId}, unitID = {unit.UnitId}, instanceID = {unit.InstanceId}, targetActorID = {targetActorID}, posW = {posW}, posH = {posH}, I can't shot, maybe I don't have ammunition.");
             }
 
-            unitWithWeapon.Shot();     // делаем выстрел. Юнит тратит 1 патрон
+            unitWithWeapon.Execute();     // делаем выстрел. Юнит тратит 1 патрон
 
 
             // Синхронизировать выполненное действие юнита на игровой сетке
@@ -67,13 +68,13 @@ namespace Plugin.Runtime.Services.ExecuteAction.Action.Executors
                                                                  targetActorID,
                                                                  posW,
                                                                  posH);
-            _syncService.Add(unit.OwnerActorID, syncOnGrid);
+            _syncService.Add(unit.OwnerActorId, syncOnGrid);
 
 
 
-            Vector2Int[] actionArea = unitWithWeapon.GetActionArea();
+            Int2[] actionArea = unitWithWeapon.GetArea();
 
-            foreach (Vector2Int area in actionArea)
+            foreach (Int2 area in actionArea)
             {
                 int targetW = posW + area.x;
                 int targetH = posH + area.y;
@@ -85,7 +86,7 @@ namespace Plugin.Runtime.Services.ExecuteAction.Action.Executors
                     return;                     // игрок выстрелил мимо!
                 }
 
-                int damage = unitWithWeapon.CurrDamage;   // получить урон, который игрок нанес выстрелом
+                int damage = unitWithWeapon.Power;   // получить урон, который игрок нанес выстрелом
 
                 _unitsService.SetDamage(enemyTargets[0], damage);
             }

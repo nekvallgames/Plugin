@@ -24,14 +24,13 @@ namespace Plugin.Installers
         }
 
         public PlotService plotService;
-        public DeserializeOpService deserializeOpService;
         public SignalBus signalBus;
         public UnitsService unitsService;
         public SortOpStepService sortOpStepService;
         public SyncService syncService;
-        public ExecuteMoveService executeMoveService;
-        public ExecuteVipService executeVipService;
-        public ExecuteActionService executeActionService;
+        public MoveService executeMoveService;
+        public VipService executeVipService;
+        public ActionService executeActionService;
         public SortTargetOnGridService sortTargetOnGridService;
         public ExecuteAdditionalService executeAdditionalService;
         public ActorsService actorsService;
@@ -41,10 +40,13 @@ namespace Plugin.Installers
         public PublicModelProvider publicModelProvider;
         public PrivateModelProvider privateModelProvider;
         public GridBuilder gridBuilder;
+        public ConvertService convertService;
 
         public GameInstaller()
         {
             _instance = this;
+
+            convertService = new ConvertService();
 
             InstallBuilders();
             InstallProviders();
@@ -60,14 +62,14 @@ namespace Plugin.Installers
         {
             publicModelProvider = new PublicModelProvider(new List<IPublicModel> 
             {
-                new LocationsPublicModel<LocationScheme>() 
+                new LocationsPublicModel<LocationScheme>(convertService) 
             });
 
             privateModelProvider = new PrivateModelProvider(new List<IPrivateModel>
             {
                 new PlotStatesPrivateModel(),
                 new UnitsPrivateModel<IUnit>(),
-                new OpStockPrivateModel<OpScheme>(),
+                new OpStockPrivateModel<OpStockItem>(),
                 new SyncPrivateModel<SyncScheme>(),
                 new GridsPrivateModel<GridScheme>(),
                 new ActorsPrivateModel<ActorScheme>()
@@ -79,17 +81,16 @@ namespace Plugin.Installers
             plotService = new PlotService(privateModelProvider.Get<PlotStatesPrivateModel>());
             signalBus = new SignalBus();
             unitsService = new UnitsService(privateModelProvider.Get<UnitsPrivateModel<IUnit>>());
-            deserializeOpService = new DeserializeOpService();
             sortOpStepService = new SortOpStepService();
             syncService = new SyncService(privateModelProvider.Get<SyncPrivateModel<SyncScheme>>());
-            executeMoveService = new ExecuteMoveService();
-            executeVipService = new ExecuteVipService();
-            executeActionService = new ExecuteActionService();
+            executeMoveService = new MoveService();
+            executeVipService = new VipService();
+            executeActionService = new ActionService();
             sortTargetOnGridService = new SortTargetOnGridService();
             executeAdditionalService = new ExecuteAdditionalService();
             actorsService = new ActorsService(privateModelProvider.Get<ActorsPrivateModel<ActorScheme>>());
-            opStockService = new OpStockService(privateModelProvider.Get<OpStockPrivateModel<OpScheme>>());
-            gridService = new GridService(publicModelProvider, privateModelProvider, signalBus, gridBuilder);
+            opStockService = new OpStockService(privateModelProvider.Get<OpStockPrivateModel<IOpStockItem>>());
+            gridService = new GridService();
         }
     }
 }

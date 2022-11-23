@@ -1,10 +1,10 @@
-﻿namespace Plugin.Interfaces
+﻿namespace Plugin.Interfaces.Units
 {
     public interface IVip
     {
         /// <summary>
         /// Текущий юнит является Vip?
         /// </summary>
-        bool IsVip { get; set; }
+        bool Enable { get; set; }
     }
 }

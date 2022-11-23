@@ -1,5 +1,10 @@
-﻿using Plugin.Interfaces;
+﻿using Plugin.Installers;
+using Plugin.Interfaces;
+using Plugin.Interfaces.Units;
 using Plugin.Models.Private;
+using Plugin.Schemes;
+using Plugin.Signals;
+using Plugin.Tools;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,10 +17,45 @@ namespace Plugin.Runtime.Services
     public class UnitsService
     {
         private UnitsPrivateModel<IUnit> _model;
+        private OpStockService _opStockService;
+        private ConvertService _convertService;
 
         public UnitsService(UnitsPrivateModel<IUnit> model)
         {
             _model = model;
+
+            var gameInstaller = GameInstaller.GetInstance();
+            _opStockService = gameInstaller.opStockService;
+            _convertService = gameInstaller.convertService;
+
+            gameInstaller.signalBus.Subscrible<OpStockPrivateModelSignal>( OpStockModelChange );
+        }
+
+        /// <summary>
+        /// Модель із операціями акторів була оновлена
+        /// </summary>
+        private void OpStockModelChange(OpStockPrivateModelSignal signalData)
+        {
+            // Якщо це операція choosedUnitsForGame, це означає, що потрібно для гравця створити юнітів
+            if (signalData.OpCode == OperationCode.choosedUnitsForGame)
+            {
+                // Забрати зі складу операцію, в якій знаходяться дані із юнітами, котрих обрав актор
+                var opChoosedUnits = _opStockService.TakeOp(signalData.ActorId, signalData.OpCode);
+
+                var choosedUnitsScheme = _convertService.DeserializeObject<ChoosedUnitsScheme>(opChoosedUnits.Data.ToString());
+
+                foreach( int unitId in choosedUnitsScheme.unitsId )
+                {
+
+                }
+            }
+        }
+
+        public bool IsAlive(IUnit unit)
+        {
+            // TODO добавити перевірку на броню. Юніт може не мати житів, але має тільки броню. Наприклад робот
+
+            return ((IHealth)unit).Capacity > 0;
         }
 
         /// <summary>
@@ -31,7 +71,7 @@ namespace Plugin.Runtime.Services
             foreach (var unit in _model.Items)
             {
                 // 1. Проверяем, юнит принадлежит игроку unitOwnerID
-                if (unit.OwnerActorID != unitOwnerID){
+                if (unit.OwnerActorId != unitOwnerID){
                     continue;
                 }
 
@@ -50,16 +90,21 @@ namespace Plugin.Runtime.Services
         /// </summary>
         public void ReviveAmmunitionForAllUnits(int actorId)
         {
-            List<IUnit> units = _model.Items.FindAll(x => x.OwnerActorID == actorId);
+            List<IUnit> units = _model.Items.FindAll(x => x.OwnerActorId == actorId);
 
             foreach (IUnit unit in units){
                 unit.ReviveAction();
             }
         }
 
-        public IUnit GetUnit(int playerActorId, int unitId, int instanceId)
+        public IUnit GetUnit(int actorId, int unitId, int instanceId)
         {
-            return _model.Items.Find(x => x.OwnerActorID == playerActorId && x.UnitID == unitId && x.InstanceID == instanceId);
+            return _model.Items.Find(x => x.OwnerActorId == actorId && x.UnitId == unitId && x.InstanceId == instanceId);
+        }
+
+        public List<IUnit> GetUnits(int actorId)
+        {
+            return _model.Items.FindAll(x => x.OwnerActorId == actorId);
         }
 
         /// <summary>
@@ -111,9 +156,9 @@ namespace Plugin.Runtime.Services
 
             health += healthPower;
 
-            if (health > unitTargets.GetMaxHealth)
+            if (health > unitTargets.MaxHealth)
             {
-                health = unitTargets.GetMaxHealth;
+                health = unitTargets.MaxHealth;
             }
         }
 
@@ -147,7 +192,7 @@ namespace Plugin.Runtime.Services
         /// </summary>
         public bool HasAliveUnit(int actorId)
         {
-            return _model.Items.FindAll(x => x.OwnerActorID == actorId).Any(x => x.Health > 0);
+            return _model.Items.FindAll(x => x.OwnerActorId == actorId).Any(x => x.Health > 0);
         }
 
         /// <summary>
@@ -155,7 +200,7 @@ namespace Plugin.Runtime.Services
         /// </summary>
         public bool HasAnyDeadUnit(int actorId)
         {
-            return _model.Items.FindAll(x => x.OwnerActorID == actorId).Any(x => x.Health <= 0);
+            return _model.Items.FindAll(x => x.OwnerActorId == actorId).Any(x => x.Health <= 0);
         }
     }
 

@@ -1,5 +1,6 @@
 ﻿using Plugin.Installers;
 using Plugin.Interfaces;
+using Plugin.Interfaces.Units;
 using Plugin.Runtime.Services.Sync;
 using Plugin.Runtime.Services.Sync.Groups;
 using Plugin.Tools;
@@ -54,7 +55,7 @@ namespace Plugin.Runtime.Services.ExecuteAction.Additional.Executors
             IHealingAdditional unitMedic = (IHealingAdditional)unit;
 
             if (!unitMedic.CanHealing()){
-                throw new ArgumentException($"ExecuteAdditionalService :: Healing :: Execute() ownerID = {unit.OwnerActorID}, unitID = {unit.UnitID}, instanceID = {unit.InstanceID}, targetActorID = {targetActorID}, posH = {posH}, I can't healing, maybe I don't have ammunition.");
+                throw new ArgumentException($"ExecuteAdditionalService :: Healing :: Execute() ownerID = {unit.OwnerActorId}, unitID = {unit.UnitId}, instanceID = {unit.InstanceId}, targetActorID = {targetActorID}, posH = {posH}, I can't healing, maybe I don't have ammunition.");
             }
 
             unitMedic.Healing();     // юнит вылечил когото. Забрать 1 аптечку
@@ -64,12 +65,12 @@ namespace Plugin.Runtime.Services.ExecuteAction.Additional.Executors
                                                                      targetActorID,
                                                                      posW,
                                                                      posH);
-            _syncService.Add(unit.OwnerActorID, syncOnGrid);
+            _syncService.Add(unit.OwnerActorId, syncOnGrid);
 
 
-            Vector2Int[] additionalArea = unitMedic.GetAdditionalArea();
+            Int2[] additionalArea = unitMedic.GetAdditionalArea();
 
-            foreach (Vector2Int area in additionalArea)
+            foreach (Int2 area in additionalArea)
             {
                 int targetW = posW + area.x;
                 int targetH = posH + area.y;

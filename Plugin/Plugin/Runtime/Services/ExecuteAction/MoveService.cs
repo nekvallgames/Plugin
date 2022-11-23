@@ -1,18 +1,19 @@
 ﻿using Plugin.Installers;
-using Plugin.Interfaces;
+using Plugin.Interfaces.Units;
 using Plugin.Runtime.Services.Sync;
 using Plugin.Runtime.Services.Sync.Groups;
+using Plugin.Tools;
 
 namespace Plugin.Runtime.Services.ExecuteAction
 {
     /// <summary>
-    /// Сервіс, котрий переміщає юнітів по ігровій сітці
+    /// Сервіс, котрий переміщає та позиціонує юнітів по ігровій сітці
     /// </summary>
-    public class ExecuteMoveService
+    public class MoveService
     {
         private SyncService _syncService;
 
-        public ExecuteMoveService()
+        public MoveService()
         {
             _syncService = GameInstaller.GetInstance().syncService;
         }
@@ -26,21 +27,11 @@ namespace Plugin.Runtime.Services.ExecuteAction
             // TODO в будущем добавить проверку на то, может ли юнит дойти 
             // или стать в текущих координатах
 
-            unit.PositionOnGridW = posW;
-            unit.PositionOnGridH = posH;
+            ((IPositionOnGrid)unit).Position = new Int2(posW, posH);
 
             // Синхронизировать позицию юнита на игровой сетке
             var syncData = new SyncPositionOnGridGroup(unit);
-            _syncService.Add(unit.OwnerActorID, syncData);
-        }
-
-        /// <summary>
-        /// Переместить юнита с текущей его позиции в позицию moveToPosW, moveToPosH
-        /// на игровой сетке, но с проверками, может ли юнит дойти в эти координаты
-        /// </summary>
-        public void MoveTo(IUnit unit, uint moveToPosW, uint moveToPosH)
-        {
-
+            _syncService.Add(unit.OwnerActorId, syncData);
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Plugin.Interfaces;
 using Plugin.OpComponents;
+using Plugin.Tools;
 
 namespace Plugin.Builders
 {
@@ -38,12 +39,12 @@ namespace Plugin.Builders
         /// <summary>
         /// Синхронизировать позицию на игровой сетке
         /// </summary>
-        public SyncElementBuilder SyncPositionOnGrid(int cellW, int cellH)
+        public SyncElementBuilder SyncPositionOnGrid(Int2 position)
         {
             var syncElementPositionOnGrid = new PositionOnGridOpComponent
             {
-                w = cellW,
-                h = cellH
+                w = position.x,
+                h = position.y
             };
 
             Sync.SyncElements.Add(syncElementPositionOnGrid);

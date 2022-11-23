@@ -1,55 +1,59 @@
-﻿using Plugin.Tools;
-using System.Numerics;
+﻿using Plugin.Interfaces.Units;
+using Plugin.Tools;
 
 namespace Plugin.Interfaces.Actions
 {
     /// <summary>
-    /// Выполнить действие - выстрелы с огнестрельного оружия
+    /// Выполнить действие - нанести урон
     /// </summary>
-    public interface IWeaponsAction
+    public interface IDamageAction : IAction
     {
         /// <summary>
         /// Инитиализировать оружие
         /// </summary>
-        void InitializeGun();
+        void Initialize();
 
         /// <summary>
         /// Перезарядить оружие
         /// </summary>
-        void GunReload();
+        void Reload();
 
         /// <summary>
         /// Может ли юнит выстрелить?
         /// Есть ли патроны для выстрела?
         /// </summary>
-        bool CanShot();
+        bool CanExecute();
 
         /// <summary>
         /// Юнит выстрелил. Использовать аммуницию
         /// </summary>
-        void Shot();
+        void Execute();
 
         /// <summary>
         /// Сила урона от текущего оружия. Но, текущее значение может изменятся,
         /// так как сущность может получить как баф, так и дебаф
         /// </summary>
-        int CurrDamage { get; set; }
+        int Power { get; set; }
 
         /// <summary>
         /// Базовая сила урона от текущего оружия
         /// Текущий параметр изменять нельзя!!!
         /// </summary>
-        int OriginalDamage { get; }
+        int OriginalPower { get; }
 
         /// <summary>
         /// Получить рисунок экшена
         /// </summary>
-        Vector2Int[] GetActionArea();
+        Int2[] DamageActionArea { get; }
 
         /// <summary>
-        /// Текущее количество баффа для урона
-        /// Число указывать в %. Это число может быть как отрицательным, так и положительным
+        /// Поточна кількість амуніції 
         /// </summary>
-        int DamageBuff { get; set; }
+        int Capacity { get; }
+
+        /// <summary>
+        /// Орігінальна кількість амуніції при створенні юніта
+        /// </summary>
+        int OriginalCapacity { get; }
     }
 }

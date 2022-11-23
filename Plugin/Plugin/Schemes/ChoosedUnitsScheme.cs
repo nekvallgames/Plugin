@@ -10,6 +10,6 @@ namespace Plugin.Schemes
     [Serializable]
     public class ChoosedUnitsScheme : IOpScheme
     {
-        public List<int> unitsID;
+        public List<int> unitsId;
     }
 }

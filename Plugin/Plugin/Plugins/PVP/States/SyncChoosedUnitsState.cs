@@ -20,8 +20,20 @@ namespace Plugin.Plugins.PVP.States
         private OpStockService _opStockService;
         private PlotService _plotService;
 
-        public SyncChoosedUnitsState()
+        /// <summary>
+        /// Кількість гравців, котрі потрібні для старту ігрової кімнати
+        /// </summary>
+        private int _countActors;
+        /// <summary>
+        /// Наступний стейт, в котрий перейдемо після поточного стейту
+        /// </summary>
+        private string _nextState;
+
+        public SyncChoosedUnitsState(int countActors, string nextState)
         {
+            _countActors = countActors;
+            _nextState = nextState;
+
             var gameInstaller = GameInstaller.GetInstance();
 
             _signalBus = gameInstaller.signalBus;
@@ -53,11 +65,9 @@ namespace Plugin.Plugins.PVP.States
         {
             int opStepCount = _opStockService.GetOpCount(OperationCode.choosedUnitsForGame);
 
-            if (opStepCount >= 2)
-            {
-                // Оба игрока прислали своих выбранных юнитов. Начать создавать игру
-                // stateMachine.ChangeState(PVPPluginStateMachine.STATE.CreateGameData);
-                // _plotService.ChangeState();
+            if (opStepCount >= _countActors){
+                // Все игроки прислали своих выбранных юнитов
+                _plotService.ChangeState(_nextState);
             }
         }
 

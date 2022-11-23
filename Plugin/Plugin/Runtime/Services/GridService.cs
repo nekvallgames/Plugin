@@ -1,4 +1,5 @@
 ﻿using Plugin.Builders;
+using Plugin.Installers;
 using Plugin.Models.Private;
 using Plugin.Models.Public;
 using Plugin.Runtime.Providers;
@@ -14,16 +15,15 @@ namespace Plugin.Runtime.Services
         private GridsPrivateModel<GridScheme> _gridsPrivateModel;
         private GridBuilder _gridBuilder;
 
-        public GridService(PublicModelProvider publicModelProvider, 
-                           PrivateModelProvider privateModelProvider, 
-                           SignalBus signalBus,
-                           GridBuilder gridBuilder)
+        public GridService()
         {
-            _locationsPublicModel = publicModelProvider.Get<LocationsPublicModel<LocationScheme>>();
-            _gridsPrivateModel = privateModelProvider.Get<GridsPrivateModel<GridScheme>>();
-            _gridBuilder = gridBuilder;
+            var gameInstaller = GameInstaller.GetInstance();
 
-            signalBus.Subscrible<ActorsPrivateModelSignal>(OnActorsModelChange);
+            _locationsPublicModel = gameInstaller.publicModelProvider.Get<LocationsPublicModel<LocationScheme>>();
+            _gridsPrivateModel = gameInstaller.privateModelProvider.Get<GridsPrivateModel<GridScheme>>();
+            _gridBuilder = gameInstaller.gridBuilder;
+
+            gameInstaller.signalBus.Subscrible<ActorsPrivateModelSignal>(OnActorsModelChange);
         }
 
         /// <summary>

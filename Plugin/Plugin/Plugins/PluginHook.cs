@@ -51,7 +51,7 @@ namespace Plugin.Plugins
         /// </summary>
         public override void OnRaiseEvent(IRaiseEventCallInfo info)
         {
-            _opStockService.Add(new OpScheme(info.ActorNr,
+            _opStockService.Add(new OpStockItem(info.ActorNr,
                                              info.Request.EvCode,
                                              info.Request.Data));
 

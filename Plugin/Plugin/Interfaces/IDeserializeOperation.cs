@@ -11,13 +11,13 @@ namespace Plugin.Interfaces
         /// <summary>
         /// Может ли текущий десериализатор десериализировать операцию
         /// </summary>
-        bool CanDeserialize(OpScheme opData);
+        bool CanDeserialize(OpStockItem opData);
 
         Type TypeDeserialize { get; }
 
         /// <summary>
         /// Десериализировать операцию
         /// </summary>
-        T Deserialize<T>(OpScheme opData);
+        T Deserialize<T>(OpStockItem opData);
     }
 }
