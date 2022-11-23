@@ -39,20 +39,12 @@ namespace Plugin.Runtime.Units
             Capacity = OriginalCapacity;
         }
 
-        public void ExecuteAction( Int2 position )
-        {
-            if (CanExecute())
-            {
-                Execute();
-            }
-        }
-
-        public bool CanExecute()
+        public bool CanExecuteAction()
         {
             return Capacity > 0;
         }
 
-        public void Execute()
+        public void SpendAction()
         {
             Capacity--;
             if (Capacity < 0){

@@ -1,5 +1,4 @@
 ﻿using Plugin.Interfaces;
-using Plugin.Interfaces.Units;
 using System;
 using System.Collections.Generic;
 
@@ -35,10 +34,10 @@ namespace Plugin.Runtime.Services
             foreach (IUnit occupied in occupiedList)
             {
                 //PositionOnGridComponent positionOnGrid = entityManager.GetComponentData<PositionOnGridComponent>(occupied.PositionOnGridH);
-                SortVO sortVo = new SortVO
+                var sortVo = new SortVO
                 {
                     unit = occupied,
-                    positionOnGridH = occupied.PositionOnGridH
+                    positionOnGridH = occupied.Position.y
                 };
 
                 if (occupied is IBarrier)

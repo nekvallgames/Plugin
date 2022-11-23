@@ -1,6 +1,6 @@
-﻿namespace Plugin.Interfaces.Units
+﻿namespace Plugin.Interfaces.UnitComponents
 {
-    public interface IArmor
+    public interface IArmorComponent
     {
         /// <summary>
         /// Получить количество брони юнита

@@ -1,6 +1,6 @@
 ﻿using Plugin.Installers;
 using Plugin.Interfaces;
-using Plugin.Interfaces.Units;
+using Plugin.Interfaces.UnitComponents;
 using Plugin.Models.Private;
 using Plugin.Schemes;
 using Plugin.Signals;
@@ -51,11 +51,9 @@ namespace Plugin.Runtime.Services
             }
         }
 
-        public bool IsAlive(IUnit unit)
+        public bool IsDead(IUnit unit)
         {
-            // TODO добавити перевірку на броню. Юніт може не мати житів, але має тільки броню. Наприклад робот
-
-            return ((IHealth)unit).Capacity > 0;
+            return unit.IsDead;
         }
 
         /// <summary>
@@ -88,78 +86,58 @@ namespace Plugin.Runtime.Services
         /// <summary>
         /// Восстановить все действия юнитов (перезарядить оружия, восстановить магию и т.д.)
         /// </summary>
-        public void ReviveAmmunitionForAllUnits(int actorId)
+        public void ReviveAction( int actorId )
         {
-            List<IUnit> units = _model.Items.FindAll(x => x.OwnerActorId == actorId);
+            List<IUnit> units = _model.Items.FindAll(x => x is IActionComponent);
 
             foreach (IUnit unit in units){
-                unit.ReviveAction();
+                ((IActionComponent)unit).ReviveAction();
             }
         }
 
-        public IUnit GetUnit(int actorId, int unitId, int instanceId)
-        {
+        public IUnit GetUnit(int actorId, int unitId, int instanceId){
             return _model.Items.Find(x => x.OwnerActorId == actorId && x.UnitId == unitId && x.InstanceId == instanceId);
         }
 
-        public List<IUnit> GetUnits(int actorId)
-        {
+        public List<IUnit> GetUnits(int actorId){
             return _model.Items.FindAll(x => x.OwnerActorId == actorId);
-        }
-
-        /// <summary>
-        /// Восстановить действие юнита
-        /// </summary>
-        public void ReviveAction(IUnit unit)
-        {
-            unit.ReviveAction();
         }
 
         /// <summary>
         /// Нанести урон юниту
         /// </summary>
-        public void SetDamage(IUnit unit, int damage)
+        public void SetDamage( IUnit unit, int damage )
         {
-            int health = unit.Health;
-            int armor = unit.Armor;
+            bool hasHealth = HasComponent<IHealthComponent>(unit);
+            bool hasArmor = HasComponent<IArmorComponent>(unit);
 
-            // Если есть броня, то нанести урон по брони
-            if (armor > 0)
-            {
-                armor -= damage;
-                if (armor < 0)
-                {
-                    armor = 0;
+            if ((hasArmor && hasHealth) || hasArmor){
+                SetDamageByArmor(unit, damage);
+            }
+            else
+                if (hasHealth){
+                    SetDamageByHealth(unit, damage);
                 }
-
-                unit.Armor = armor;
-                return;
-            }
-
-
-            // Нанести урон по жизням
-            health -= damage;
-            if (health < 0)
-            {
-                health = 0;
-            }
-
-            unit.Health = health;
         }
 
         /// <summary>
         /// Вылечить текущего юнита
         /// </summary>
-        public void Healing(IUnit unitTargets, int healthPower)
+        public void Healing(IUnit unit, int healthPower)
         {
-            int health = unitTargets.Health;
-
-            health += healthPower;
-
-            if (health > unitTargets.MaxHealth)
-            {
-                health = unitTargets.MaxHealth;
+            if (!HasComponent<IHealthComponent>(unit)){
+                throw new ArgumentException($"UnitService :: Healing() I can't healing unit, because this unit don't have IHealthComponent. ActorId = {unit.OwnerActorId}, unitId = {unit.UnitId}, instanceId = {unit.InstanceId}");
             }
+
+            var healthComponent = (IHealthComponent)unit;
+
+            int health = healthComponent.Capacity + healthPower;
+
+            if (health > healthComponent.CapacityMax){
+                health = healthComponent.CapacityMax;
+            }
+
+            ((IHealthComponent)unit).Capacity = health;
         }
 
         /// <summary>
@@ -167,24 +145,22 @@ namespace Plugin.Runtime.Services
         /// </summary>
         private bool IsPositionUnderUnitArea(IUnit unit, int posW, int posH)
         {
-            // 1. Позиция юнита на игровой сетке.  
-            int unitPosW = unit.PositionOnGridW;
-            int unitPosH = unit.PositionOnGridH;
+            // Позиция юнита на игровой сетке.  
+            Int2 unitPos = unit.Position;
 
-            // 2. Ширина и высота юнита, которую он занимает на игровой сетке
-            int areaW = (unit.AreaWidth - 1);
-            int areaH = (unit.AreaHeight - 1);
+            // Ширина и высота юнита, которую он занимает на игровой сетке
+            var bodySize = new Int2(unit.BodySize.x - 1 < 0 ? 0 : unit.BodySize.x - 1,
+                                    unit.BodySize.y - 1 < 0 ? 0 : unit.BodySize.y - 1);
 
-            if (areaW < 0) areaW = 0;
-            if (areaH < 0) areaH = 0;
-
-            if ((posW >= unitPosW) && (posW <= (unitPosW + areaW))       // проверяем по ширине
-                && (posH >= unitPosH) && (posH <= (unitPosH + areaH)))   // проверяем по высоте
+            if ((posW >= unitPos.x) && (posW <= (unitPos.x + bodySize.x))       // проверяем по ширине
+                && (posH >= unitPos.y) && (posH <= (unitPos.y + bodySize.y)))   // проверяем по высоте
             {
                 return true;
             }
 
             return false;
+
+
         }
 
         /// <summary>
@@ -192,7 +168,7 @@ namespace Plugin.Runtime.Services
         /// </summary>
         public bool HasAliveUnit(int actorId)
         {
-            return _model.Items.FindAll(x => x.OwnerActorId == actorId).Any(x => x.Health > 0);
+            return _model.Items.Any(x => x.OwnerActorId == actorId && !x.IsDead);
         }
 
         /// <summary>
@@ -200,7 +176,37 @@ namespace Plugin.Runtime.Services
         /// </summary>
         public bool HasAnyDeadUnit(int actorId)
         {
-            return _model.Items.FindAll(x => x.OwnerActorId == actorId).Any(x => x.Health <= 0);
+            return _model.Items.Any(x => x.OwnerActorId == actorId && x.IsDead);
+        }
+
+        /// <summary>
+        /// В поточного юніта є вказаний компонент?
+        /// </summary>
+        public bool HasComponent<T>(IUnit unit)
+        {
+            return typeof(T).IsAssignableFrom(unit.GetType());
+        }
+
+        /// <summary>
+        /// Нанести урон по жизням
+        /// </summary>
+        private void SetDamageByHealth(IUnit unit, int damage)
+        {
+            int curr = ((IHealthComponent)unit).Capacity - damage;
+            if (curr < 0) curr = 0;
+            
+            ((IHealthComponent)unit).Capacity = curr;
+        }
+
+        /// <summary>
+        /// Нанести урон по броні
+        /// </summary>
+        private void SetDamageByArmor(IUnit unit, int damage)
+        {
+            int curr = ((IArmorComponent)unit).Capacity - damage;
+            if (curr < 0) curr = 0;
+
+            ((IArmorComponent)unit).Capacity = curr;
         }
     }
 

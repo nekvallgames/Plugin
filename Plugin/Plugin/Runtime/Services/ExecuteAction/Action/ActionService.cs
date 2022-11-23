@@ -1,5 +1,4 @@
 ﻿using Plugin.Interfaces;
-using Plugin.Interfaces.Units;
 using Plugin.Runtime.Services.ExecuteAction.Action.Executors;
 
 namespace Plugin.Runtime.Services.ExecuteAction.Action
@@ -18,8 +17,8 @@ namespace Plugin.Runtime.Services.ExecuteAction.Action
         {
             _executorsActions = new IExecuteAction[]
             {
-                new GrenadeShot(),    // выполнить бросок гранаты и взорвать ее
-                new WeaponShot()      // выстрелить 1 раз с огнестрельного оружия
+                new WaveDamageAction(),    // выполнить бросок гранаты и взорвать ее
+                new DamageAction()      // выстрелить 1 раз с огнестрельного оружия
             };
         }
 
@@ -37,8 +36,7 @@ namespace Plugin.Runtime.Services.ExecuteAction.Action
             {
                 // Перебираем всех исполнителей действий, и проверяем, может 
                 // ли какой то исполнитель выполнить действие для текущего юнита
-                if (!executer.CanExecute(unit))
-                {
+                if (!executer.CanExecute(unit)){
                     continue;
                 }
 

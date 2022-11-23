@@ -1,7 +1,6 @@
 ﻿using Plugin.Installers;
 using Plugin.Interfaces;
 using Plugin.Interfaces.Actions;
-using Plugin.Interfaces.Units;
 using Plugin.Runtime.Services.Sync;
 using Plugin.Runtime.Services.Sync.Groups;
 using Plugin.Tools;
@@ -22,13 +21,13 @@ namespace Plugin.Runtime.Services.ExecuteAction.Action.Executors
     /// 4. забираем у игрока 1 патрон
     /// 
     /// </summary>
-    public class WeaponShot : IExecuteAction
+    public class DamageAction : IExecuteAction
     {
         private SyncService _syncService;
         private UnitsService _unitsService;
         private SortTargetOnGridService _sortTargetOnGridService;
 
-        public WeaponShot()
+        public DamageAction()
         {
             var gameInstaller = GameInstaller.GetInstance();
 
@@ -40,55 +39,48 @@ namespace Plugin.Runtime.Services.ExecuteAction.Action.Executors
         /// <summary>
         /// Может ли текущий класс выполнить действие для юнита?
         /// </summary>
-        public bool CanExecute(IUnit unit){
-            if (unit is IDamageAction){
-                return true;
-            }
-
-            return false;
+        public bool CanExecute(IUnit unit)
+        {
+            return typeof(IDamageAction).IsAssignableFrom(unit.GetType());
         }
 
         /// <summary>
         /// Выполнить действие
         /// </summary>
-        public void Execute( IUnit unit, int targetActorID, int posW, int posH )
+        public void Execute( IUnit unit, int targetActorId, int posW, int posH )
         {
             // Проверяем, может ли юнит вытсрелить?
-            var unitWithWeapon = (IDamageAction)unit;
+            var damageAction = (IDamageAction)unit;
 
-            if (!unitWithWeapon.CanExecute()){
-                throw new ArgumentException($"ExecuteActionService :: WeaponShot :: Execute() ownerID = {unit.OwnerActorId}, unitID = {unit.UnitId}, instanceID = {unit.InstanceId}, targetActorID = {targetActorID}, posW = {posW}, posH = {posH}, I can't shot, maybe I don't have ammunition.");
+            if (!damageAction.CanExecuteAction()){
+                throw new ArgumentException($"ExecuteActionService :: WeaponShot :: Execute() ownerID = {unit.OwnerActorId}, unitID = {unit.UnitId}, instanceID = {unit.InstanceId}, targetActorID = {targetActorId}, posW = {posW}, posH = {posH}, I can't make damage action. Maybe I don't have ammunition.");
             }
 
-            unitWithWeapon.Execute();     // делаем выстрел. Юнит тратит 1 патрон
-
+            damageAction.SpendAction();     // делаем выстрел. Юнит тратит 1 патрон
 
             // Синхронизировать выполненное действие юнита на игровой сетке
-            ISyncGroupComponent syncOnGrid = new SyncActionGroup(unit,
-                                                                 targetActorID,
-                                                                 posW,
-                                                                 posH);
-            _syncService.Add(unit.OwnerActorId, syncOnGrid);
+            var syncData = new SyncActionGroup(unit,
+                                               targetActorId,
+                                               posW,
+                                               posH);
+            _syncService.Add(unit.OwnerActorId, syncData);
 
 
-
-            Int2[] actionArea = unitWithWeapon.GetArea();
-
-            foreach (Int2 area in actionArea)
+            foreach (Int2 area in damageAction.DamageActionArea)
             {
                 int targetW = posW + area.x;
                 int targetH = posH + area.y;
 
                 // Находим всех противников, в которых мы выстрелили
-                List<IUnit> enemyTargets = _sortTargetOnGridService.SortTargets(_unitsService.GetUnitsUnderThisPosition(targetActorID, targetW, targetH));
+                List<IUnit> targets = _sortTargetOnGridService.SortTargets(_unitsService.GetUnitsUnderThisPosition(targetActorId, targetW, targetH));
 
-                if (enemyTargets.Count <= 0){
+                if (targets.Count <= 0){
                     return;                     // игрок выстрелил мимо!
                 }
 
-                int damage = unitWithWeapon.Power;   // получить урон, который игрок нанес выстрелом
+                int damage = damageAction.Power;   // получить урон, который игрок нанес выстрелом
 
-                _unitsService.SetDamage(enemyTargets[0], damage);
+                _unitsService.SetDamage(targets[0], damage);
             }
         }
     }

@@ -1,6 +1,6 @@
 ﻿using Plugin.Builders;
 using Plugin.Interfaces;
-using Plugin.Interfaces.Units;
+using Plugin.Interfaces.UnitComponents;
 using System.Collections.Generic;
 
 namespace Plugin.Runtime.Services.Sync.Groups
@@ -20,7 +20,7 @@ namespace Plugin.Runtime.Services.Sync.Groups
             var syncElements = SyncElementBuilder
                .Build(this)
                .SyncUnitID(unit.UnitId, unit.InstanceId)
-               .SyncVip((unit as IVip).Enable);
+               .SyncVip((unit as IVipComponent).Enable);
         }
     }
 }

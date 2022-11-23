@@ -1,6 +1,6 @@
-﻿namespace Plugin.Interfaces.Units
+﻿namespace Plugin.Interfaces.UnitComponents
 {
-    public interface IVip
+    public interface IVipComponent
     {
         /// <summary>
         /// Текущий юнит является Vip?

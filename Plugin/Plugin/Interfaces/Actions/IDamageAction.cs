@@ -1,4 +1,4 @@
-﻿using Plugin.Interfaces.Units;
+﻿using Plugin.Interfaces.UnitComponents;
 using Plugin.Tools;
 
 namespace Plugin.Interfaces.Actions
@@ -6,7 +6,7 @@ namespace Plugin.Interfaces.Actions
     /// <summary>
     /// Выполнить действие - нанести урон
     /// </summary>
-    public interface IDamageAction : IAction
+    public interface IDamageAction : IActionComponent
     {
         /// <summary>
         /// Инитиализировать оружие
@@ -22,12 +22,12 @@ namespace Plugin.Interfaces.Actions
         /// Может ли юнит выстрелить?
         /// Есть ли патроны для выстрела?
         /// </summary>
-        bool CanExecute();
+        bool CanExecuteAction();
 
         /// <summary>
         /// Юнит выстрелил. Использовать аммуницию
         /// </summary>
-        void Execute();
+        void SpendAction();
 
         /// <summary>
         /// Сила урона от текущего оружия. Но, текущее значение может изменятся,

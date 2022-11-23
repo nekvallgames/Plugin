@@ -1,7 +1,6 @@
 ﻿using Plugin.Installers;
 using Plugin.Interfaces;
 using Plugin.Interfaces.Actions;
-using Plugin.Interfaces.Units;
 using Plugin.Runtime.Services.Sync;
 using Plugin.Runtime.Services.Sync.Groups;
 using Plugin.Tools;
@@ -22,13 +21,13 @@ namespace Plugin.Runtime.Services.ExecuteAction.Action.Executors
     /// 4. забираем у игрока 1-у гранату
     /// 
     /// </summary>
-    public class GrenadeShot : IExecuteAction
+    public class WaveDamageAction : IExecuteAction
     {
         private SyncService _syncService;
         private UnitsService _unitsService;
         private SortTargetOnGridService _sortTargetOnGridService;
 
-        public GrenadeShot()
+        public WaveDamageAction()
         {
             var gameInstaller = GameInstaller.GetInstance();
 
@@ -42,11 +41,7 @@ namespace Plugin.Runtime.Services.ExecuteAction.Action.Executors
         /// </summary>
         public bool CanExecute(IUnit unit)
         {
-            if (unit is IGrenadeWeaponsAction){
-                return true;
-            }
-
-            return false;
+            return unit is IWaveDamageAction;
         }
 
         /// <summary>
@@ -55,13 +50,13 @@ namespace Plugin.Runtime.Services.ExecuteAction.Action.Executors
         public void Execute(IUnit unit, int targetActorID, int posW, int posH)
         {
             // Проверяем, может ли юнит вытсрелить?
-            var unitWithGrenade = (IGrenadeWeaponsAction)unit;
+            var waveDamageAction = (IWaveDamageAction)unit;
 
-            if (!unitWithGrenade.CanExecute()){
+            if (!waveDamageAction.CanExecuteAction()){
                 throw new ArgumentException($"ExecuteActionService :: GrenadeShot :: Execute() ownerID = {unit.OwnerActorId}, unitID = {unit.UnitId}, instanceID = {unit.InstanceId}, targetActorID = {targetActorID}, posW = {posW}, posH = {posH}, I can't shot, maybe I don't have ammunition.");
             }
 
-            unitWithGrenade.Execute();     // делаем бросок гранаты. Юнит тратит 1-у гранату
+            waveDamageAction.SpendAction();     // делаем бросок гранаты. Юнит тратит 1-у гранату
 
             // Синхронизировать выполненное действие юнита на игровой сетке
             var syncOnGrid = new SyncActionGroup(unit,
@@ -76,14 +71,14 @@ namespace Plugin.Runtime.Services.ExecuteAction.Action.Executors
             // 2 1 0 1 2
             // 2 1 1 1 2
             // 2 2 2 2 2
-            Int2[] actionArea = unitWithGrenade.GetArea();
+            Int2[] actionArea = waveDamageAction.DamageActionArea;
 
             // Перебираем каждую ячейку поля взрыва
             foreach (Int2 area in actionArea)
             {
                 // Найти урон, взависимости от волны взрыва гранаты
                 int waveIndex = CalculateWave(area.x, area.y);
-                int damage = CalculateDamage(unitWithGrenade.Power, unitWithGrenade, waveIndex);
+                int damage = CalculateDamage(waveDamageAction.Power, waveDamageAction, waveIndex);
 
                 int targetW = posW + area.x;
                 int targetH = posH + area.y;
@@ -115,7 +110,7 @@ namespace Plugin.Runtime.Services.ExecuteAction.Action.Executors
         /// grenadeParamComponent - в компоненте находятся параметры в уроном от волны
         /// waveIndex - текущий волна
         /// </summary>
-        private int CalculateDamage(int weaponDamage, IGrenadeWeaponsAction unitWithGrenade, int waveIndex)
+        private int CalculateDamage(int weaponDamage, IWaveDamageAction unitWithGrenade, int waveIndex)
         {
             switch (waveIndex)
             {

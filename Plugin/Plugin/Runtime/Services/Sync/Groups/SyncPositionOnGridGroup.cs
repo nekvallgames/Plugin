@@ -1,7 +1,5 @@
 ﻿using Plugin.Builders;
 using Plugin.Interfaces;
-using Plugin.Interfaces.Units;
-using System;
 using System.Collections.Generic;
 
 namespace Plugin.Runtime.Services.Sync.Groups
@@ -21,7 +19,7 @@ namespace Plugin.Runtime.Services.Sync.Groups
             var syncElements = SyncElementBuilder
                .Build(this)
                .SyncUnitID(unit.UnitId, unit.InstanceId)
-               .SyncPositionOnGrid( ((IPositionOnGrid)unit).Position );
+               .SyncPositionOnGrid( unit.Position );
         }
     }
 }

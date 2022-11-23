@@ -1,4 +1,4 @@
-﻿using Plugin.Interfaces.Units;
+﻿using Plugin.Interfaces;
 using Plugin.Runtime.Units;
 using System;
 
@@ -17,8 +17,8 @@ namespace Plugin.Builders
             {
                 case UnitPistol.UnitId:
                     {
-                        return new UnitPistol(ownerActorID,
-                                              unitID,
+                        return new UnitPistol(ownerActorId,
+                                              unitId,
                                               GetInstanceID(ownerActorID));
                     }
                     break;

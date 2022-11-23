@@ -1,6 +1,4 @@
-﻿using Plugin.Interfaces.Units;
-
-namespace Plugin.Interfaces
+﻿namespace Plugin.Interfaces
 {
     public interface IExecuteAction
     {

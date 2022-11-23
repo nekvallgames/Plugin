@@ -1,5 +1,5 @@
 ﻿using Plugin.Installers;
-using Plugin.Interfaces.Units;
+using Plugin.Interfaces;
 using Plugin.Runtime.Services.Sync;
 using Plugin.Runtime.Services.Sync.Groups;
 using Plugin.Tools;
@@ -27,7 +27,7 @@ namespace Plugin.Runtime.Services.ExecuteAction
             // TODO в будущем добавить проверку на то, может ли юнит дойти 
             // или стать в текущих координатах
 
-            ((IPositionOnGrid)unit).Position = new Int2(posW, posH);
+            unit.Position = new Int2(posW, posH);
 
             // Синхронизировать позицию юнита на игровой сетке
             var syncData = new SyncPositionOnGridGroup(unit);

@@ -1,9 +1,9 @@
-﻿using Plugin.Interfaces.Units;
+﻿using Plugin.Interfaces;
 using Plugin.Tools;
 
 namespace Plugin.Runtime.Units
 {
-    public abstract class BaseUnit : IUnit, IPositionOnGrid, IArea
+    public abstract class BaseUnit : IUnit
     {
         /// <summary>
         /// Владелец игрового юнита
@@ -30,7 +30,10 @@ namespace Plugin.Runtime.Units
         /// </summary>
         public abstract Int2 BodySize { get; }
 
-
+        /// <summary>
+        /// Поточний юніт мертвий?
+        /// </summary>
+        public bool IsDead { get; set; }
 
         public BaseUnit( int ownerActorId, int unitId, int instanceUnitId )
         {

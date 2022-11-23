@@ -1,6 +1,6 @@
-﻿namespace Plugin.Interfaces.Units
+﻿namespace Plugin.Interfaces.UnitComponents
 {
-    public interface IHealth
+    public interface IHealthComponent
     {
         /// <summary>
         /// Получить количество жизней юнита
