@@ -1,4 +1,6 @@
-﻿using Plugin.Interfaces;
+﻿using Plugin.Installers;
+using Plugin.Interfaces;
+using Plugin.Runtime.Services;
 using Plugin.Runtime.Units;
 using System;
 
@@ -6,6 +8,13 @@ namespace Plugin.Builders
 {
     public class UnitBuilder
     {
+        private UnitInstanceService _unitInstanceService;
+
+        public UnitBuilder()
+        {
+            _unitInstanceService = GameInstaller.GetInstance().unitInstanceService;
+        }
+
         /// <summary>
         /// Создать юнит, указав его тип
         /// ownerActorId - владелец юнита
@@ -19,7 +28,15 @@ namespace Plugin.Builders
                     {
                         return new UnitPistol(ownerActorId,
                                               unitId,
-                                              GetInstanceID(ownerActorID));
+                                              _unitInstanceService.GetInstance(ownerActorId, unitId));
+                    }
+                    break;
+
+                case UnitShotGun.UnitId:
+                    {
+                        return new UnitShotGun(ownerActorId,
+                                               unitId,
+                                               _unitInstanceService.GetInstance(ownerActorId, unitId));
                     }
                     break;
             }

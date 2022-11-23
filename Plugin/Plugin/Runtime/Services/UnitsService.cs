@@ -99,8 +99,14 @@ namespace Plugin.Runtime.Services
             return _model.Items.Find(x => x.OwnerActorId == actorId && x.UnitId == unitId && x.InstanceId == instanceId);
         }
 
-        public List<IUnit> GetUnits(int actorId){
+        public List<IUnit> GetUnits(int actorId)
+        {
             return _model.Items.FindAll(x => x.OwnerActorId == actorId);
+        }
+
+        public List<IUnit> GetUnits(int actorId, int unitId)
+        {
+            return _model.Items.FindAll(x => x.OwnerActorId == actorId && x.UnitId == unitId);
         }
 
         /// <summary>

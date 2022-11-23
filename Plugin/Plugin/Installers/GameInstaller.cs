@@ -41,12 +41,14 @@ namespace Plugin.Installers
         public PrivateModelProvider privateModelProvider;
         public GridBuilder gridBuilder;
         public ConvertService convertService;
+        public UnitInstanceService unitInstanceService;
 
         public GameInstaller()
         {
             _instance = this;
 
             convertService = new ConvertService();
+            unitInstanceService = new UnitInstanceService();
 
             InstallBuilders();
             InstallProviders();
