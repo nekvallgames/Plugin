@@ -5,7 +5,7 @@ namespace Plugin.Templates
 {
     public abstract class BaseModel<T> : IModel<T>
     {
-        private List<T> _list = new List<T>();
+        public List<T> Items { get; } = new List<T>();
 
         /// <summary>
         /// Добавити елемент до списку
@@ -15,9 +15,17 @@ namespace Plugin.Templates
             if (!CanAddHook(item))
                 return;
 
-            _list.Add(item);
-
+            Items.Add(item);
             AfterAddHook(item);
+        }
+
+        /// <summary>
+        /// Видалити елемент із списку
+        /// </summary>
+        public void Remove(T item)
+        {
+            Items.Remove(item);
+            AfterRemoveHook(item);
         }
 
         /// <summary>
@@ -29,7 +37,10 @@ namespace Plugin.Templates
         /// Виконається після добавлення поточного єлементу до списку
         /// </summary>
         protected virtual void AfterAddHook(T item) { }
-        public List<T> Items => _list;
-        
+        /// <summary>
+        /// Виконається після видалення поточного єлементу із списка
+        /// </summary>
+        protected virtual void AfterRemoveHook(T item) { }
+
     }
 }

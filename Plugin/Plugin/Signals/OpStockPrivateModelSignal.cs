@@ -3,18 +3,37 @@
 namespace Plugin.Signals
 {
     /// <summary>
-    /// Событие, игрок прислал на GAME SERVER операцию 
-    /// и положили ее на слад операций игрока
+    /// Подія, коли модель із даними операцій акторів була змінена
     /// </summary>
     public struct OpStockPrivateModelSignal : ISignal
     {
+        /// <summary>
+        /// Власник операції
+        /// </summary>
         public int ActorId { get; }
+        /// <summary>
+        /// Код операції знаходиться в классі OperationCode
+        /// </summary>
         public byte OpCode { get; }
 
-        public OpStockPrivateModelSignal(int actorId, byte opCode)
+        /// <summary>
+        /// Статус змінення моделі
+        /// add - була добавлена нова операція
+        /// remove - операція була оброблена і видалена
+        /// </summary>
+        public StatusType Status { get; }
+
+        public enum StatusType
+        {
+            add,
+            remove
+        }
+
+        public OpStockPrivateModelSignal(int actorId, byte opCode, StatusType status)
         {
             ActorId = actorId;
             OpCode = opCode;
+            Status = status;
         }
     }
 }

@@ -50,6 +50,7 @@ namespace Plugin.Plugins.PVP.States
             LogChannel.Log("PlotService :: AccumulateState :: EnterState()", LogChannel.Type.Plot);
 
             _signalBus.Subscrible<ActorsPrivateModelSignal>(OnChangeActorModel);
+            OnChangeActorModel(default);
         }
 
         /// <summary>
@@ -57,7 +58,13 @@ namespace Plugin.Plugins.PVP.States
         /// </summary>
         private void OnChangeActorModel( ActorsPrivateModelSignal signalData )
         {
-            if (_actorsService.GetConnectedActors().Count >= _countActors){
+            // TODO добавити перевірку, якщо в кімнаті буде більше гравців, а ніж потрібно,
+            // то що би гравців, котрі лишні, дісконектнуло із кімнати
+
+            if (_actorsService.GetConnectedActors().Count == _countActors)
+            {
+                _actorsService.RemoveDisconnectedActors();
+
                 _plotService.ChangeState(_nextState);
             }
         }

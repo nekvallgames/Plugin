@@ -20,6 +20,9 @@ namespace Plugin.Runtime.Services
             _model = model;
         }
 
+        /// <summary>
+        /// Створити нового актора
+        /// </summary>
         public void CreateActor(string userId, int actorId)
         {
             if (Has(actorId)){
@@ -27,7 +30,6 @@ namespace Plugin.Runtime.Services
             }
 
             _model.Add(new ActorScheme(userId, actorId));
-            CreateSignal(actorId);
         }
 
         public bool Has(int actorId)
@@ -46,11 +48,32 @@ namespace Plugin.Runtime.Services
         }
 
         /// <summary>
+        /// Отримати всіх акторів
+        /// </summary>
+        public List<ActorScheme> GetActors()
+        {
+            return _model.Items;
+        }
+
+        /// <summary>
         /// Отримати всіх акторів, котрі приконекчені до ігрової кімнати
         /// </summary>
         public List<ActorScheme> GetConnectedActors()
         {
             return _model.Items.FindAll(x => x.IsConnected);
+        }
+
+        /// <summary>
+        /// Видалити із моделі акторів, котрі були дісконекнуті
+        /// </summary>
+        public void RemoveDisconnectedActors()
+        {
+            List<ActorScheme> actors = _model.Items.FindAll(x => !x.IsConnected);
+            if (actors.Any()){
+                foreach (ActorScheme actor in actors){
+                    _model.Remove(actor);
+                }
+            }
         }
 
         /// <summary>
@@ -60,7 +83,5 @@ namespace Plugin.Runtime.Services
         {
             _signalBus.Fire(new ActorsPrivateModelSignal(actorId));
         }
-
-        
     }
 }

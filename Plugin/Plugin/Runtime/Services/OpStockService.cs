@@ -3,6 +3,9 @@ using Plugin.Models.Private;
 
 namespace Plugin.Runtime.Services
 {
+    /// <summary>
+    /// Сервіс, для маніпуляції операцій, котрі присилають актори
+    /// </summary>
     public class OpStockService
     {
         private OpStockPrivateModel<IOpStockItem> _model;
@@ -26,12 +29,20 @@ namespace Plugin.Runtime.Services
         }
 
         /// <summary>
+        /// Отримати операцію зі складу 
+        /// </summary>
+        public IOpStockItem GetOp(int actorId, byte opCode)
+        {
+            return _model.Items.Find(x => x.ActorId == actorId && x.OpCode == opCode);
+        }
+
+        /// <summary>
         /// Отримати і видалити операцію зі складу 
         /// </summary>
         public IOpStockItem TakeOp(int actorId, byte opCode)
         {
-            var item = _model.Items.Find(x => x.ActorId == actorId && x.OpCode == opCode);
-            _model.Items.Remove(item);
+            var item = GetOp(actorId, opCode);
+            _model.Remove(item);
 
             return item;
         }

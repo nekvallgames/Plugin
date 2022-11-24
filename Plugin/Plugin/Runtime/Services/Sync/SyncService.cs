@@ -4,6 +4,10 @@ using Plugin.Schemes;
 
 namespace Plugin.Runtime.Services.Sync
 {
+    /// <summary>
+    /// Сервіс, котрий зберігає в собі виконані дії юнітів
+    /// Що би в подальшому синхронізувати дії юнітів на стороні сервера із діями на стороні клієнту
+    /// </summary>
     public class SyncService
     {
         private SyncPrivateModel<SyncScheme> _model;

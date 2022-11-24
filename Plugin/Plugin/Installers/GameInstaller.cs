@@ -35,20 +35,19 @@ namespace Plugin.Installers
         public ExecuteAdditionalService executeAdditionalService;
         public ActorsService actorsService;
         public OpStockService opStockService;
-        public BroadcastService pushService;
+        public BroadcastProvider broadcastProvider;
         public GridService gridService;
         public PublicModelProvider publicModelProvider;
         public PrivateModelProvider privateModelProvider;
         public GridBuilder gridBuilder;
         public ConvertService convertService;
         public UnitInstanceService unitInstanceService;
+        public UnitBuilder unitBuilder;
+        public NotificationChangeVipService notificationChangeVipService;
 
         public GameInstaller()
         {
             _instance = this;
-
-            convertService = new ConvertService();
-            unitInstanceService = new UnitInstanceService();
 
             InstallBuilders();
             InstallProviders();
@@ -58,6 +57,7 @@ namespace Plugin.Installers
         private void InstallBuilders()
         {
             gridBuilder = new GridBuilder();
+            unitBuilder = new UnitBuilder();
         }
 
         private void InstallProviders()
@@ -80,8 +80,9 @@ namespace Plugin.Installers
 
         private void InstallServices()
         {
+            convertService = new ConvertService();
+            unitInstanceService = new UnitInstanceService();
             plotService = new PlotService(privateModelProvider.Get<PlotStatesPrivateModel>());
-            signalBus = new SignalBus();
             unitsService = new UnitsService(privateModelProvider.Get<UnitsPrivateModel<IUnit>>());
             sortOpStepService = new SortOpStepService();
             syncService = new SyncService(privateModelProvider.Get<SyncPrivateModel<SyncScheme>>());
@@ -93,6 +94,7 @@ namespace Plugin.Installers
             actorsService = new ActorsService(privateModelProvider.Get<ActorsPrivateModel<ActorScheme>>());
             opStockService = new OpStockService(privateModelProvider.Get<OpStockPrivateModel<IOpStockItem>>());
             gridService = new GridService();
+            notificationChangeVipService = new NotificationChangeVipService();
         }
     }
 }

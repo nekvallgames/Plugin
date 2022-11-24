@@ -20,7 +20,16 @@ namespace Plugin.Models.Private
 
         protected override void AfterAddHook(T item)
         {
-            _signalBus.Fire(new OpStockPrivateModelSignal(item.ActorId, item.OpCode));
+            _signalBus.Fire(new OpStockPrivateModelSignal(item.ActorId, 
+                                                          item.OpCode, 
+                                                          OpStockPrivateModelSignal.StatusType.add));
+        }
+
+        protected override void AfterRemoveHook(T item) 
+        {
+            _signalBus.Fire(new OpStockPrivateModelSignal(item.ActorId,
+                                                          item.OpCode,
+                                                          OpStockPrivateModelSignal.StatusType.remove));
         }
     }
 }

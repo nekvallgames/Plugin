@@ -1,4 +1,5 @@
-﻿using Plugin.Installers;
+﻿using Plugin.Builders;
+using Plugin.Installers;
 using Plugin.Interfaces;
 using Plugin.Interfaces.UnitComponents;
 using Plugin.Models.Private;
@@ -19,14 +20,16 @@ namespace Plugin.Runtime.Services
         private UnitsPrivateModel<IUnit> _model;
         private OpStockService _opStockService;
         private ConvertService _convertService;
+        private UnitBuilder _unitBuilder;
 
-        public UnitsService(UnitsPrivateModel<IUnit> model)
+        public UnitsService( UnitsPrivateModel<IUnit> model )
         {
             _model = model;
 
             var gameInstaller = GameInstaller.GetInstance();
             _opStockService = gameInstaller.opStockService;
             _convertService = gameInstaller.convertService;
+            _unitBuilder = gameInstaller.unitBuilder;
 
             gameInstaller.signalBus.Subscrible<OpStockPrivateModelSignal>( OpStockModelChange );
         }
@@ -39,15 +42,17 @@ namespace Plugin.Runtime.Services
             // Якщо це операція choosedUnitsForGame, це означає, що потрібно для гравця створити юнітів
             if (signalData.OpCode == OperationCode.choosedUnitsForGame)
             {
-                // Забрати зі складу операцію, в якій знаходяться дані із юнітами, котрих обрав актор
-                var opChoosedUnits = _opStockService.TakeOp(signalData.ActorId, signalData.OpCode);
+                // Отримати зі складу операцію, в якій знаходяться дані із юнітами, котрих обрав актор
+                var opChoosedUnits = _opStockService.GetOp(signalData.ActorId, signalData.OpCode);
 
                 var choosedUnitsScheme = _convertService.DeserializeObject<ChoosedUnitsScheme>(opChoosedUnits.Data.ToString());
 
-                foreach( int unitId in choosedUnitsScheme.unitsId )
-                {
-
+                foreach( int unitId in choosedUnitsScheme.unitsId ){
+                    _model.Add( _unitBuilder.CreateUnit(signalData.ActorId, unitId) );
                 }
+
+                // Видалити оброблену операцію зі складу
+                _opStockService.TakeOp(signalData.ActorId, signalData.OpCode);
             }
         }
 
@@ -64,7 +69,7 @@ namespace Plugin.Runtime.Services
         /// </summary>
         public List<IUnit> GetUnitsUnderThisPosition( int unitOwnerID, int posW, int posH )
         {
-            List<IUnit> unitsUnderPos = new List<IUnit>();
+            var unitsUnderPos = new List<IUnit>();
 
             foreach (var unit in _model.Items)
             {

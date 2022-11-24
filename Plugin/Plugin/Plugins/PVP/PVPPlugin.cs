@@ -1,6 +1,7 @@
 ﻿using Plugin.Installers;
 using Plugin.Interfaces;
 using Plugin.Plugins.PVP.States;
+using Plugin.Runtime.Providers;
 using Plugin.Runtime.Services;
 
 namespace Plugin.Plugins.PVP
@@ -22,12 +23,12 @@ namespace Plugin.Plugins.PVP
         public PVPPlugin()
         {
             var gameInstaller = GameInstaller.GetInstance();
-            gameInstaller.pushService = new BroadcastService(this);  // TODO не подобається как було реалізовано прокидання єкземпляра PluginBase до классу PushService
+            gameInstaller.broadcastProvider = new BroadcastProvider(this);  // TODO не подобається как було реалізовано прокидання єкземпляра PluginBase до классу PushService
 
 
 
-            gameInstaller.plotService.Add(new IState[] { new AccumulateState(2, SyncChoosedUnitsState.NAME),
-                                                         new SyncChoosedUnitsState(2, "")});
+            gameInstaller.plotService.Add(new IState[] { new AccumulateState(2, SyncStartState.NAME),
+                                                         new SyncStartState(2, "")});
 
 
             gameInstaller.plotService.ChangeState(AccumulateState.NAME);
