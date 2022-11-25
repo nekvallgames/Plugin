@@ -1,5 +1,6 @@
 ﻿using Plugin.Interfaces;
 using Plugin.Runtime.Services.ExecuteAction.Additional.Executors;
+using Plugin.Runtime.Services.Sync;
 
 namespace Plugin.Runtime.Services.ExecuteAction.Additional
 {
@@ -10,12 +11,11 @@ namespace Plugin.Runtime.Services.ExecuteAction.Additional
         /// </summary>
         private IExecuteAction[] _executorsActions;
 
-        // Constructor
-        public ExecuteAdditionalService()
+        public ExecuteAdditionalService(SyncService syncService, UnitsService unitsService)
         {
             _executorsActions = new IExecuteAction[]
             {
-                new Healing()      // медик хочет вылечить юнита
+                new Healing(syncService, unitsService)      // медик хочет вылечить юнита
             };
         }
 

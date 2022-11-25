@@ -27,13 +27,11 @@ namespace Plugin.Runtime.Services.ExecuteAction.Action.Executors
         private UnitsService _unitsService;
         private SortTargetOnGridService _sortTargetOnGridService;
 
-        public DamageAction()
+        public DamageAction(SyncService syncService, UnitsService unitsService, SortTargetOnGridService sortTargetOnGridService)
         {
-            var gameInstaller = GameInstaller.GetInstance();
-
-            _syncService = gameInstaller.syncService;
-            _unitsService = gameInstaller.unitsService;
-            _sortTargetOnGridService = gameInstaller.sortTargetOnGridService;
+            _syncService = syncService;
+            _unitsService = unitsService;
+            _sortTargetOnGridService = sortTargetOnGridService;
         }
 
         /// <summary>

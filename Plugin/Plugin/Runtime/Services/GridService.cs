@@ -15,15 +15,16 @@ namespace Plugin.Runtime.Services
         private GridsPrivateModel<GridScheme> _gridsPrivateModel;
         private GridBuilder _gridBuilder;
 
-        public GridService()
+        public GridService(PublicModelProvider publicModelProvider, 
+                           PrivateModelProvider privateModelProvider, 
+                           GridBuilder gridBuilder, 
+                           SignalBus signalBus)
         {
-            var gameInstaller = GameInstaller.GetInstance();
+            _locationsPublicModel = publicModelProvider.Get<LocationsPublicModel<LocationScheme>>();
+            _gridsPrivateModel = privateModelProvider.Get<GridsPrivateModel<GridScheme>>();
+            _gridBuilder = gridBuilder;
 
-            _locationsPublicModel = gameInstaller.publicModelProvider.Get<LocationsPublicModel<LocationScheme>>();
-            _gridsPrivateModel = gameInstaller.privateModelProvider.Get<GridsPrivateModel<GridScheme>>();
-            _gridBuilder = gameInstaller.gridBuilder;
-
-            gameInstaller.signalBus.Subscrible<ActorsPrivateModelSignal>(OnActorsModelChange);
+            signalBus.Subscrible<ActorsPrivateModelSignal>(OnActorsModelChange);
         }
 
         /// <summary>

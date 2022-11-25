@@ -13,9 +13,9 @@ namespace Plugin.Models.Private
     {
         private SignalBus _signalBus;
 
-        public OpStockPrivateModel()
+        public OpStockPrivateModel(SignalBus signalBus)
         {
-            _signalBus = GameInstaller.GetInstance().signalBus;
+            _signalBus = signalBus;
         }
 
         protected override void AfterAddHook(T item)

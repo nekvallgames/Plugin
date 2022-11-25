@@ -14,9 +14,9 @@ namespace Plugin.Models.Private
     {
         private SignalBus _signalBus;
 
-        public ActorsPrivateModel()
+        public ActorsPrivateModel(SignalBus signalBus)
         {
-            _signalBus = GameInstaller.GetInstance().signalBus;
+            _signalBus = signalBus;
         }
 
         /// <summary>

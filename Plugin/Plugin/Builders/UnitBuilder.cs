@@ -10,9 +10,9 @@ namespace Plugin.Builders
     {
         private UnitInstanceService _unitInstanceService;
 
-        public UnitBuilder()
+        public UnitBuilder(UnitInstanceService unitInstanceService)
         {
-            _unitInstanceService = GameInstaller.GetInstance().unitInstanceService;
+            _unitInstanceService = unitInstanceService;
         }
 
         /// <summary>

@@ -2,6 +2,7 @@
 using Plugin.Interfaces;
 using Plugin.Models.Private;
 using Plugin.Models.Public;
+using Plugin.Plugins;
 using Plugin.Runtime.Providers;
 using Plugin.Runtime.Services;
 using Plugin.Runtime.Services.ExecuteAction;
@@ -49,52 +50,42 @@ namespace Plugin.Installers
         {
             _instance = this;
 
-            InstallBuilders();
-            InstallProviders();
-            InstallServices();
-        }
+            signalBus = new SignalBus();
+            convertService = new ConvertService();
+            sortOpStepService = new SortOpStepService();
 
-        private void InstallBuilders()
-        {
-            gridBuilder = new GridBuilder();
-            unitBuilder = new UnitBuilder();
-        }
-
-        private void InstallProviders()
-        {
-            publicModelProvider = new PublicModelProvider(new List<IPublicModel> 
+            publicModelProvider = new PublicModelProvider(new List<IPublicModel>
             {
-                new LocationsPublicModel<LocationScheme>(convertService) 
+                new LocationsPublicModel<LocationScheme>(convertService)
             });
 
             privateModelProvider = new PrivateModelProvider(new List<IPrivateModel>
             {
                 new PlotStatesPrivateModel(),
                 new UnitsPrivateModel<IUnit>(),
-                new OpStockPrivateModel<OpStockItem>(),
+                new OpStockPrivateModel<IOpStockItem>(signalBus),
                 new SyncPrivateModel<SyncScheme>(),
                 new GridsPrivateModel<GridScheme>(),
-                new ActorsPrivateModel<ActorScheme>()
+                new ActorsPrivateModel<ActorScheme>(signalBus)
             });
-        }
 
-        private void InstallServices()
-        {
-            convertService = new ConvertService();
-            unitInstanceService = new UnitInstanceService();
-            plotService = new PlotService(privateModelProvider.Get<PlotStatesPrivateModel>());
-            unitsService = new UnitsService(privateModelProvider.Get<UnitsPrivateModel<IUnit>>());
-            sortOpStepService = new SortOpStepService();
-            syncService = new SyncService(privateModelProvider.Get<SyncPrivateModel<SyncScheme>>());
-            executeMoveService = new MoveService();
-            executeVipService = new VipService();
-            executeActionService = new ActionService();
-            sortTargetOnGridService = new SortTargetOnGridService();
-            executeAdditionalService = new ExecuteAdditionalService();
-            actorsService = new ActorsService(privateModelProvider.Get<ActorsPrivateModel<ActorScheme>>());
+            gridBuilder = new GridBuilder();
+            
+            unitInstanceService = new UnitInstanceService(privateModelProvider.Get<UnitsPrivateModel<IUnit>>());
+            unitBuilder = new UnitBuilder(unitInstanceService);
             opStockService = new OpStockService(privateModelProvider.Get<OpStockPrivateModel<IOpStockItem>>());
-            gridService = new GridService();
-            notificationChangeVipService = new NotificationChangeVipService();
+            unitsService = new UnitsService(privateModelProvider.Get<UnitsPrivateModel<IUnit>>(), opStockService, convertService, unitBuilder, signalBus);
+            syncService = new SyncService(privateModelProvider.Get<SyncPrivateModel<SyncScheme>>());
+            executeMoveService = new MoveService(syncService);
+            plotService = new PlotService(privateModelProvider.Get<PlotStatesPrivateModel>());
+            executeVipService = new VipService(syncService, unitsService);
+            sortTargetOnGridService = new SortTargetOnGridService();
+            executeActionService = new ActionService(syncService, unitsService, sortTargetOnGridService);
+            executeAdditionalService = new ExecuteAdditionalService(syncService, unitsService);
+            actorsService = new ActorsService(privateModelProvider.Get<ActorsPrivateModel<ActorScheme>>(), signalBus);
+            gridService = new GridService(publicModelProvider, privateModelProvider, gridBuilder, signalBus);
+            broadcastProvider = new BroadcastProvider(PluginHook.Instance);
+            notificationChangeVipService = new NotificationChangeVipService(opStockService, actorsService, signalBus, broadcastProvider);
         }
     }
 }

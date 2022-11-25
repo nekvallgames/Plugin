@@ -1,5 +1,5 @@
-﻿using Plugin.Installers;
-using Plugin.Interfaces;
+﻿using Plugin.Interfaces;
+using Plugin.Models.Private;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -10,13 +10,11 @@ namespace Plugin.Runtime.Services
     /// </summary>
     public class UnitInstanceService
     {
-        private UnitsService _unitsService;
+        private UnitsPrivateModel<IUnit> _unitsPrivateModel;
 
-        public UnitInstanceService()
+        public UnitInstanceService(UnitsPrivateModel<IUnit> unitsPrivateModel)
         {
-            var gameInstaller = GameInstaller.GetInstance();
-
-            _unitsService = gameInstaller.unitsService;
+            _unitsPrivateModel = unitsPrivateModel;
         }
 
         /// <summary>
@@ -26,7 +24,7 @@ namespace Plugin.Runtime.Services
         /// </summary>
         public int GetInstance(int actorId, int unitId)
         {
-            List<IUnit> list = _unitsService.GetUnits(actorId, unitId);
+            List<IUnit> list = _unitsPrivateModel.Items.FindAll(x => x.OwnerActorId == actorId && x.UnitId == unitId);
             if (!list.Any())
                 return 0;
 

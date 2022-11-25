@@ -17,12 +17,10 @@ namespace Plugin.Runtime.Services.ExecuteAction
         private SyncService _syncService;
         private UnitsService _unitsService;
 
-        public VipService()
+        public VipService(SyncService syncService, UnitsService unitsService)
         {
-            var gameInstaller = GameInstaller.GetInstance();
-
-            _syncService = gameInstaller.syncService;
-            _unitsService = gameInstaller.unitsService;
+            _syncService = syncService;
+            _unitsService = unitsService;
         }
 
         public void ChangeVip( IUnit unitNextVip, bool enable )

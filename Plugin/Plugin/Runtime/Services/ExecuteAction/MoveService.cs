@@ -13,9 +13,9 @@ namespace Plugin.Runtime.Services.ExecuteAction
     {
         private SyncService _syncService;
 
-        public MoveService()
+        public MoveService(SyncService syncService)
         {
-            _syncService = GameInstaller.GetInstance().syncService;
+            _syncService = syncService;
         }
 
         /// <summary>

@@ -1,10 +1,10 @@
-﻿using Plugin.Installers;
-using Plugin.Interfaces;
+﻿using Plugin.Interfaces;
 using Plugin.Runtime.Services.Sync;
 using Plugin.Runtime.Services.Sync.Groups;
 using Plugin.Tools;
 using System;
 using System.Collections.Generic;
+
 namespace Plugin.Runtime.Services.ExecuteAction.Additional.Executors
 {
     /// <summary>
@@ -24,12 +24,10 @@ namespace Plugin.Runtime.Services.ExecuteAction.Additional.Executors
         private SyncService _syncService;
         private UnitsService _unitsService;
 
-        public Healing()
+        public Healing(SyncService syncService, UnitsService unitsService)
         {
-            var gameInstaller = GameInstaller.GetInstance();
-
-            _syncService = gameInstaller.syncService;
-            _unitsService = gameInstaller.unitsService;
+            _syncService = syncService;
+            _unitsService = unitsService;
         }
 
         /// <summary>

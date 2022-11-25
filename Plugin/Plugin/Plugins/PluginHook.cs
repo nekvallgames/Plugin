@@ -10,15 +10,16 @@ namespace Plugin.Plugins
     /// </summary>
     public class PluginHook : PluginBase
     {
-        private SignalBus _signalBus;
         private OpStockService _opStockService;
         private ActorsService _actorsService;
+        public static PluginHook Instance;
 
         public PluginHook()
         {
+            Instance = this;
+
             var gameInstaller = GameInstaller.GetInstance();
 
-            _signalBus = gameInstaller.signalBus;
             _opStockService = gameInstaller.opStockService;
             _actorsService = gameInstaller.actorsService;
         }

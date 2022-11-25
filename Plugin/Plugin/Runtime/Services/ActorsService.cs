@@ -1,5 +1,4 @@
-﻿using Plugin.Installers;
-using Plugin.Models.Private;
+﻿using Plugin.Models.Private;
 using Plugin.Schemes;
 using Plugin.Signals;
 using System;
@@ -13,9 +12,9 @@ namespace Plugin.Runtime.Services
         private ActorsPrivateModel<ActorScheme> _model;
         private SignalBus _signalBus;
 
-        public ActorsService(ActorsPrivateModel<ActorScheme> model)
+        public ActorsService(ActorsPrivateModel<ActorScheme> model, SignalBus signalBus)
         {
-            _signalBus = GameInstaller.GetInstance().signalBus;
+            _signalBus = signalBus;
 
             _model = model;
         }

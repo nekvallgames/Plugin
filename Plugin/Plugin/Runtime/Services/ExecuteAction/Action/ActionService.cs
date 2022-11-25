@@ -1,5 +1,6 @@
 ﻿using Plugin.Interfaces;
 using Plugin.Runtime.Services.ExecuteAction.Action.Executors;
+using Plugin.Runtime.Services.Sync;
 
 namespace Plugin.Runtime.Services.ExecuteAction.Action
 {
@@ -13,12 +14,12 @@ namespace Plugin.Runtime.Services.ExecuteAction.Action
         /// </summary>
         private IExecuteAction[] _executorsActions;
 
-        public ActionService()
+        public ActionService(SyncService syncService, UnitsService unitsService, SortTargetOnGridService sortTargetOnGridService)
         {
             _executorsActions = new IExecuteAction[]
             {
-                new WaveDamageAction(),    // выполнить бросок гранаты и взорвать ее
-                new DamageAction()      // выстрелить 1 раз с огнестрельного оружия
+                new WaveDamageAction(syncService, unitsService, sortTargetOnGridService),    // выполнить бросок гранаты и взорвать ее
+                new DamageAction(syncService, unitsService, sortTargetOnGridService)      // выстрелить 1 раз с огнестрельного оружия
             };
         }
 

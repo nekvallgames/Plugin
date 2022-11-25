@@ -1,5 +1,4 @@
 ﻿using Photon.Hive.Plugin;
-using Plugin.Installers;
 using Plugin.Runtime.Providers;
 using Plugin.Schemes;
 using Plugin.Signals;
@@ -24,14 +23,13 @@ namespace Plugin.Runtime.Services
         private OpStockService _opStockService;
         private ActorsService _actorsService;
 
-        public NotificationChangeVipService()
+        public NotificationChangeVipService(OpStockService opStockService, ActorsService actorsService, SignalBus signalBus, BroadcastProvider broadcastProvider)
         {
-            var gameInstaller = GameInstaller.GetInstance();
-            _signalBus = gameInstaller.signalBus;
-            _broadcastService = gameInstaller.broadcastProvider;
-            _opStockService = gameInstaller.opStockService;
-            _actorsService = gameInstaller.actorsService;
-
+            _opStockService = opStockService;
+            _actorsService = actorsService;
+            _signalBus = signalBus;
+            _broadcastService = broadcastProvider;
+            
             _signalBus.Subscrible<OpStockPrivateModelSignal>(OnOpStockModelChange);
         }
 
