@@ -43,7 +43,7 @@ namespace Plugin.Runtime.Services
                 _opStockService.TakeOp(signalData.ActorId, signalData.OpCode);  // видалити операцію зі складу
 
                 // Створити массив із акторів, кому ми відправимо цей івент
-                List<ActorScheme> actors = _actorsService.GetActors().FindAll(x => x.ActorId != signalData.ActorId);
+                List<ActorScheme> actors = _actorsService.Actors.FindAll(x => x.ActorId != signalData.ActorId);
                 var actorsId = new List<int>();
                 foreach (ActorScheme actor in actors){
                     actorsId.Add(actor.ActorId);

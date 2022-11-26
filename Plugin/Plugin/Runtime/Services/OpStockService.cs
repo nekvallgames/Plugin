@@ -1,5 +1,6 @@
 ﻿using Plugin.Interfaces;
 using Plugin.Models.Private;
+using System.Linq;
 
 namespace Plugin.Runtime.Services
 {
@@ -18,6 +19,14 @@ namespace Plugin.Runtime.Services
         public void Add(IOpStockItem opScheme)
         {
             _model.Add(opScheme);
+        }
+
+        /// <summary>
+        /// Чи є на складі актора вказана операція? 
+        /// </summary>
+        public bool HasOp(int actorId, byte opCode)
+        {
+            return _model.Items.Any(x => x.ActorId == actorId && x.OpCode == opCode);
         }
 
         /// <summary>

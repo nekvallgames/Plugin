@@ -11,10 +11,10 @@ namespace Plugin.Runtime.Services.ExecuteOp.Executors
     /// Выполнить дополнительное действие юнита - выполнить дополнительное (пассивное) действие юнита.
     /// Например, если юнит хиллер, то вылечить юнита
     /// </summary>
-    public class ExecuteOpAdditional : IExecuteOp
+    public class ExecuteOpGroupAdditional : IExecuteOpGroup
     {
         private UnitsService _unitsService;
-        private ExecuteAdditionalService _executeAdditionalService;
+        private AdditionalService _additionalService;
 
         // Данные, которые нужны для восзоздания дополнительное (пассивное) действия юнита
         private int _unitID;
@@ -23,12 +23,10 @@ namespace Plugin.Runtime.Services.ExecuteOp.Executors
         private int _posH;
         private int _targetActorID;
 
-        public ExecuteOpAdditional()
+        public ExecuteOpGroupAdditional(UnitsService unitsService, AdditionalService additionalService)
         {
-            var gameInstaller = GameInstaller.GetInstance();
-
-            _unitsService = gameInstaller.unitsService;
-            _executeAdditionalService = gameInstaller.executeAdditionalService;
+            _unitsService = unitsService;
+            _additionalService = additionalService;
         }
 
         /// <summary>
@@ -66,7 +64,7 @@ namespace Plugin.Runtime.Services.ExecuteOp.Executors
 
             // Отбращаемся к классу, который выполняет действия юнитов, и просим 
             // его, выполнять для текущего юнита действие
-            _executeAdditionalService.ExecuteAdditional(unit, _targetActorID, _posW, _posH);
+            _additionalService.ExecuteAdditional(unit, _targetActorID, _posW, _posH);
         }
 
 

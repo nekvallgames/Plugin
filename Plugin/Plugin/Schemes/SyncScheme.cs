@@ -21,7 +21,7 @@ namespace Plugin.Schemes
         /// <summary>
         /// Список дій, котрі гравець виконав на поточному кроці
         /// </summary>
-        public List<ISyncGroupComponent> SyncActions;
+        public List<ISyncGroupComponent> SyncGroups;
 
 
         public SyncScheme( int actorId, int syncStep )
@@ -29,7 +29,7 @@ namespace Plugin.Schemes
             ActorId = actorId;
             SyncStep = syncStep;
 
-            SyncActions = new List<ISyncGroupComponent>();
+            SyncGroups = new List<ISyncGroupComponent>();
         }
     }
 }

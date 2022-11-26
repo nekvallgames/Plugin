@@ -8,6 +8,7 @@ using Plugin.Runtime.Services;
 using Plugin.Runtime.Services.ExecuteAction;
 using Plugin.Runtime.Services.ExecuteAction.Action;
 using Plugin.Runtime.Services.ExecuteAction.Additional;
+using Plugin.Runtime.Services.ExecuteOp;
 using Plugin.Runtime.Services.Sync;
 using Plugin.Schemes;
 using System.Collections.Generic;
@@ -27,13 +28,12 @@ namespace Plugin.Installers
         public PlotService plotService;
         public SignalBus signalBus;
         public UnitsService unitsService;
-        public SortOpStepService sortOpStepService;
         public SyncService syncService;
-        public MoveService executeMoveService;
-        public VipService executeVipService;
-        public ActionService executeActionService;
+        public MoveService moveService;
+        public VipService vipService;
+        public ActionService actionService;
         public SortTargetOnGridService sortTargetOnGridService;
-        public ExecuteAdditionalService executeAdditionalService;
+        public AdditionalService additionalService;
         public ActorsService actorsService;
         public OpStockService opStockService;
         public BroadcastProvider broadcastProvider;
@@ -45,6 +45,12 @@ namespace Plugin.Installers
         public UnitInstanceService unitInstanceService;
         public UnitBuilder unitBuilder;
         public NotificationChangeVipService notificationChangeVipService;
+        public StepSchemeBuilder stepSchemeBuilder;
+
+        public SortOpStepService sortOpStepService;
+        public ExecuteOpStepService executeOpStepService;
+        public ExecuteOpGroupService executeOpGroupService;
+
 
         public GameInstaller()
         {
@@ -66,26 +72,29 @@ namespace Plugin.Installers
                 new OpStockPrivateModel<IOpStockItem>(signalBus),
                 new SyncPrivateModel<SyncScheme>(),
                 new GridsPrivateModel<GridScheme>(),
-                new ActorsPrivateModel<ActorScheme>(signalBus)
+                new ActorsPrivateModel<ActorScheme>(signalBus),
+                new PlotsPrivateModel<IPlotScheme>()
             });
 
             gridBuilder = new GridBuilder();
-            
             unitInstanceService = new UnitInstanceService(privateModelProvider.Get<UnitsPrivateModel<IUnit>>());
             unitBuilder = new UnitBuilder(unitInstanceService);
             opStockService = new OpStockService(privateModelProvider.Get<OpStockPrivateModel<IOpStockItem>>());
             unitsService = new UnitsService(privateModelProvider.Get<UnitsPrivateModel<IUnit>>(), opStockService, convertService, unitBuilder, signalBus);
-            syncService = new SyncService(privateModelProvider.Get<SyncPrivateModel<SyncScheme>>());
-            executeMoveService = new MoveService(syncService);
+            syncService = new SyncService(privateModelProvider.Get<SyncPrivateModel<SyncScheme>>(), new PlotsPrivateModel<IPlotScheme>());
+            stepSchemeBuilder = new StepSchemeBuilder(syncService);
+            moveService = new MoveService(syncService);
             plotService = new PlotService(privateModelProvider.Get<PlotStatesPrivateModel>());
-            executeVipService = new VipService(syncService, unitsService);
+            vipService = new VipService(syncService, unitsService);
             sortTargetOnGridService = new SortTargetOnGridService();
-            executeActionService = new ActionService(syncService, unitsService, sortTargetOnGridService);
-            executeAdditionalService = new ExecuteAdditionalService(syncService, unitsService);
+            actionService = new ActionService(syncService, unitsService, sortTargetOnGridService);
+            additionalService = new AdditionalService(syncService, unitsService);
             actorsService = new ActorsService(privateModelProvider.Get<ActorsPrivateModel<ActorScheme>>(), signalBus);
             gridService = new GridService(publicModelProvider, privateModelProvider, gridBuilder, signalBus);
             broadcastProvider = new BroadcastProvider(PluginHook.Instance);
             notificationChangeVipService = new NotificationChangeVipService(opStockService, actorsService, signalBus, broadcastProvider);
+            executeOpGroupService = new ExecuteOpGroupService(unitsService, moveService, vipService, actionService, additionalService);
+            executeOpStepService = new ExecuteOpStepService(sortOpStepService, executeOpGroupService);
         }
     }
 }

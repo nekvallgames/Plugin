@@ -11,7 +11,7 @@ namespace Plugin.Runtime.Services.ExecuteOp.Executors
     /// Выполнить действие игрока - выполнить активное действие игрока.
     /// Например, если он стрелок, значит он выстрелил во вражеского юнита
     /// </summary>
-    public class ExecuteOpAction : IExecuteOp
+    public class ExecuteOpGroupAction : IExecuteOpGroup
     {
         private UnitsService _unitsService;
         private ActionService _actionService;
@@ -24,12 +24,10 @@ namespace Plugin.Runtime.Services.ExecuteOp.Executors
         private int _targetActorId;
 
 
-        public ExecuteOpAction()
+        public ExecuteOpGroupAction(UnitsService unitsService, ActionService actionService)
         {
-            var gameInstaller = GameInstaller.GetInstance();
-
-            _unitsService = gameInstaller.unitsService;
-            _actionService = gameInstaller.executeActionService;
+            _unitsService = unitsService;
+            _actionService = actionService;
         }
 
         /// <summary>

@@ -10,22 +10,20 @@ namespace Plugin.Runtime.Services.ExecuteOp.Executors
     /// <summary>
     /// Выполнить действие игрока - активировать/деактивировать VIP для юнита
     /// </summary>
-    public class ExecuteVip : IExecuteOp
+    public class ExecuteOpGroupVip : IExecuteOpGroup
     {
         private UnitsService _unitsService;
-        private VipService _executeVipService;
+        private VipService _vipService;
 
         // Данные, которые нужны для восзоздания действия игрока
         private int _unitId;
         private int _instanceId;
         private bool _enable;
 
-        public ExecuteVip()
+        public ExecuteOpGroupVip(UnitsService unitsService, VipService vipService)
         {
-            var gameInstaller = GameInstaller.GetInstance();
-
-            _unitsService = gameInstaller.unitsService;
-            _executeVipService = gameInstaller.executeVipService;
+            _unitsService = unitsService;
+            _vipService = vipService;
         }
 
         /// <summary>
@@ -61,7 +59,7 @@ namespace Plugin.Runtime.Services.ExecuteOp.Executors
 
             // Обращаемся к классу, который активировать/деактивировать VIP для юнита, и просим 
             // его, выполнять для текущего юнита действие
-            _executeVipService.ChangeVip(unit, _enable);
+            _vipService.ChangeVip(unit, _enable);
         }
 
         /// <summary>

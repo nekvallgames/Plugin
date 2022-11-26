@@ -6,7 +6,7 @@ namespace Plugin.OpComponents
     [Serializable]
     public struct PositionOnGridOpComponent : ISyncComponent
     {
-        public int HistoryStep
+        public int SyncStep
         {
             get { return hs; }
             set { hs = value; }

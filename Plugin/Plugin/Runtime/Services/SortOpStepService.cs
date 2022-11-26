@@ -14,7 +14,7 @@ namespace Plugin.Runtime.Services
         /// и указав stepHistory и stepGroup, вытаскиваем компоненты, что бы после выполнить 
         /// действие игрока на стороне сервера
         /// </summary>
-        public List<ISyncComponent> Sort(StepScheme stepScheme, int stepHistory, uint stepGroup)
+        public List<ISyncComponent> Sort(StepScheme stepScheme, int syncStep, uint stepGroup)
         {
             List<ISyncComponent> groupComponents = new List<ISyncComponent>();
 
@@ -22,7 +22,7 @@ namespace Plugin.Runtime.Services
             {
                 foreach (ISyncComponent component in stepScheme.syncActions)
                 {
-                    if (IsCorrectComponent(component, stepHistory, stepGroup))
+                    if (IsCorrectComponent(component, syncStep, stepGroup))
                     {
                         groupComponents.Add(component);
                     }
@@ -33,7 +33,7 @@ namespace Plugin.Runtime.Services
             {
                 foreach (ISyncComponent component in stepScheme.syncAdditional)
                 {
-                    if (IsCorrectComponent(component, stepHistory, stepGroup))
+                    if (IsCorrectComponent(component, syncStep, stepGroup))
                     {
                         groupComponents.Add(component);
                     }
@@ -44,7 +44,7 @@ namespace Plugin.Runtime.Services
             {
                 foreach (ISyncComponent component in stepScheme.syncPositionOnGrid)
                 {
-                    if (IsCorrectComponent(component, stepHistory, stepGroup))
+                    if (IsCorrectComponent(component, syncStep, stepGroup))
                     {
                         groupComponents.Add(component);
                     }
@@ -55,7 +55,7 @@ namespace Plugin.Runtime.Services
             {
                 foreach (ISyncComponent component in stepScheme.syncTargetActorID)
                 {
-                    if (IsCorrectComponent(component, stepHistory, stepGroup))
+                    if (IsCorrectComponent(component, syncStep, stepGroup))
                     {
                         groupComponents.Add(component);
                     }
@@ -66,7 +66,7 @@ namespace Plugin.Runtime.Services
             {
                 foreach (ISyncComponent component in stepScheme.syncUnitID)
                 {
-                    if (IsCorrectComponent(component, stepHistory, stepGroup))
+                    if (IsCorrectComponent(component, syncStep, stepGroup))
                     {
                         groupComponents.Add(component);
                     }
@@ -77,7 +77,7 @@ namespace Plugin.Runtime.Services
             {
                 foreach (ISyncComponent component in stepScheme.syncVip)
                 {
-                    if (IsCorrectComponent(component, stepHistory, stepGroup))
+                    if (IsCorrectComponent(component, syncStep, stepGroup))
                     {
                         groupComponents.Add(component);
                     }
@@ -90,9 +90,9 @@ namespace Plugin.Runtime.Services
         /// <summary>
         /// Проверяем, текущий компонент подходит под выборку?
         /// </summary>
-        private bool IsCorrectComponent(ISyncComponent component, int stepHistory, uint stepGroup)
+        private bool IsCorrectComponent(ISyncComponent component, int syncStep, uint stepGroup)
         {
-            return (component.HistoryStep == stepHistory && component.GroupIndex == stepGroup);
+            return (component.SyncStep == syncStep && component.GroupIndex == stepGroup);
         }
     }
 }

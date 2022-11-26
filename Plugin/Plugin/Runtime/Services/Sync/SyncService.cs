@@ -1,6 +1,7 @@
 ﻿using Plugin.Interfaces;
 using Plugin.Models.Private;
 using Plugin.Schemes;
+using System.Linq;
 
 namespace Plugin.Runtime.Services.Sync
 {
@@ -10,21 +11,14 @@ namespace Plugin.Runtime.Services.Sync
     /// </summary>
     public class SyncService
     {
-        private SyncPrivateModel<SyncScheme> _model;
+        private SyncPrivateModel<SyncScheme> _syncPrivateModel;
+        private PlotsPrivateModel<IPlotScheme> _plotsPrivateModel;
 
-        /// <summary>
-        /// Глобальний крок синхронізації
-        /// </summary>
-        public int SyncStep { get; private set; }
-
-        public SyncService(SyncPrivateModel<SyncScheme> model)
+        public SyncService(SyncPrivateModel<SyncScheme> syncPrivateModel, PlotsPrivateModel<IPlotScheme> plotsPrivateModel)
         {
-            _model = model;
-        }
+            _syncPrivateModel = syncPrivateModel;
+            _plotsPrivateModel = plotsPrivateModel;
 
-        public void IncreaseSyncStep()
-        {
-            SyncStep++;
         }
 
         /// <summary>
@@ -32,17 +26,28 @@ namespace Plugin.Runtime.Services.Sync
         /// </summary>
         public void Add( int actorId, ISyncGroupComponent syncData )
         {
-            var actorSync = _model.Items.Find(x => x.ActorId == actorId && x.SyncStep == SyncStep);
+            int plotStep = _plotsPrivateModel.Items[0].SyncStep;    // поточний крок ігрового сценарія
+
+            var syncStep = Get(actorId, plotStep);
 
             // Нужно перебрать все компоненты в syncAction,
             // и проставить глобальный шаг и обьединить все компоненты в группу
             foreach (ISyncComponent syncComponent in syncData.SyncElements)
             {
-                syncComponent.HistoryStep = SyncStep;                // глобальный шаг, которому принадлежит синхронизация
-                syncComponent.GroupIndex = actorSync.SyncActions.Count;    // обьединить все компоненты в группу
+                syncComponent.SyncStep = plotStep;                   // глобальный шаг, которому принадлежит синхронизация
+                syncComponent.GroupIndex = syncStep.SyncGroups.Count;  // обьединить все компоненты в группу
             }
 
-            actorSync.SyncActions.Add(syncData);
+            syncStep.SyncGroups.Add(syncData);
+        }
+
+        public SyncScheme Get(int actorId, int syncStep)
+        {
+            if (_syncPrivateModel.Items.Any(x => x.ActorId == actorId && x.SyncStep == syncStep)){
+                return _syncPrivateModel.Items.Find(x => x.ActorId == actorId && x.SyncStep == syncStep);
+            }
+
+            return new SyncScheme(actorId, syncStep);
         }
     }
 }

@@ -1,8 +1,8 @@
 ﻿using Plugin.Installers;
 using Plugin.Interfaces;
+using Plugin.Models.Private;
 using Plugin.Plugins.PVP.States;
-using Plugin.Runtime.Providers;
-using Plugin.Runtime.Services;
+using Plugin.Schemes;
 
 namespace Plugin.Plugins.PVP
 {
@@ -23,14 +23,18 @@ namespace Plugin.Plugins.PVP
         public PVPPlugin()
         {
             var gameInstaller = GameInstaller.GetInstance();
-            gameInstaller.broadcastProvider = new BroadcastProvider(this);  // TODO не подобається как було реалізовано прокидання єкземпляра PluginBase до классу PushService
 
+            // створити схему, котра буде зберігати в собі данні ігрового сценарія
+            gameInstaller.privateModelProvider.Get<PlotsPrivateModel<IPlotScheme>>().Add(new PVPPlotScheme());
 
-
+            // створити стейти ігрового сценарія
             gameInstaller.plotService.Add(new IState[] { new AccumulateState(2, SyncStartState.NAME),
-                                                         new SyncStartState(2, "")});
+                                                         new SyncStartState(2, WaitStepResult.NAME), 
+                                                         new WaitStepResult(2, StepResult.NAME),
+                                                         new StepResult(WaitStepResult.NAME)
+                                                        });
 
-
+            // запустити ігровий сценарій
             gameInstaller.plotService.ChangeState(AccumulateState.NAME);
         }
 

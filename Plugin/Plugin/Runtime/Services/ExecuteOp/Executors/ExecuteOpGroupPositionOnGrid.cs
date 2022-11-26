@@ -11,10 +11,10 @@ namespace Plugin.Runtime.Services.ExecuteOp.Executors
     /// Виконати операцію клієнта, котру він прислав на Game Server
     /// Выполнить действие игрока - переместить игрового юнита на игровой сетке
     /// </summary>
-    public class ExecuteOpPositionOnGrid : IExecuteOp
+    public class ExecuteOpGroupPositionOnGrid : IExecuteOpGroup
     {
         private UnitsService _unitsService;
-        private MoveService _executeMoveService;
+        private MoveService _moveService;
 
         // Данные, которые нужны для восзоздания действия игрока
         private int _unitID;
@@ -22,12 +22,10 @@ namespace Plugin.Runtime.Services.ExecuteOp.Executors
         private int _posW;
         private int _posH;
 
-        public ExecuteOpPositionOnGrid()
+        public ExecuteOpGroupPositionOnGrid(UnitsService unitsService, MoveService moveService)
         {
-            var gameInstaller = GameInstaller.GetInstance();
-
-            _unitsService = gameInstaller.unitsService;
-            _executeMoveService = gameInstaller.executeMoveService;
+            _unitsService = unitsService;
+            _moveService = moveService;
         }
 
         /// <summary>
@@ -62,7 +60,7 @@ namespace Plugin.Runtime.Services.ExecuteOp.Executors
             }
 
             // Переместить юнита в указаную позицию
-            _executeMoveService.PositionOnGrid(unit, _posW, _posH);
+            _moveService.PositionOnGrid(unit, _posW, _posH);
         }
 
         /// <summary>

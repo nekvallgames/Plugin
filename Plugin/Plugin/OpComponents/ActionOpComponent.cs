@@ -6,7 +6,7 @@ namespace Plugin.OpComponents
     [Serializable]
     public struct ActionOpComponent : ISyncComponent
     {
-        public int HistoryStep 
+        public int SyncStep 
         {
             get { return hs; }
             set { hs = value; }

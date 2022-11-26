@@ -4,14 +4,14 @@ using Plugin.Runtime.Services.Sync;
 
 namespace Plugin.Runtime.Services.ExecuteAction.Additional
 {
-    public class ExecuteAdditionalService
+    public class AdditionalService
     {
         /// <summary>
         /// Исполнители действий
         /// </summary>
         private IExecuteAction[] _executorsActions;
 
-        public ExecuteAdditionalService(SyncService syncService, UnitsService unitsService)
+        public AdditionalService(SyncService syncService, UnitsService unitsService)
         {
             _executorsActions = new IExecuteAction[]
             {

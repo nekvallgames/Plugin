@@ -2,7 +2,7 @@
 
 namespace Plugin.Interfaces
 {
-    public interface IExecuteOp
+    public interface IExecuteOpGroup
     {
         /// <summary>
         /// Может ли текущий класс выполнить действие игрока?

@@ -49,11 +49,8 @@ namespace Plugin.Runtime.Services
         /// <summary>
         /// Отримати всіх акторів
         /// </summary>
-        public List<ActorScheme> GetActors()
-        {
-            return _model.Items;
-        }
-
+        public List<ActorScheme> Actors => _model.Items;
+        
         /// <summary>
         /// Отримати всіх акторів, котрі приконекчені до ігрової кімнати
         /// </summary>
