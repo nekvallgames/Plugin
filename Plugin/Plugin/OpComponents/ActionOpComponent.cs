@@ -4,6 +4,9 @@ using System;
 
 namespace Plugin.OpComponents
 {
+    /// <summary>
+    /// Компонент для синхронізації основної дії юніта
+    /// </summary>
     [Serializable]
     public struct ActionOpComponent : ISyncComponent
     {

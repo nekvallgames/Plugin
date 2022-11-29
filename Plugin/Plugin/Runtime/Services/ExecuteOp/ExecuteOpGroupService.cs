@@ -14,7 +14,11 @@ namespace Plugin.Runtime.Services.ExecuteOp
         /// </summary>
         private IExecuteOpGroup[] _executors;
 
-        public ExecuteOpGroupService(UnitsService unitsService, MoveService moveService, VipService vipService, ActionService actionService, AdditionalService additionalService)
+        public ExecuteOpGroupService(UnitsService unitsService, 
+                                     MoveService moveService, 
+                                     VipService vipService, 
+                                     ActionService actionService, 
+                                     AdditionalService additionalService)
         {
             // Перетасовывая выполнители, можно выставить их приоритет выполнения
             _executors = new IExecuteOpGroup[]
@@ -30,7 +34,7 @@ namespace Plugin.Runtime.Services.ExecuteOp
         /// Метот принимает в себя группу из компонентов. Нужно сначала найти
         /// класс, который может выполнить действие, и после выполнить действие
         /// </summary>
-        public void Execute(int playerActorID, List<ISyncComponent> componentGroup)
+        public void Execute(int playerActorId, List<ISyncComponent> componentGroup)
         {
             foreach (IExecuteOpGroup executor in _executors)
             {
@@ -38,7 +42,7 @@ namespace Plugin.Runtime.Services.ExecuteOp
                     continue;
                 }
 
-                executor.Execute(playerActorID, componentGroup);
+                executor.Execute(playerActorId, componentGroup);
             }
         }
     }

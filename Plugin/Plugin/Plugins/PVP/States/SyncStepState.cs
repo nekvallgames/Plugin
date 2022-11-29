@@ -29,7 +29,7 @@ namespace Plugin.Plugins.PVP.States
         private ConvertService _convertService;
         private OpStockService _opStockService;
         private PVPPlotModelScheme _plotModel;
-        private ExecuteOpStepService _executeOpStepService;
+        private ExecuteOpStepSchemeService _executeOpStepService;
         private StepSchemeBuilder _stepSchemeBuilder;
         private BroadcastProvider _broadcastProvider;
         private PlotService _plotService;

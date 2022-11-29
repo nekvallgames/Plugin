@@ -49,8 +49,7 @@ namespace Plugin.Installers
         public StepSchemeBuilder stepSchemeBuilder;
         public LocationUnitsSpawner locationUnitsSpawner;
 
-        public SortOpStepService sortOpStepService;
-        public ExecuteOpStepService executeOpStepService;
+        public ExecuteOpStepSchemeService executeOpStepService;
         public ExecuteOpGroupService executeOpGroupService;
 
 
@@ -60,7 +59,6 @@ namespace Plugin.Installers
 
             signalBus = new SignalBus();
             convertService = new ConvertService();
-            sortOpStepService = new SortOpStepService();
 
             publicModelProvider = new PublicModelProvider(new List<IPublicModel>
             {
@@ -97,7 +95,7 @@ namespace Plugin.Installers
             broadcastProvider = new BroadcastProvider(PluginHook.Instance);
             notificationChangeVipService = new NotificationChangeVipService(opStockService, actorsService, signalBus, broadcastProvider);
             executeOpGroupService = new ExecuteOpGroupService(unitsService, moveService, vipService, actionService, additionalService);
-            executeOpStepService = new ExecuteOpStepService(sortOpStepService, executeOpGroupService);
+            executeOpStepService = new ExecuteOpStepSchemeService(executeOpGroupService);
         }
     }
 }

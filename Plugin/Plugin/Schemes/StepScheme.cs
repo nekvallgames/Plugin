@@ -2,54 +2,67 @@
 using Plugin.OpComponents;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Plugin.Schemes
 {
     /// <summary>
-    /// Схема ігрового кроку
+    /// Схема для синхронізації дій ігрового кроку
     /// </summary>
     [Serializable]
     public class StepScheme : IOpScheme
     {
-        public List<ActionOpComponent> syncActions;
-        public List<AdditionalOpComponent> syncAdditional;
-        public List<PositionOnGridOpComponent> syncPositionOnGrid;
-        public List<TargetActorIdOpComponent> syncTargetActorID;
-        public List<UnitIdOpComponent> syncUnitID;
-        public List<VipOpComponent> syncVip;
-        
-
-        public StepScheme()
-        {
-            syncActions = new List<ActionOpComponent>();
-            syncAdditional = new List<AdditionalOpComponent>();
-            syncPositionOnGrid = new List<PositionOnGridOpComponent>();
-            syncUnitID = new List<UnitIdOpComponent>();
-            syncTargetActorID = new List<TargetActorIdOpComponent>();
-            syncVip = new List<VipOpComponent>();
-        }
-        
+        public List<ActionOpComponent> syncActions = new List<ActionOpComponent>();
+        public List<AdditionalOpComponent> syncAdditional = new List<AdditionalOpComponent>();
+        public List<PositionOnGridOpComponent> syncPositionOnGrid = new List<PositionOnGridOpComponent>();
+        public List<TargetActorIdOpComponent> syncTargetActorId = new List<TargetActorIdOpComponent>();
+        public List<UnitIdOpComponent> syncUnitId = new List<UnitIdOpComponent>();
+        public List<VipOpComponent> syncVip = new List<VipOpComponent>();
+                        
         public void Add( ISyncComponent component )
         {
             // TODO поки що не можу реалізувати по інакшому, не вистачає досвіду
-
             if (component.GetType() == typeof(ActionOpComponent))
                 syncActions.Add((ActionOpComponent)component);
-
+            else
             if (component.GetType() == typeof(AdditionalOpComponent))
                 syncAdditional.Add((AdditionalOpComponent)component);
-
+            else
             if (component.GetType() == typeof(PositionOnGridOpComponent))
                 syncPositionOnGrid.Add((PositionOnGridOpComponent)component);
-
+            else
             if (component.GetType() == typeof(UnitIdOpComponent))
-                syncUnitID.Add((UnitIdOpComponent)component);
-
+                syncUnitId.Add((UnitIdOpComponent)component);
+            else
             if (component.GetType() == typeof(TargetActorIdOpComponent))
-                syncTargetActorID.Add((TargetActorIdOpComponent)component);
-
+                syncTargetActorId.Add((TargetActorIdOpComponent)component);
+            else
             if (component.GetType() == typeof(VipOpComponent))
                 syncVip.Add((VipOpComponent)component);
+        }
+
+        /// <summary>
+        /// Отримати компоненти синхронізації, вказав syncStep та groupIndex
+        /// </summary>
+        public List<ISyncComponent> Get(int syncStep, int groupIndex)
+        {
+            var syncComponents = new List<ISyncComponent>();
+
+            DragAndDrop(ref syncActions, ref syncComponents);
+            DragAndDrop(ref syncAdditional, ref syncComponents);
+            DragAndDrop(ref syncPositionOnGrid, ref syncComponents);
+            DragAndDrop(ref syncUnitId, ref syncComponents);
+            DragAndDrop(ref syncTargetActorId, ref syncComponents);
+            DragAndDrop(ref syncVip, ref syncComponents);
+
+            void DragAndDrop<T>(ref List<T> from, ref List<ISyncComponent> to) where T : ISyncComponent
+            {
+                if (from.Any(x => x.SyncStep == syncStep && x.GroupIndex == groupIndex)){
+                    to.Add( from.First(x => x.SyncStep == syncStep && x.GroupIndex == groupIndex));
+                }
+            }
+
+            return syncComponents;
         }
 
     }

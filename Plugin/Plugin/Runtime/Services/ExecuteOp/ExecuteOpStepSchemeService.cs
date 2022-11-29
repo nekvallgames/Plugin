@@ -7,25 +7,23 @@ namespace Plugin.Runtime.Services.ExecuteOp
     /// <summary>
     /// Сервіс, котрий виконає всі дії, котрі актор прислав в операції ActorStep
     /// </summary>
-    public class ExecuteOpStepService
+    public class ExecuteOpStepSchemeService
     {
-        private SortOpStepService _sortOpStepService;
         private ExecuteOpGroupService _executeOpGroupService;
 
-        public ExecuteOpStepService( SortOpStepService sortOpStepService, ExecuteOpGroupService executeOpGroupService )
+        public ExecuteOpStepSchemeService( ExecuteOpGroupService executeOpGroupService )
         {
-            _sortOpStepService = sortOpStepService;
             _executeOpGroupService = executeOpGroupService;
         }
 
         public void Execute(int actorId, int syncStep, StepScheme stepScheme)
         {
-            uint componentsGroup = 0;
+            int groupIndex = 0;
 
             while (true)
             {
                 // 1. Вытаскиваем из кучи компонентов только ту группу, которая нам нужна, а именно: stepHistory и componentsGroup
-                List<ISyncComponent> componentGroup = _sortOpStepService.Sort(stepScheme, syncStep, componentsGroup);
+                List<ISyncComponent> componentGroup = stepScheme.Get(syncStep, groupIndex);
 
                 if (componentGroup == null || componentGroup.Count <= 0)
                 {
@@ -38,7 +36,7 @@ namespace Plugin.Runtime.Services.ExecuteOp
                 _executeOpGroupService.Execute(actorId, componentGroup);
 
                 // 3. Увеличиваем шаг и обращаемся к следующей группе
-                componentsGroup++;
+                groupIndex++;
             }
         }
     }
