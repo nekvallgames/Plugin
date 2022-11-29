@@ -73,8 +73,10 @@ namespace Plugin.Runtime.Services.ExecuteAction.Action.Executors
                 // Находим всех противников, в которых мы выстрелили
                 List<IUnit> targets = _sortTargetOnGridService.SortTargets(_unitsService.GetUnitsUnderThisPosition(targetActorId, targetW, targetH));
 
+                LogChannel.Log($"ActionService :: DamageAction() ownerId = {unit.OwnerActorId}, unitId = {unit.UnitId}, instanceId = {unit.InstanceId}, cellW = {targetW}, cellH = {targetH}");
+
                 if (targets.Count <= 0){
-                    return;                     // игрок выстрелил мимо!
+                    continue;                     // игрок выстрелил мимо!
                 }
 
                 int damage = damageAction.Power;   // получить урон, который игрок нанес выстрелом

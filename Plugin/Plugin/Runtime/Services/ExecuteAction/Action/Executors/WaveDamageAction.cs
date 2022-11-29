@@ -40,26 +40,26 @@ namespace Plugin.Runtime.Services.ExecuteAction.Action.Executors
         /// </summary>
         public bool CanExecute(IUnit unit)
         {
-            return unit is IWaveDamageAction;
+            return typeof(IWaveDamageAction).IsAssignableFrom(unit.GetType());
         }
 
         /// <summary>
         /// Выполнить действие
         /// </summary>
-        public void Execute(IUnit unit, int targetActorID, int posW, int posH)
+        public void Execute(IUnit unit, int targetActorId, int posW, int posH)
         {
             // Проверяем, может ли юнит выстрелить?
             var waveDamageAction = (IWaveDamageAction)unit;
 
             if (!waveDamageAction.CanExecuteAction()){
-                Debug.Fail($"ExecuteActionService :: GrenadeShot :: Execute() ownerID = {unit.OwnerActorId}, unitID = {unit.UnitId}, instanceID = {unit.InstanceId}, targetActorID = {targetActorID}, posW = {posW}, posH = {posH}, I can't shot, maybe I don't have ammunition.");
+                Debug.Fail($"ExecuteActionService :: GrenadeShot :: Execute() ownerID = {unit.OwnerActorId}, unitID = {unit.UnitId}, instanceID = {unit.InstanceId}, targetActorID = {targetActorId}, posW = {posW}, posH = {posH}, I can't shot, maybe I don't have ammunition.");
             }
 
             waveDamageAction.SpendAction();     // делаем бросок гранаты. Юнит тратит 1-у гранату
 
             // Синхронизировать выполненное действие юнита на игровой сетке
             var syncOnGrid = new SyncActionGroup(unit,
-                                                 targetActorID,
+                                                 targetActorId,
                                                  posW,
                                                  posH);
             _syncService.Add(unit.OwnerActorId, syncOnGrid);
@@ -83,10 +83,11 @@ namespace Plugin.Runtime.Services.ExecuteAction.Action.Executors
                 int targetH = posH + area.y;
 
                 // Находим всех противников, в которых мы выстрелили
-                List<IUnit> enemyTargets = _sortTargetOnGridService.SortTargets(_unitsService.GetUnitsUnderThisPosition(targetActorID, targetW, targetH));
+                List<IUnit> enemyTargets = _sortTargetOnGridService.SortTargets(_unitsService.GetUnitsUnderThisPosition(targetActorId, targetW, targetH));
 
-                if (enemyTargets.Count <= 0)
-                {
+                LogChannel.Log($"ActionService :: WaveDamageAction() ownerId = {unit.OwnerActorId}, unitId = {unit.UnitId}, instanceId = {unit.InstanceId}, cellW = {targetW}, cellH = {targetH}");
+
+                if (enemyTargets.Count <= 0){
                     continue;                     // игрок выстрелил мимо!
                 }
 

@@ -1,6 +1,7 @@
 ﻿using Plugin.Interfaces;
 using Plugin.Runtime.Services.ExecuteAction.Action.Executors;
 using Plugin.Runtime.Services.Sync;
+using System.Diagnostics;
 
 namespace Plugin.Runtime.Services.ExecuteAction.Action
 {
@@ -43,8 +44,10 @@ namespace Plugin.Runtime.Services.ExecuteAction.Action
 
                 // Текущим исполнителем выполнить действие для текущего юнита
                 executer.Execute(unit, targetActorID, posW, posH);
-                break;
+                return;
             }
+
+            Debug.Fail($"ActionService :: ExecuteAction() I can't execute action, because I don't know how. OwnerId = {unit.OwnerActorId}, uId = {unit.UnitId}, instanceId = {unit.InstanceId}");
         }
     }
 }

@@ -19,9 +19,9 @@ namespace Plugin.Plugins.PVP.States
     /// Нужно сначала синхронизировать первый шаг, где игрок розставляет своих юнитов на игровой сетке
     /// И после выполнить второй шаг - где игрок уже атаковал противника
     /// </summary>
-    public class StepResult : IState
+    public class SyncStepState : IState
     {
-        public const string NAME = "StepResult";
+        public const string NAME = "SyncStepState";
         public string Name => NAME;
 
         private UnitsService _unitsService;
@@ -36,7 +36,7 @@ namespace Plugin.Plugins.PVP.States
 
         private string _nextStep;
 
-        public StepResult(string nextStep)
+        public SyncStepState(string nextStep)
         {
             _nextStep = nextStep;
 

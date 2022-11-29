@@ -30,8 +30,8 @@ namespace Plugin.Plugins.PVP
             // створити стейти ігрового сценарія
             gameInstaller.plotService.Add(new IState[] { new AccumulateState(2, SyncStartState.NAME),
                                                          new SyncStartState(2, WaitStepResult.NAME), 
-                                                         new WaitStepResult(2, StepResult.NAME),
-                                                         new StepResult(WaitStepResult.NAME)
+                                                         new WaitStepResult(2, SyncStepState.NAME),
+                                                         new SyncStepState(WaitStepResult.NAME)
                                                         });
 
             // запустити ігровий сценарій

@@ -23,7 +23,7 @@ namespace Plugin.Runtime.Spawners
             _unitsService = unitsService;
             _locationsPublicModel = publicModelProvider.Get<LocationsPublicModel<LocationScheme>>();
             
-            signalBus.Subscrible<ActorsPrivateModelSignal>(OnActorsModelChange);
+           // signalBus.Subscrible<ActorsPrivateModelSignal>(OnActorsModelChange);
         }
 
         /// <summary>

@@ -1,5 +1,4 @@
-﻿using Plugin.Installers;
-using Plugin.Interfaces;
+﻿using Plugin.Interfaces;
 using Plugin.Runtime.Services.Sync;
 using Plugin.Runtime.Services.Sync.Groups;
 using Plugin.Tools;
@@ -28,6 +27,8 @@ namespace Plugin.Runtime.Services.ExecuteAction
             // или стать в текущих координатах
 
             unit.Position = new Int2(posW, posH);
+
+            LogChannel.Log($"MoveService :: PositionOnGrid() ownerId = {unit.OwnerActorId}, uId = {unit.UnitId}, instance = {unit.InstanceId}, w = {posW}, h = {posH}", LogChannel.Type.ExecuteAction);
 
             // Синхронизировать позицию юнита на игровой сетке
             var syncData = new SyncPositionOnGridGroup(unit);
