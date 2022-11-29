@@ -3,11 +3,13 @@ using Plugin.Installers;
 using Plugin.Interfaces;
 using Plugin.Interfaces.UnitComponents;
 using Plugin.Models.Private;
+using Plugin.Runtime.Services.ExecuteAction;
 using Plugin.Schemes;
 using Plugin.Signals;
 using Plugin.Tools;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace Plugin.Runtime.Services
@@ -21,14 +23,21 @@ namespace Plugin.Runtime.Services
         private OpStockService _opStockService;
         private ConvertService _convertService;
         private UnitBuilder _unitBuilder;
+        private MoveService _moveService;
 
-        public UnitsService( UnitsPrivateModel<IUnit> model, OpStockService opStockService, ConvertService convertService, UnitBuilder unitBuilder, SignalBus signalBus)
+        public UnitsService( UnitsPrivateModel<IUnit> model, 
+                             OpStockService opStockService, 
+                             ConvertService convertService, 
+                             UnitBuilder unitBuilder, 
+                             SignalBus signalBus, 
+                             MoveService moveService)
         {
             _model = model;
 
             _opStockService = opStockService;
             _convertService = convertService;
             _unitBuilder = unitBuilder;
+            _moveService = moveService;
 
             signalBus.Subscrible<OpStockPrivateModelSignal>( OpStockModelChange );
         }
@@ -47,12 +56,36 @@ namespace Plugin.Runtime.Services
                 var choosedUnitsScheme = _convertService.DeserializeObject<ChoosedUnitsScheme>(opChoosedUnits.Data.ToString());
 
                 foreach( int unitId in choosedUnitsScheme.unitsId ){
-                    _model.Add( _unitBuilder.CreateUnit(signalData.ActorId, unitId) );
+                    CreateUnit(signalData.ActorId, unitId);
                 }
 
                 // Видалити оброблену операцію зі складу
                 _opStockService.TakeOp(signalData.ActorId, signalData.OpCode);
             }
+        }
+
+        /// <summary>
+        /// Створити юніта для актора
+        /// </summary>
+        public IUnit CreateUnit(int actorId, int unitId)
+        {
+            IUnit unit = _unitBuilder.CreateUnit(actorId, unitId);
+
+            _model.Add(unit);
+
+            return unit;
+        }
+
+        /// <summary>
+        /// Створити юніта для актора та позиціюнювати юніта на ігровій сітці
+        /// </summary>
+        public IUnit CreateUnit(int actorId, int unitId, int posW, int posH)
+        {
+            IUnit unit = CreateUnit(actorId, unitId);
+
+            _moveService.PositionOnGrid(unit, posW, posH);
+
+            return unit;
         }
 
         public bool IsDead(IUnit unit)
@@ -136,7 +169,8 @@ namespace Plugin.Runtime.Services
         public void Healing(IUnit unit, int healthPower)
         {
             if (!HasComponent<IHealthComponent>(unit)){
-                throw new ArgumentException($"UnitService :: Healing() I can't healing unit, because this unit don't have IHealthComponent. ActorId = {unit.OwnerActorId}, unitId = {unit.UnitId}, instanceId = {unit.InstanceId}");
+                Debug.Fail($"UnitService :: Healing() I can't healing unit, because this unit don't have IHealthComponent. ActorId = {unit.OwnerActorId}, unitId = {unit.UnitId}, instanceId = {unit.InstanceId}");
+                return;
             }
 
             var healthComponent = (IHealthComponent)unit;

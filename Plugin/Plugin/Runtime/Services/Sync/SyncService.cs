@@ -12,13 +12,12 @@ namespace Plugin.Runtime.Services.Sync
     public class SyncService
     {
         private SyncPrivateModel<SyncScheme> _syncPrivateModel;
-        private PlotsPrivateModel<IPlotScheme> _plotsPrivateModel;
+        private PlotsPrivateModel<IPlotModelScheme> _plotsPrivateModel;
 
-        public SyncService(SyncPrivateModel<SyncScheme> syncPrivateModel, PlotsPrivateModel<IPlotScheme> plotsPrivateModel)
+        public SyncService(SyncPrivateModel<SyncScheme> syncPrivateModel, PlotsPrivateModel<IPlotModelScheme> plotsPrivateModel)
         {
             _syncPrivateModel = syncPrivateModel;
             _plotsPrivateModel = plotsPrivateModel;
-
         }
 
         /// <summary>
@@ -26,7 +25,7 @@ namespace Plugin.Runtime.Services.Sync
         /// </summary>
         public void Add( int actorId, ISyncGroupComponent syncData )
         {
-            int plotStep = _plotsPrivateModel.Items[0].SyncStep;    // поточний крок ігрового сценарія
+            int plotStep = _plotsPrivateModel.Items[0].SyncStep;    // витягуємо із моделі ігрового сценарія поточний крок ігрового сценарія
 
             var syncStep = Get(actorId, plotStep);
 

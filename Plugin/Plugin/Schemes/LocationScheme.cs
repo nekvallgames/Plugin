@@ -1,4 +1,5 @@
 ﻿using Plugin.Tools;
+using System.Collections.Generic;
 
 namespace Plugin.Schemes
 {
@@ -13,11 +14,14 @@ namespace Plugin.Schemes
 
         public int[] GridMask { get; }
 
-        public LocationScheme(string name, Int2 sizeGrid, int[] gridMask)
+        public List<(int, int, int)> LocationUnits { get; }
+
+        public LocationScheme(string name, Int2 sizeGrid, int[] gridMask, List<(int, int, int)> locationUnits)
         {
             Name = name;
             SizeGrid = sizeGrid;
             GridMask = gridMask;
+            LocationUnits = locationUnits;
         }
     }
 }

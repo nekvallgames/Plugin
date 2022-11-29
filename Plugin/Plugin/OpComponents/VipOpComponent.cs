@@ -1,4 +1,5 @@
-﻿using Plugin.Interfaces;
+﻿using Newtonsoft.Json;
+using Plugin.Interfaces;
 using System;
 
 namespace Plugin.OpComponents
@@ -6,11 +7,13 @@ namespace Plugin.OpComponents
     [Serializable]
     public struct VipOpComponent : ISyncComponent
     {
+        [JsonIgnore]
         public int SyncStep
         {
-            get { return hs; }
-            set { hs = value; }
+            get { return ss; }
+            set { ss = value; }
         }
+        [JsonIgnore]
         public int GroupIndex
         {
             get { return gi; }
@@ -18,8 +21,8 @@ namespace Plugin.OpComponents
         }
 
 
-        // historyStep
-        public int hs;
+        // syncStep
+        public int ss;
         // groupIndex
         public int gi;
         // enable

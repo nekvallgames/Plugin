@@ -3,8 +3,10 @@ using Plugin.Interfaces;
 using Plugin.Interfaces.UnitComponents;
 using Plugin.Runtime.Services.Sync;
 using Plugin.Runtime.Services.Sync.Groups;
+using Plugin.Tools;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Plugin.Runtime.Services.ExecuteAction
 {
@@ -27,12 +29,14 @@ namespace Plugin.Runtime.Services.ExecuteAction
         {
             // Перевіряємо, чи може поточний юніт бути vip?
             if (!_unitsService.HasComponent<IVipComponent>(unitNextVip)){
-                throw new ArgumentException($"ExecuteVipService :: ChangeVip() actorID = {unitNextVip.OwnerActorId}, unitId = {unitNextVip.UnitId}, instanceId = {unitNextVip.InstanceId}. Unit don't has implementation IVip");
+                Debug.Fail($"VipService :: ChangeVip() actorID = {unitNextVip.OwnerActorId}, unitId = {unitNextVip.UnitId}, instanceId = {unitNextVip.InstanceId}. Unit don't has implementation IVip");
+                return;
             }
 
             // Мертвого юніта не можемо зробити vip
             if (_unitsService.IsDead(unitNextVip)){
-                throw new ArgumentException($"ExecuteVipService :: ChangeVip() actorID = {unitNextVip.OwnerActorId}, unitId = {unitNextVip.UnitId}, instanceId = {unitNextVip.InstanceId}. Unit alredy dead. I can't make it vip");
+                Debug.Fail($"ExecuteVipService :: ChangeVip() actorID = {unitNextVip.OwnerActorId}, unitId = {unitNextVip.UnitId}, instanceId = {unitNextVip.InstanceId}. Unit alredy dead. I can't make it vip");
+                return;
             }
 
             // Деактивуємо vip для всих юнітів актора

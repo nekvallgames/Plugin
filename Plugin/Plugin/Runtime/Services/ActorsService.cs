@@ -3,6 +3,7 @@ using Plugin.Schemes;
 using Plugin.Signals;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace Plugin.Runtime.Services
@@ -25,7 +26,8 @@ namespace Plugin.Runtime.Services
         public void CreateActor(string userId, int actorId)
         {
             if (Has(actorId)){
-                throw new ArgumentException($"ActorsService :: CreateActor() I can't create actorId = {actorId}, because this actor already was created.");
+                Debug.Fail($"ActorsService :: CreateActor() I can't create actorId = {actorId}, because this actor already was created.");
+                return;
             }
 
             _model.Add(new ActorScheme(userId, actorId));
@@ -38,12 +40,13 @@ namespace Plugin.Runtime.Services
 
         public void EnableConnected(int actorId, bool enable)
         {
-            if (Has(actorId)){
+            if (!Has(actorId)){
                 throw new ArgumentNullException($"ActorsService :: EnableConnected() actorId = {actorId} is null");
             }
 
             _model.Items.Find(x => x.ActorId == actorId).IsConnected = enable;
-            CreateSignal(actorId);
+
+            _signalBus.Fire(new ActorsPrivateModelSignal(actorId, ModelChangeSignal.StatusType.change));
         }
 
         /// <summary>
@@ -70,14 +73,6 @@ namespace Plugin.Runtime.Services
                     _model.Remove(actor);
                 }
             }
-        }
-
-        /// <summary>
-        /// Створити сигнал, що модель даних ActorsPrivateModel була змінена
-        /// </summary>
-        private void CreateSignal(int actorId)
-        {
-            _signalBus.Fire(new ActorsPrivateModelSignal(actorId));
         }
     }
 }

@@ -25,8 +25,8 @@ namespace Plugin.Plugins.PVP
             var gameInstaller = GameInstaller.GetInstance();
 
             // створити схему, котра буде зберігати в собі данні ігрового сценарія
-            gameInstaller.privateModelProvider.Get<PlotsPrivateModel<IPlotScheme>>().Add(new PVPPlotScheme());
-
+            gameInstaller.privateModelProvider.Get<PlotsPrivateModel<IPlotModelScheme>>().Add(new PVPPlotModelScheme());
+                        
             // створити стейти ігрового сценарія
             gameInstaller.plotService.Add(new IState[] { new AccumulateState(2, SyncStartState.NAME),
                                                          new SyncStartState(2, WaitStepResult.NAME), 

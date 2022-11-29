@@ -40,6 +40,8 @@ namespace Plugin.Runtime.Units
             OwnerActorId = ownerActorId;
             UnitId = unitId;
             InstanceId = instanceUnitId;
+
+            LogChannel.Log($"Created unit ownerId = {OwnerActorId}, uId = {UnitId}, instance = {InstanceId}", LogChannel.Type.Default);
         }
     }
 }

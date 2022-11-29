@@ -4,6 +4,7 @@ using Plugin.Runtime.Services.Sync.Groups;
 using Plugin.Tools;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Plugin.Runtime.Services.ExecuteAction.Additional.Executors
 {
@@ -52,7 +53,7 @@ namespace Plugin.Runtime.Services.ExecuteAction.Additional.Executors
             IHealingAdditional unitMedic = (IHealingAdditional)unit;
 
             if (!unitMedic.CanHealing()){
-                throw new ArgumentException($"ExecuteAdditionalService :: Healing :: Execute() ownerID = {unit.OwnerActorId}, unitID = {unit.UnitId}, instanceID = {unit.InstanceId}, targetActorID = {targetActorID}, posH = {posH}, I can't healing, maybe I don't have ammunition.");
+                Debug.Fail($"ExecuteAdditionalService :: Healing :: Execute() ownerID = {unit.OwnerActorId}, unitID = {unit.UnitId}, instanceID = {unit.InstanceId}, targetActorID = {targetActorID}, posH = {posH}, I can't healing, maybe I don't have ammunition.");
             }
 
             unitMedic.Healing();     // юнит вылечил когото. Забрать 1 аптечку

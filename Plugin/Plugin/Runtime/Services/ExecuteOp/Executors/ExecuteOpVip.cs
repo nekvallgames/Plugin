@@ -4,6 +4,7 @@ using Plugin.OpComponents;
 using Plugin.Runtime.Services.ExecuteAction;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Plugin.Runtime.Services.ExecuteOp.Executors
 {
@@ -47,14 +48,16 @@ namespace Plugin.Runtime.Services.ExecuteOp.Executors
         {
             // Вытаскиваем нужные нам компоненты из списка
             if (!ParceData(componentsGroup)){
-                throw new ArgumentException($"ExecuteOpService :: ExecuteVip() actorID = {actorId}, I can't parce data");
+                Debug.Fail($"ExecuteOpService :: ExecuteVip() actorID = {actorId}, I can't parce data");
+                return;
             }
 
             // 2. Найти юнита, который выполнил действие
             IUnit unit = _unitsService.GetUnit(actorId, _unitId, _instanceId);
 
             if (unit == null){
-                throw new ArgumentException($"ExecuteOpService :: ExecuteVip() actorID = {actorId}, unitId = {_unitId}, instanceId = {_instanceId}. I don't find this unit for execute vip");
+                Debug.Fail($"ExecuteOpService :: ExecuteVip() actorID = {actorId}, unitId = {_unitId}, instanceId = {_instanceId}. I don't find this unit for execute vip");
+                return;
             }
 
             // Обращаемся к классу, который активировать/деактивировать VIP для юнита, и просим 

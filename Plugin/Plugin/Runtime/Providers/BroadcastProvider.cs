@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace Plugin.Runtime.Providers
 {
     /// <summary>
-    /// Сервіс, за допомогою котрого будемо відправляти повідомлення акторам ігрової кімнати
+    /// Провайдер, за допомогою котрого будемо відправляти повідомлення акторам ігрової кімнати
     /// </summary>
     public class BroadcastProvider
     {

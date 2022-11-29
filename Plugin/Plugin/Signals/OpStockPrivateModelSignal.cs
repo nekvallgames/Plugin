@@ -1,11 +1,9 @@
-﻿using Plugin.Interfaces;
-
-namespace Plugin.Signals
+﻿namespace Plugin.Signals
 {
     /// <summary>
     /// Подія, коли модель із даними операцій акторів була змінена
     /// </summary>
-    public struct OpStockPrivateModelSignal : ISignal
+    public class OpStockPrivateModelSignal : ModelChangeSignal
     {
         /// <summary>
         /// Власник операції
@@ -16,24 +14,10 @@ namespace Plugin.Signals
         /// </summary>
         public byte OpCode { get; }
 
-        /// <summary>
-        /// Статус змінення моделі
-        /// add - була добавлена нова операція
-        /// remove - операція була оброблена і видалена
-        /// </summary>
-        public StatusType Status { get; }
-
-        public enum StatusType
-        {
-            add,
-            remove
-        }
-
-        public OpStockPrivateModelSignal(int actorId, byte opCode, StatusType status)
+        public OpStockPrivateModelSignal(int actorId, byte opCode, StatusType status):base(status)
         {
             ActorId = actorId;
             OpCode = opCode;
-            Status = status;
         }
     }
 }

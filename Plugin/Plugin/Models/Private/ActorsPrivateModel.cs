@@ -24,7 +24,7 @@ namespace Plugin.Models.Private
         /// </summary>
         protected override void AfterAddHook(T item) 
         {
-            _signalBus.Fire(new ActorsPrivateModelSignal(item.ActorId));
+            _signalBus.Fire(new ActorsPrivateModelSignal(item.ActorId, ModelChangeSignal.StatusType.add));
         }
     }
 }

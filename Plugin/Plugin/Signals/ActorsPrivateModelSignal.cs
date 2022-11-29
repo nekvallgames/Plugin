@@ -1,15 +1,13 @@
-﻿using Plugin.Interfaces;
-
-namespace Plugin.Signals
+﻿namespace Plugin.Signals
 {
     /// <summary>
     /// Подія, коли модель із данними гравців була оновлена
     /// </summary>
-    public struct ActorsPrivateModelSignal : ISignal
+    public class ActorsPrivateModelSignal : ModelChangeSignal
     {
         public int ActorId { get; }
 
-        public ActorsPrivateModelSignal(int actorId)
+        public ActorsPrivateModelSignal(int actorId, StatusType status) : base(status)
         {
             ActorId = actorId;
         }

@@ -1,6 +1,7 @@
 ﻿using Plugin.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Plugin.Templates
 {
@@ -19,7 +20,8 @@ namespace Plugin.Templates
         {
             if (_states.ContainsKey(state.Name))
             {
-                throw new ArgumentException($"{this} :: Add() I already has current state {state.Name}");
+                Debug.Fail($"{this} :: Add() I already has current state {state.Name}");
+                return;
             }
 
             _states.Add(state.Name, state);

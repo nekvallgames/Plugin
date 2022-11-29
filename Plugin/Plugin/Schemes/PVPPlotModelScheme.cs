@@ -6,7 +6,7 @@ namespace Plugin.Schemes
     /// Схема, котра буде зберігати в данні ігрового сценарія PVP
     /// Поточна схема буде лежати в моделі PlotsPrivateModel
     /// </summary>
-    public class PVPPlotScheme : IPlotScheme
+    public class PVPPlotModelScheme : IPlotModelScheme
     {
         /// <summary>
         /// Поточний крок синхронізації ігрового сценарія

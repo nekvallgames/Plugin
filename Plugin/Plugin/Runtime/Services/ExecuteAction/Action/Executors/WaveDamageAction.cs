@@ -6,6 +6,7 @@ using Plugin.Runtime.Services.Sync.Groups;
 using Plugin.Tools;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Plugin.Runtime.Services.ExecuteAction.Action.Executors
 {
@@ -47,11 +48,11 @@ namespace Plugin.Runtime.Services.ExecuteAction.Action.Executors
         /// </summary>
         public void Execute(IUnit unit, int targetActorID, int posW, int posH)
         {
-            // Проверяем, может ли юнит вытсрелить?
+            // Проверяем, может ли юнит выстрелить?
             var waveDamageAction = (IWaveDamageAction)unit;
 
             if (!waveDamageAction.CanExecuteAction()){
-                throw new ArgumentException($"ExecuteActionService :: GrenadeShot :: Execute() ownerID = {unit.OwnerActorId}, unitID = {unit.UnitId}, instanceID = {unit.InstanceId}, targetActorID = {targetActorID}, posW = {posW}, posH = {posH}, I can't shot, maybe I don't have ammunition.");
+                Debug.Fail($"ExecuteActionService :: GrenadeShot :: Execute() ownerID = {unit.OwnerActorId}, unitID = {unit.UnitId}, instanceID = {unit.InstanceId}, targetActorID = {targetActorID}, posW = {posW}, posH = {posH}, I can't shot, maybe I don't have ammunition.");
             }
 
             waveDamageAction.SpendAction();     // делаем бросок гранаты. Юнит тратит 1-у гранату

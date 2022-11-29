@@ -1,5 +1,6 @@
 ﻿using Plugin.Interfaces;
 using System;
+using System.Diagnostics;
 
 namespace Plugin.Templates
 {
@@ -31,7 +32,8 @@ namespace Plugin.Templates
         {
             if (!_model.Has(nextStateName))
             {
-                throw new ArgumentException($"{GetType()} :: ChangeState() I don't know this state {nextStateName}");
+                Debug.Fail($"{GetType()} :: ChangeState() I don't know this state {nextStateName}");
+                return;
             }
 
             if (CurrState != null)

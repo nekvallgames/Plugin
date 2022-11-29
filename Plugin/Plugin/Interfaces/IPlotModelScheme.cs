@@ -1,6 +1,6 @@
 ﻿namespace Plugin.Interfaces
 {
-    public interface IPlotScheme
+    public interface IPlotModelScheme
     {
         /// <summary>
         /// Поточний крок синхронізації ігрового сценарія

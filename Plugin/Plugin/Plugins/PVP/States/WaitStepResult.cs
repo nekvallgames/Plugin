@@ -54,7 +54,7 @@ namespace Plugin.Plugins.PVP.States
         /// </summary>
         private void OpStockModelChanged(OpStockPrivateModelSignal signalData)
         {
-            int opStepCount = _opStockService.GetOpCount(OperationCode.actorStep);
+            int opStepCount = _opStockService.GetOpCount(OperationCode.syncStep);
 
             if (opStepCount == _countActors)
             {

@@ -35,6 +35,7 @@ namespace Plugin.Plugins.PVP.States
         private string _nextState;
 
         private int _expectedCount = 0;
+        private bool _isIgnoreSignal;
 
         public SyncStartState(int countActors, string nextState)
         {
@@ -54,6 +55,7 @@ namespace Plugin.Plugins.PVP.States
         public void EnterState()
         {
             LogChannel.Log("PlotService :: SyncStartState :: EnterState()", LogChannel.Type.Plot);
+            _isIgnoreSignal = false;
 
             // Слухаємо оновлення моделі із операціями акторів
             _signalBus.Subscrible<OpStockPrivateModelSignal>( OnOpStockChange );
@@ -78,11 +80,12 @@ namespace Plugin.Plugins.PVP.States
                 _expectedCount++;
             }
 
-            if ( _expectedCount == _countActors )
+            if ( _expectedCount == _countActors && !_isIgnoreSignal)
             {
+                _isIgnoreSignal = true;
                 // Відправити акторам сигнал, що гра стартонула
                 SendStartGame();
-
+                
                 _plotService.ChangeState(_nextState);
             }
         }
@@ -127,6 +130,7 @@ namespace Plugin.Plugins.PVP.States
 
         public void ExitState()
         {
+            _isIgnoreSignal = true;
             _signalBus.Unsubscrible<OpStockPrivateModelSignal>(OnOpStockChange);
         }
     }

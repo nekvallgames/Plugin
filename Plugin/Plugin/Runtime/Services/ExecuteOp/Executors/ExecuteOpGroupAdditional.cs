@@ -4,6 +4,7 @@ using Plugin.OpComponents;
 using Plugin.Runtime.Services.ExecuteAction.Additional;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Plugin.Runtime.Services.ExecuteOp.Executors
 {
@@ -52,14 +53,16 @@ namespace Plugin.Runtime.Services.ExecuteOp.Executors
         {
             // Вытаскиваем нужные нам компоненты из списка
             if (!ParceData(componentsGroup)){
-                throw new ArgumentException($"ExecuteOpService :: ExecuteOpAdditional :: Execute() playerActorId = {playerActorID}, I can't parce data");
+                Debug.Fail($"ExecuteOpService :: ExecuteOpAdditional :: Execute() playerActorId = {playerActorID}, I can't parce data");
+                return;
             }
 
             // Найти юнита, который выполнил действие
             IUnit unit = _unitsService.GetUnit(playerActorID, _unitID, _instanceID);
 
             if (unit == null){
-                throw new ArgumentException($"ExecuteOpService :: ExecuteOpAdditional :: Execute() playerActorID = {playerActorID}, unitID = {_unitID}, instanceID = {_instanceID}. I don't find this unit for execute actions");
+                Debug.Fail($"ExecuteOpService :: ExecuteOpAdditional :: Execute() playerActorID = {playerActorID}, unitID = {_unitID}, instanceID = {_instanceID}. I don't find this unit for execute actions");
+                return;
             }
 
             // Отбращаемся к классу, который выполняет действия юнитов, и просим 

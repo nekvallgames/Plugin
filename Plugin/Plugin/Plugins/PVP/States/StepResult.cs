@@ -28,7 +28,7 @@ namespace Plugin.Plugins.PVP.States
         private ActorsService _actorsService;
         private ConvertService _convertService;
         private OpStockService _opStockService;
-        private PVPPlotScheme _plotModel;
+        private PVPPlotModelScheme _plotModel;
         private ExecuteOpStepService _executeOpStepService;
         private StepSchemeBuilder _stepSchemeBuilder;
         private BroadcastProvider _broadcastProvider;
@@ -51,8 +51,8 @@ namespace Plugin.Plugins.PVP.States
             _broadcastProvider = gameInstaller.broadcastProvider;
             _plotService = gameInstaller.plotService;
 
-            var plotsPrivateModel = gameInstaller.privateModelProvider.Get<PlotsPrivateModel<IPlotScheme>>();
-            _plotModel = plotsPrivateModel.Items[0] as PVPPlotScheme;
+            var plotsPrivateModel = gameInstaller.privateModelProvider.Get<PlotsPrivateModel<IPlotModelScheme>>();
+            _plotModel = plotsPrivateModel.Items[0] as PVPPlotModelScheme;
         }
 
         public void EnterState()
@@ -106,10 +106,10 @@ namespace Plugin.Plugins.PVP.States
         {
             foreach (ActorScheme actor in _actorsService.Actors)
             {
-                if (!_opStockService.HasOp(actor.ActorId, OperationCode.actorStep))
+                if (!_opStockService.HasOp(actor.ActorId, OperationCode.syncStep))
                     continue;
 
-                var stepData = _opStockService.TakeOp(actor.ActorId, OperationCode.actorStep);
+                var stepData = _opStockService.TakeOp(actor.ActorId, OperationCode.syncStep);
 
                 var stepScheme = _convertService.DeserializeObject<StepScheme>(stepData.Data.ToString());
 

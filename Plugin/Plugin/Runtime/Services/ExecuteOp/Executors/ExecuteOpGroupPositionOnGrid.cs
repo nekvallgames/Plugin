@@ -4,6 +4,7 @@ using Plugin.OpComponents;
 using Plugin.Runtime.Services.ExecuteAction;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Plugin.Runtime.Services.ExecuteOp.Executors
 {
@@ -49,14 +50,16 @@ namespace Plugin.Runtime.Services.ExecuteOp.Executors
         {
             // Вытаскиваем нужные нам компоненты из списка
             if (!ParceData(componentsGroup)){
-                throw new ArgumentException($"ExecuteOpService :: ExecuteOpPositionOnGrid() playerActorId = {playerActorId}, I can't parce data");
+                Debug.Fail($"ExecuteOpService :: ExecuteOpPositionOnGrid() playerActorId = {playerActorId}, I can't parce data");
+                return;
             }
 
             // Вытащить юнита, к которому будем применять перемещение
             IUnit unit = _unitsService.GetUnit(playerActorId, _unitID, _instanceID);
 
             if (unit == null){
-                throw new ArgumentException($"ExecuteOpService :: ExecuteOpPositionOnGrid() playerActorID = {playerActorId}, unitID = {_unitID}, instanceID = {_instanceID}, I don't find this unit for execute actions");
+                Debug.Fail($"ExecuteOpService :: ExecuteOpPositionOnGrid() playerActorID = {playerActorId}, unitID = {_unitID}, instanceID = {_instanceID}, I don't find this unit for execute actions");
+                return;
             }
 
             // Переместить юнита в указаную позицию

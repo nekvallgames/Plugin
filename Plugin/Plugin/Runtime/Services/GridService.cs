@@ -9,6 +9,9 @@ using System.Linq;
 
 namespace Plugin.Runtime.Services
 {
+    /// <summary>
+    /// Сервіс, котрий реалізує логіку ігрової сітки для акторів
+    /// </summary>
     public class GridService
     {
         private LocationsPublicModel<LocationScheme> _locationsPublicModel;

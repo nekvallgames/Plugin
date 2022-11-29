@@ -6,6 +6,7 @@ using Plugin.Runtime.Services.Sync.Groups;
 using Plugin.Tools;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Plugin.Runtime.Services.ExecuteAction.Action.Executors
 {
@@ -51,7 +52,7 @@ namespace Plugin.Runtime.Services.ExecuteAction.Action.Executors
             var damageAction = (IDamageAction)unit;
 
             if (!damageAction.CanExecuteAction()){
-                throw new ArgumentException($"ExecuteActionService :: WeaponShot :: Execute() ownerID = {unit.OwnerActorId}, unitID = {unit.UnitId}, instanceID = {unit.InstanceId}, targetActorID = {targetActorId}, posW = {posW}, posH = {posH}, I can't make damage action. Maybe I don't have ammunition.");
+                Debug.Fail($"ExecuteActionService :: WeaponShot :: Execute() ownerID = {unit.OwnerActorId}, unitID = {unit.UnitId}, instanceID = {unit.InstanceId}, targetActorID = {targetActorId}, posW = {posW}, posH = {posH}, I can't make damage action. Maybe I don't have ammunition.");
             }
 
             damageAction.SpendAction();     // делаем выстрел. Юнит тратит 1 патрон
