@@ -1,5 +1,4 @@
-﻿using Plugin.Builders;
-using Plugin.Models.Public;
+﻿using Plugin.Models.Public;
 using Plugin.Runtime.Providers;
 using Plugin.Runtime.Services;
 using Plugin.Schemes;
@@ -23,7 +22,7 @@ namespace Plugin.Runtime.Spawners
             _unitsService = unitsService;
             _locationsPublicModel = publicModelProvider.Get<LocationsPublicModel<LocationScheme>>();
             
-           // signalBus.Subscrible<ActorsPrivateModelSignal>(OnActorsModelChange);
+            signalBus.Subscrible<ActorsPrivateModelSignal>(OnActorsModelChange);
         }
 
         /// <summary>
