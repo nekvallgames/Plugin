@@ -48,6 +48,7 @@ namespace Plugin.Installers
         public NotificationChangeVipService notificationChangeVipService;
         public StepSchemeBuilder stepSchemeBuilder;
         public LocationUnitsSpawner locationUnitsSpawner;
+        public SyncStepService syncStepService;
 
         public ExecuteOpStepSchemeService executeOpStepService;
         public ExecuteOpGroupService executeOpGroupService;
@@ -93,9 +94,12 @@ namespace Plugin.Installers
             actorsService = new ActorsService(privateModelProvider.Get<ActorsPrivateModel<ActorScheme>>(), signalBus);
             gridService = new GridService(publicModelProvider, privateModelProvider, gridBuilder, signalBus);
             broadcastProvider = new BroadcastProvider(PluginHook.Instance);
+            syncStepService = new SyncStepService(broadcastProvider, actorsService, stepSchemeBuilder, convertService);
             notificationChangeVipService = new NotificationChangeVipService(opStockService, actorsService, signalBus, broadcastProvider);
             executeOpGroupService = new ExecuteOpGroupService(unitsService, moveService, vipService, actionService, additionalService);
             executeOpStepService = new ExecuteOpStepSchemeService(executeOpGroupService);
+
+            
         }
     }
 }

@@ -20,6 +20,12 @@ namespace Plugin.OpComponents
             set { gi = value; }
         }
 
+        [JsonIgnore]
+        public int UnitId => uid;
+
+        [JsonIgnore]
+        public int UnitInstance => i;
+
         // syncStep
         public int ss;
         // groupIndex

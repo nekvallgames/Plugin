@@ -1,8 +1,6 @@
-﻿using Plugin.Installers;
-using Plugin.Interfaces;
+﻿using Plugin.Interfaces;
 using Plugin.OpComponents;
 using Plugin.Runtime.Services.ExecuteAction.Action;
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 
@@ -16,14 +14,9 @@ namespace Plugin.Runtime.Services.ExecuteOp.Executors
     {
         private UnitsService _unitsService;
         private ActionService _actionService;
-
-        // Данные, которые нужны для восзоздания действия игрока
-        private int _unitId;
-        private int _instanceId;
-        private int _posW;
-        private int _posH;
-        private int _targetActorId;
-
+        private ActionOpComponent _actionOpComponent;
+        private UnitIdOpComponent _unitIdOpComponent;
+        private TargetActorIdOpComponent _targetActorIdOpComponent;
 
         public ExecuteOpGroupAction(UnitsService unitsService, ActionService actionService)
         {
@@ -51,62 +44,40 @@ namespace Plugin.Runtime.Services.ExecuteOp.Executors
         public void Execute(int actorId, List<ISyncComponent> componentsGroup)
         {
             // 1. Вытаскиваем нужные нам компоненты из списка
-            if (!ParceData(componentsGroup)){
-                Debug.Fail($"ExecuteOpService :: ExecuteOpAction :: Execute() playerActorID = {actorId}. I can't parce data");
-                return;
-            }
+            Parce(componentsGroup);
 
             // 2. Найти юнита, который выполнил действие
-            IUnit unit = _unitsService.GetUnit(actorId, _unitId, _instanceId);
+            IUnit unit = _unitsService.GetUnit(actorId, _unitIdOpComponent.UnitId, _unitIdOpComponent.UnitInstance);
 
             if (unit == null){
-                Debug.Fail($"ExecuteOpService :: ExecuteOpAction :: Execute() playerActorID = {actorId}, unitID = {_unitId}, instanceID = {_instanceId}. I don't find this unit for execute actions");
+                Debug.Fail($"ExecuteOpGroupService :: ExecuteOpAction :: Execute() playerActorID = {actorId}, unitID = {_unitIdOpComponent.UnitId}, instanceID = {_unitIdOpComponent.UnitInstance}. I don't find this unit for execute actions");
                 return;
             }
 
             // 3. Отбращаемся к классу, который выполняет действия юнитов, и просим 
             // его, выполнять для текущего юнита действие
-            _actionService.ExecuteAction(unit, _targetActorId, _posW, _posH);
+            _actionService.ExecuteAction(unit, _targetActorIdOpComponent.aid, _actionOpComponent.w, _actionOpComponent.h);
         }
 
         /// <summary>
         /// Распарсить входящие данные
         /// </summary>
-        private bool ParceData(List<ISyncComponent> componentsGroup)
+        private void Parce(List<ISyncComponent> componentsGroup)
         {
-            bool isParceAction = false;
-            bool isParceUnitID = false;
-            bool isParceTargetActorID = false;
-
             foreach (ISyncComponent component in componentsGroup)
             {
-                if (component.GetType() == typeof(ActionOpComponent))
-                {
-                    _posW = ((ActionOpComponent)component).w;
-                    _posH = ((ActionOpComponent)component).h;
-                    isParceAction = true;
+                if (component.GetType() == typeof(ActionOpComponent)){
+                    _actionOpComponent = (ActionOpComponent)component;
                 }
                 else
-                if (component.GetType() == typeof(UnitIdOpComponent))
-                {
-                    _unitId = ((UnitIdOpComponent)component).uid;
-                    _instanceId = ((UnitIdOpComponent)component).i;
-                    isParceUnitID = true;
-                }
-                else
-                if (component.GetType() == typeof(TargetActorIdOpComponent))
-                {
-                    _targetActorId = ((TargetActorIdOpComponent)component).aid;
-                    isParceTargetActorID = true;
-                }
+                    if (component.GetType() == typeof(UnitIdOpComponent)){
+                        _unitIdOpComponent = (UnitIdOpComponent)component;
+                    }
+                    else
+                        if (component.GetType() == typeof(TargetActorIdOpComponent)){
+                            _targetActorIdOpComponent = (TargetActorIdOpComponent)component;
+                        }
             }
-
-            if (isParceAction && isParceUnitID && isParceTargetActorID)
-            {
-                return true;
-            }
-
-            return false;
         }
     }
 }

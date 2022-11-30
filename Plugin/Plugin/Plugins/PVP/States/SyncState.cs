@@ -1,9 +1,6 @@
-﻿using Photon.Hive.Plugin;
-using Plugin.Builders;
-using Plugin.Installers;
+﻿using Plugin.Installers;
 using Plugin.Interfaces;
 using Plugin.Models.Private;
-using Plugin.Runtime.Providers;
 using Plugin.Runtime.Services;
 using Plugin.Runtime.Services.ExecuteOp;
 using Plugin.Schemes;
@@ -19,9 +16,9 @@ namespace Plugin.Plugins.PVP.States
     /// Нужно сначала синхронизировать первый шаг, где игрок розставляет своих юнитов на игровой сетке
     /// И после выполнить второй шаг - где игрок уже атаковал противника
     /// </summary>
-    public class SyncStepState : IState
+    public class SyncState : IState
     {
-        public const string NAME = "SyncStepState";
+        public const string NAME = "SyncState";
         public string Name => NAME;
 
         private UnitsService _unitsService;
@@ -30,13 +27,12 @@ namespace Plugin.Plugins.PVP.States
         private OpStockService _opStockService;
         private PVPPlotModelScheme _plotModel;
         private ExecuteOpStepSchemeService _executeOpStepService;
-        private StepSchemeBuilder _stepSchemeBuilder;
-        private BroadcastProvider _broadcastProvider;
         private PlotService _plotService;
+        private SyncStepService _syncStepService;
 
         private string _nextStep;
 
-        public SyncStepState(string nextStep)
+        public SyncState(string nextStep)
         {
             _nextStep = nextStep;
 
@@ -47,9 +43,8 @@ namespace Plugin.Plugins.PVP.States
             _convertService = gameInstaller.convertService;
             _opStockService = gameInstaller.opStockService;
             _executeOpStepService = gameInstaller.executeOpStepService;
-            _stepSchemeBuilder = gameInstaller.stepSchemeBuilder;
-            _broadcastProvider = gameInstaller.broadcastProvider;
             _plotService = gameInstaller.plotService;
+            _syncStepService = gameInstaller.syncStepService;
 
             var plotsPrivateModel = gameInstaller.privateModelProvider.Get<PlotsPrivateModel<IPlotModelScheme>>();
             _plotModel = plotsPrivateModel.Items[0] as PVPPlotModelScheme;
@@ -64,37 +59,20 @@ namespace Plugin.Plugins.PVP.States
                 _unitsService.ReviveAction(sctor.ActorId);
             }
 
+            // Десериализировать операцію StepScheme акторів, котрі вони прислали 
             var actorSteps = new List<ActorStep>();
             DeserializeOp(ref actorSteps);
 
-            // Step - move
+            // Виконати перший крок - move
             ExecuteSteps(ref actorSteps, _plotModel.SyncStep);     
             _plotModel.SyncStep++;
 
-            // Step - attack
+            // Виконати другий крок - attack
             ExecuteSteps(ref actorSteps, _plotModel.SyncStep);     
             _plotModel.SyncStep++;
 
-            // Создать коллекцию, которая будет хранить в себе данные, которые нужно синхронизировать 
-            // между клиентами
-            // key   - это ActorID
-            // value - это StepScheme, которая имеет кучу из компонентов
-            var pushData = new Dictionary<byte, object> { };
 
-            // Зібрати синхронізацію дій акторів і відправити результат їхній дій всім акторам в кімнаті
-            foreach (ActorScheme actor in _actorsService.Actors)
-            {
-                StepScheme scheme = _stepSchemeBuilder.Create(actor.ActorId, new int[] { _plotModel.SyncStep - 2, _plotModel.SyncStep - 1 });
-                string jsonString = _convertService.SerializeObject(scheme);
-                pushData.Add((byte)actor.ActorId, jsonString);
-            }
-
-            _broadcastProvider.Send(ReciverGroup.All,                   // отправить сообщение всем
-                                    0,                                  // номер актера, если нужно отправить уникальное сообщение
-                                    0,
-                                    OperationCode.stepResult,
-                                    pushData,
-                                    CacheOperations.DoNotCache);        // не кэшировать сообщение
+            _syncStepService.Sync(new int[] { _plotModel.SyncStep - 2, _plotModel.SyncStep - 1 });
 
             _plotService.ChangeState(_nextStep);
         }

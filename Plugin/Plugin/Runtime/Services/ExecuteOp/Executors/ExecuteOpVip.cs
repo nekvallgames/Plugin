@@ -1,8 +1,6 @@
-﻿using Plugin.Installers;
-using Plugin.Interfaces;
+﻿using Plugin.Interfaces;
 using Plugin.OpComponents;
 using Plugin.Runtime.Services.ExecuteAction;
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 
@@ -15,11 +13,8 @@ namespace Plugin.Runtime.Services.ExecuteOp.Executors
     {
         private UnitsService _unitsService;
         private VipService _vipService;
-
-        // Данные, которые нужны для восзоздания действия игрока
-        private int _unitId;
-        private int _instanceId;
-        private bool _enable;
+        private VipOpComponent _vipOpComponent;
+        private UnitIdOpComponent _unitIdOpComponent;
 
         public ExecuteOpGroupVip(UnitsService unitsService, VipService vipService)
         {
@@ -47,54 +42,36 @@ namespace Plugin.Runtime.Services.ExecuteOp.Executors
         public void Execute(int actorId, List<ISyncComponent> componentsGroup)
         {
             // Вытаскиваем нужные нам компоненты из списка
-            if (!ParceData(componentsGroup)){
-                Debug.Fail($"ExecuteOpService :: ExecuteVip() actorID = {actorId}, I can't parce data");
-                return;
-            }
+            Parce(componentsGroup);
 
             // 2. Найти юнита, который выполнил действие
-            IUnit unit = _unitsService.GetUnit(actorId, _unitId, _instanceId);
+            IUnit unit = _unitsService.GetUnit(actorId, _unitIdOpComponent.UnitId, _unitIdOpComponent.UnitInstance);
 
             if (unit == null){
-                Debug.Fail($"ExecuteOpService :: ExecuteVip() actorID = {actorId}, unitId = {_unitId}, instanceId = {_instanceId}. I don't find this unit for execute vip");
+                Debug.Fail($"ExecuteOpGroupService :: ExecuteVip() actorID = {actorId}, unitId = {_unitIdOpComponent.UnitId}, instanceId = {_unitIdOpComponent.UnitInstance}. I don't find this unit for execute vip");
                 return;
             }
 
             // Обращаемся к классу, который активировать/деактивировать VIP для юнита, и просим 
             // его, выполнять для текущего юнита действие
-            _vipService.ChangeVip(unit, _enable);
+            _vipService.ChangeVip(unit, _vipOpComponent.e);
         }
 
         /// <summary>
         /// Распарсить входящие данные
         /// </summary>
-        private bool ParceData(List<ISyncComponent> componentsGroup)
+        private void Parce(List<ISyncComponent> componentsGroup)
         {
-            bool isParceVip = false;
-            bool isParceUnitID = false;
-
             foreach (ISyncComponent component in componentsGroup)
             {
-                if (component.GetType() == typeof(VipOpComponent))
-                {
-                    _enable = ((VipOpComponent)component).e;
-                    isParceVip = true;
+                if (component.GetType() == typeof(VipOpComponent)){
+                    _vipOpComponent = (VipOpComponent)component;
                 }
                 else
-                    if (component.GetType() == typeof(UnitIdOpComponent))
-                    {
-                        _unitId = ((UnitIdOpComponent)component).uid;
-                        _instanceId = ((UnitIdOpComponent)component).i;
-                        isParceUnitID = true;
+                    if (component.GetType() == typeof(UnitIdOpComponent)){
+                        _unitIdOpComponent = (UnitIdOpComponent)component;
                     }
             }
-
-            if (isParceVip && isParceUnitID)
-            {
-                return true;
-            }
-
-            return false;
         }
     }
 }
