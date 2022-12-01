@@ -7,7 +7,7 @@ namespace Plugin.Runtime.Units
     /// <summary>
     /// Обычный юнит барриер. Металевий люк
     /// </summary>
-    public class UnitLuke : BaseUnit, IHealthComponent, IUnit
+    public class UnitLuke : BaseUnit, IHealthComponent, IUnit, IIgnoreSyncComponent
     {
         public const int UnitId = 11;
 

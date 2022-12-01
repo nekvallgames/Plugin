@@ -1,5 +1,6 @@
-﻿using Plugin.Builders;
-using Plugin.Installers;
+﻿using Photon.Hive.Plugin;
+using Plugin.Builders;
+using Plugin.Interfaces;
 using Plugin.Models.Private;
 using Plugin.Models.Public;
 using Plugin.Runtime.Providers;
@@ -15,7 +16,7 @@ namespace Plugin.Runtime.Services
     public class GridService
     {
         private LocationsPublicModel<LocationScheme> _locationsPublicModel;
-        private GridsPrivateModel<GridScheme> _gridsPrivateModel;
+        private GridsPrivateModel<IGrid> _gridsPrivateModel;
         private GridBuilder _gridBuilder;
 
         public GridService(PublicModelProvider publicModelProvider, 
@@ -24,27 +25,29 @@ namespace Plugin.Runtime.Services
                            SignalBus signalBus)
         {
             _locationsPublicModel = publicModelProvider.Get<LocationsPublicModel<LocationScheme>>();
-            _gridsPrivateModel = privateModelProvider.Get<GridsPrivateModel<GridScheme>>();
+            _gridsPrivateModel = privateModelProvider.Get<GridsPrivateModel<IGrid>>();
             _gridBuilder = gridBuilder;
 
-            signalBus.Subscrible<ActorsPrivateModelSignal>(OnActorsModelChange);
+            signalBus.Subscrible<HostsPrivateModelSignal>(HostsModelChange);
         }
 
         /// <summary>
-        /// Модель із даними гравців була оновлена
+        /// Модель із даними хостів була змінена
         /// </summary>
-        private void OnActorsModelChange( ActorsPrivateModelSignal signalData )
+        private void HostsModelChange(HostsPrivateModelSignal signalData )
         {
-            if (_gridsPrivateModel.Items.Any(x => x.ownerActorId == signalData.ActorId))
-                return; // для поточного гравця вже створена ігрова сітка
+            foreach ( IActor actor in signalData.host.GameActorsActive )
+            {
+                if (_gridsPrivateModel.Items.Any(x => x.OwnerActorId == actor.ActorNr))
+                    continue;   // для поточного гравця вже створена ігрова сітка
 
-            // Створити ігрову сітку для поточного гравця
-            LocationScheme scheme = _locationsPublicModel.Items[0]; // TODO поки що постійно створюємо локацію за замовчуванням
+                // Створити ігрову сітку для поточного гравця
+                LocationScheme scheme = _locationsPublicModel.Items[0]; // TODO поки що постійно створюємо локацію за замовчуванням
 
-            GridScheme grid = _gridBuilder.Create(signalData.ActorId, scheme.SizeGrid, scheme.GridMask);
+                IGrid grid = _gridBuilder.Create(actor.ActorNr, scheme.SizeGrid, scheme.GridMask);
 
-            _gridsPrivateModel.Add(grid);
-
+                _gridsPrivateModel.Add(grid);
+            }
         }
     }
 }

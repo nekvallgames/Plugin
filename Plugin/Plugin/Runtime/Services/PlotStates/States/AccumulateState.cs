@@ -1,22 +1,21 @@
-﻿using Plugin.Installers;
+﻿using Photon.Hive.Plugin;
+using Plugin.Installers;
 using Plugin.Interfaces;
-using Plugin.Runtime.Services;
 using Plugin.Signals;
 using Plugin.Tools;
 
-namespace Plugin.Plugins.PVP.States
+namespace Plugin.Runtime.Services.PlotStates.States
 {
     /// <summary>
     /// Стейт, в котрому чекаємо, поки кімната збере необхідну кількість гравців
     /// </summary>
-    public class AccumulateState : IState
+    public class AccumulateState : BasePlotState, IState
     {
         public const string NAME = "AccumulateState";
         public string Name => NAME;
 
         private SignalBus _signalBus;
-        private ActorsService _actorsService;
-        private PlotService _plotService;
+        private HostsService _hostsService;
 
         /// <summary>
         /// Кількість гравців, котрі потрібні для старту ігрової кімнати
@@ -27,51 +26,56 @@ namespace Plugin.Plugins.PVP.States
         /// </summary>
         private string _nextState;
 
+        private bool _isIgnore;
+
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="countActors">кількість гравців, котрі потрібні для старту ігрової кімнати</param>
         /// <param name="nextState">перейти в вказаний стейт</param>
-        public AccumulateState(int countActors, string nextState)
+        public AccumulateState(PlotStatesService plotStatesService, 
+                               IPluginHost host, 
+                               int countActors, 
+                               string nextState):base(plotStatesService, host)
         {
             _countActors = countActors;
             _nextState = nextState;
 
-
             var gameInstaller = GameInstaller.GetInstance();
 
             _signalBus = gameInstaller.signalBus;
-            _actorsService = gameInstaller.actorsService;
-            _plotService = gameInstaller.plotService;
+            _hostsService = gameInstaller.hostsService;
         }
 
         public void EnterState()
         {
-            LogChannel.Log("PlotService :: AccumulateState :: EnterState()", LogChannel.Type.Plot);
+            LogChannel.Log("PlotStatesService :: AccumulateState :: EnterState()", LogChannel.Type.Plot);
+            _isIgnore = false;
 
-            _signalBus.Subscrible<ActorsPrivateModelSignal>(OnChangeActorModel);
-            OnChangeActorModel(default);
+            _signalBus.Subscrible<HostsPrivateModelSignal>(OnChangeHostsModel);
         }
 
         /// <summary>
-        /// Подія, коли модель із данними гравців була оновлена
+        /// Подія, коли модель із данними хостів була оновлена
         /// </summary>
-        private void OnChangeActorModel( ActorsPrivateModelSignal signalData )
+        private void OnChangeHostsModel(HostsPrivateModelSignal signalData )
         {
             // TODO добавити перевірку, якщо в кімнаті буде більше гравців, а ніж потрібно,
             // то що би гравців, котрі лишні, дісконектнуло із кімнати
 
-            if (_actorsService.GetConnectedActors().Count == _countActors)
-            {
-                _actorsService.RemoveDisconnectedActors();
+            if (_isIgnore)
+                return;
 
-                _plotService.ChangeState(_nextState);
+            if (_hostsService.Actors(host).Count == _countActors)
+            {
+                plotStatesService.ChangeState(_nextState);
             }
         }
 
         public void ExitState()
         {
-            _signalBus.Unsubscrible<ActorsPrivateModelSignal>(OnChangeActorModel);
+            _isIgnore = true;
+            _signalBus.Unsubscrible<HostsPrivateModelSignal>(OnChangeHostsModel);
         }
     }
 }

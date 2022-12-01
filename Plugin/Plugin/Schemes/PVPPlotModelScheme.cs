@@ -13,6 +13,14 @@ namespace Plugin.Schemes
         /// </summary>
         public int SyncStep { get; set; }
 
+        /// <summary>
+        /// Список із акторів, кому належить поточна модель
+        /// </summary>
+        public int OwnerActorId { get; }
 
+        public PVPPlotModelScheme(int ownerActorId)
+        {
+            OwnerActorId = ownerActorId;
+        }
     }
 }

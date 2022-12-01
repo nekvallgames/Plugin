@@ -7,7 +7,7 @@ namespace Plugin.Runtime.Units
     /// <summary>
     /// Обычный юнит барриер. Стенка из металического забора с сеткой
     /// </summary>
-    public class UnitIronFenceBarrier : BaseUnit, IHealthComponent, IUnit
+    public class UnitIronFenceBarrier : BaseUnit, IHealthComponent, IUnit, IIgnoreSyncComponent
     {
         public const int UnitId = 36;
 

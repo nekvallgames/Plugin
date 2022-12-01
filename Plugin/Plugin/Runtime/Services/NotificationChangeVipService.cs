@@ -1,6 +1,4 @@
 ﻿using Photon.Hive.Plugin;
-using Plugin.Runtime.Providers;
-using Plugin.Schemes;
 using Plugin.Signals;
 using Plugin.Tools;
 using System.Collections.Generic;
@@ -18,19 +16,15 @@ namespace Plugin.Runtime.Services
     /// </summary>
     public class NotificationChangeVipService
     {
-        private SignalBus _signalBus;
-        private BroadcastProvider _broadcastService;
         private OpStockService _opStockService;
-        private ActorsService _actorsService;
+        private HostsService _hostsService;
 
-        public NotificationChangeVipService(OpStockService opStockService, ActorsService actorsService, SignalBus signalBus, BroadcastProvider broadcastProvider)
+        public NotificationChangeVipService(HostsService hostsService, OpStockService opStockService, SignalBus signalBus)
         {
             _opStockService = opStockService;
-            _actorsService = actorsService;
-            _signalBus = signalBus;
-            _broadcastService = broadcastProvider;
-            
-            _signalBus.Subscrible<OpStockPrivateModelSignal>(OnOpStockModelChange);
+            _hostsService = hostsService;
+
+            signalBus.Subscrible<OpStockPrivateModelSignal>(OnOpStockModelChange);
         }
 
         private void OnOpStockModelChange(OpStockPrivateModelSignal signalData)
@@ -38,23 +32,31 @@ namespace Plugin.Runtime.Services
             if (signalData.OpCode == OperationCode.changeVip 
                 && signalData.Status == OpStockPrivateModelSignal.StatusType.add)
             {
-                // На склад операцій упала операція OperationCode.changeVip
+                IPluginHost plugin = _hostsService.Get(signalData.ActorId);
 
-                _opStockService.TakeOp(signalData.ActorId, signalData.OpCode);  // видалити операцію зі складу
+                foreach ( IActor actor in plugin.GameActorsActive )
+                {
+                    if (_opStockService.HasOp(actor.ActorNr, OperationCode.changeVip))
+                    {
+                        // На склад операцій упала операція OperationCode.changeVip
 
-                // Створити массив із акторів, кому ми відправимо цей івент
-                List<ActorScheme> actors = _actorsService.Actors.FindAll(x => x.ActorId != signalData.ActorId);
-                var actorsId = new List<int>();
-                foreach (ActorScheme actor in actors){
-                    actorsId.Add(actor.ActorId);
+                        _opStockService.TakeOp(actor.ActorNr, signalData.OpCode);  // видалити операцію зі складу
+
+                        // Створити массив із акторів, кому ми відправимо цей івент
+                        var actors = ((List<IActor>)plugin.GameActorsActive).FindAll(x => x.ActorNr != actor.ActorNr);
+                        var actorsId = new List<int>();
+                        foreach (IActor __actor in actors){
+                            actorsId.Add(__actor.ActorNr);
+                        }
+
+                        // Відправити всім участникам цей івент
+                        plugin.BroadcastEvent(actorsId,
+                                             signalData.ActorId,
+                                             OperationCode.changeVip,
+                                             null,
+                                             CacheOperations.DoNotCache); // не кэшировать сообщение
+                    } 
                 }
-
-                // Відправити всім участникам цей івент
-                _broadcastService.Send(actorsId, 
-                                       signalData.ActorId,
-                                       OperationCode.changeVip,
-                                       null,
-                                       CacheOperations.DoNotCache); // не кэшировать сообщение
             }
         }
     }

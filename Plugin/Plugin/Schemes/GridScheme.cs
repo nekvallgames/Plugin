@@ -2,7 +2,7 @@
 
 namespace Plugin.Schemes
 {
-    public struct GridScheme
+    public struct GridScheme : IGrid
     {
         /// <summary>
         /// Список с селлами из которых создана игровая сетка
@@ -12,24 +12,24 @@ namespace Plugin.Schemes
         /// <summary>
         /// Владелец игровой сетки
         /// </summary>
-        public int ownerActorId { get; }
+        public int OwnerActorId { get; }
 
         /// <summary>
         /// Размер игровой сетки по ширине
         /// </summary>
-        public int sizeGridW { get; }
+        public int SizeGridW { get; }
 
         /// <summary>
         /// Размер игровой сетки по высоте
         /// </summary>
-        public int sizeGridH { get; }
+        public int SizeGridH { get; }
 
 
         public GridScheme(int ownerActorId, int sizeGridW, int sizeGridH, Cell[] cellsList)
         {
-            this.ownerActorId = ownerActorId;
-            this.sizeGridW = sizeGridW;
-            this.sizeGridH = sizeGridH;
+            OwnerActorId = ownerActorId;
+            SizeGridW = sizeGridW;
+            SizeGridH = sizeGridH;
             СellsList = cellsList;
         }
     }

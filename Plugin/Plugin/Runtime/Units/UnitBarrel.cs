@@ -7,7 +7,7 @@ namespace Plugin.Runtime.Units
     /// <summary>
     /// Обычный юнит барриер. Металева бочка
     /// </summary>
-    public class UnitBarrel : BaseUnit, IHealthComponent, IUnit
+    public class UnitBarrel : BaseUnit, IHealthComponent, IUnit, IIgnoreSyncComponent
     {
         public const int UnitId = 6;
 

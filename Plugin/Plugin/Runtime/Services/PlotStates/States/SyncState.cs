@@ -1,13 +1,12 @@
-﻿using Plugin.Installers;
+﻿using Photon.Hive.Plugin;
+using Plugin.Installers;
 using Plugin.Interfaces;
-using Plugin.Models.Private;
-using Plugin.Runtime.Services;
 using Plugin.Runtime.Services.ExecuteOp;
 using Plugin.Schemes;
 using Plugin.Tools;
 using System.Collections.Generic;
 
-namespace Plugin.Plugins.PVP.States
+namespace Plugin.Runtime.Services.PlotStates.States
 {
     /// <summary>
     /// Состояние, при котором мы обрабатываем результат шага игроков
@@ -16,47 +15,48 @@ namespace Plugin.Plugins.PVP.States
     /// Нужно сначала синхронизировать первый шаг, где игрок розставляет своих юнитов на игровой сетке
     /// И после выполнить второй шаг - где игрок уже атаковал противника
     /// </summary>
-    public class SyncState : IState
+    public class SyncState : BasePlotState, IState
     {
         public const string NAME = "SyncState";
         public string Name => NAME;
 
         private UnitsService _unitsService;
-        private ActorsService _actorsService;
         private ConvertService _convertService;
         private OpStockService _opStockService;
-        private PVPPlotModelScheme _plotModel;
         private ExecuteOpStepSchemeService _executeOpStepService;
-        private PlotService _plotService;
         private SyncStepService _syncStepService;
+        private HostsService _hostsService;
+        private PlotsModelService _plotsModelService;
 
         private string _nextStep;
 
-        public SyncState(string nextStep)
+        public SyncState(PlotStatesService plotStatesService,
+                         IPluginHost host, 
+                         string nextStep):base(plotStatesService, host)
         {
             _nextStep = nextStep;
 
             var gameInstaller = GameInstaller.GetInstance();
 
             _unitsService = gameInstaller.unitsService;
-            _actorsService = gameInstaller.actorsService;
             _convertService = gameInstaller.convertService;
             _opStockService = gameInstaller.opStockService;
             _executeOpStepService = gameInstaller.executeOpStepService;
-            _plotService = gameInstaller.plotService;
             _syncStepService = gameInstaller.syncStepService;
-
-            var plotsPrivateModel = gameInstaller.privateModelProvider.Get<PlotsPrivateModel<IPlotModelScheme>>();
-            _plotModel = plotsPrivateModel.Items[0] as PVPPlotModelScheme;
+            _hostsService = gameInstaller.hostsService;
+            _plotsModelService = gameInstaller.plotsModelService;
         }
 
         public void EnterState()
         {
             LogChannel.Log("PlotService :: PVPStepResult :: EnterState()", LogChannel.Type.Plot);
 
-            // Всим юнітам акторів перезарядити їхні єкшени
-            foreach (ActorScheme sctor in _actorsService.Actors){
-                _unitsService.ReviveAction(sctor.ActorId);
+            var plotModels = new List<IPlotModelScheme>();
+
+            foreach (IActor actor in _hostsService.Actors(host))
+            {
+                _unitsService.ReviveAction(actor.ActorNr);  // Всiм юнітам перезарядити їхні єкшени
+                plotModels.Add(_plotsModelService.Get(actor.ActorNr));  // отримати модель даних ігрового режиму
             }
 
             // Десериализировать операцію StepScheme акторів, котрі вони прислали 
@@ -64,17 +64,26 @@ namespace Plugin.Plugins.PVP.States
             DeserializeOp(ref actorSteps);
 
             // Виконати перший крок - move
-            ExecuteSteps(ref actorSteps, _plotModel.SyncStep);     
-            _plotModel.SyncStep++;
+            ExecuteSteps(ref actorSteps, plotModels[0].SyncStep);
+            IncreaseSyncStep();
 
             // Виконати другий крок - attack
-            ExecuteSteps(ref actorSteps, _plotModel.SyncStep);     
-            _plotModel.SyncStep++;
+            ExecuteSteps(ref actorSteps, plotModels[0].SyncStep);
+            IncreaseSyncStep();
 
 
-            _syncStepService.Sync(new int[] { _plotModel.SyncStep - 2, _plotModel.SyncStep - 1 });
+            _syncStepService.Sync(host, new int[] { plotModels[0].SyncStep - 2, plotModels[0].SyncStep - 1 });
 
-            _plotService.ChangeState(_nextStep);
+            plotStatesService.ChangeState(_nextStep);
+
+
+
+            void IncreaseSyncStep()
+            {
+                foreach (IPlotModelScheme plotModel in plotModels){
+                    plotModel.SyncStep++;
+                }
+            }
         }
 
         /// <summary>
@@ -82,16 +91,16 @@ namespace Plugin.Plugins.PVP.States
         /// </summary>
         private void DeserializeOp(ref List<ActorStep> actorSteps)
         {
-            foreach (ActorScheme actor in _actorsService.Actors)
+            foreach (IActor actor in _hostsService.Actors(host))
             {
-                if (!_opStockService.HasOp(actor.ActorId, OperationCode.syncStep))
+                if (!_opStockService.HasOp(actor.ActorNr, OperationCode.syncStep))
                     continue;
 
-                var stepData = _opStockService.TakeOp(actor.ActorId, OperationCode.syncStep);
+                var stepData = _opStockService.TakeOp(actor.ActorNr, OperationCode.syncStep);
 
                 var stepScheme = _convertService.DeserializeObject<StepScheme>(stepData.Data.ToString());
 
-                actorSteps.Add(new ActorStep(actor.ActorId, stepScheme));
+                actorSteps.Add(new ActorStep(actor.ActorNr, stepScheme));
             }
         }
 

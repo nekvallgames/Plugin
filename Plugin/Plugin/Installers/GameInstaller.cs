@@ -1,8 +1,8 @@
-﻿using Plugin.Builders;
+﻿using Photon.Hive.Plugin;
+using Plugin.Builders;
 using Plugin.Interfaces;
 using Plugin.Models.Private;
 using Plugin.Models.Public;
-using Plugin.Plugins;
 using Plugin.Runtime.Providers;
 using Plugin.Runtime.Services;
 using Plugin.Runtime.Services.ExecuteAction;
@@ -12,6 +12,7 @@ using Plugin.Runtime.Services.ExecuteOp;
 using Plugin.Runtime.Services.Sync;
 using Plugin.Runtime.Spawners;
 using Plugin.Schemes;
+using System;
 using System.Collections.Generic;
 
 namespace Plugin.Installers
@@ -26,7 +27,7 @@ namespace Plugin.Installers
             return _instance;
         }
 
-        public PlotService plotService;
+        public HostsService hostsService;
         public SignalBus signalBus;
         public UnitsService unitsService;
         public SyncService syncService;
@@ -35,9 +36,7 @@ namespace Plugin.Installers
         public ActionService actionService;
         public SortTargetOnGridService sortTargetOnGridService;
         public AdditionalService additionalService;
-        public ActorsService actorsService;
         public OpStockService opStockService;
-        public BroadcastProvider broadcastProvider;
         public GridService gridService;
         public PublicModelProvider publicModelProvider;
         public PrivateModelProvider privateModelProvider;
@@ -49,10 +48,10 @@ namespace Plugin.Installers
         public StepSchemeBuilder stepSchemeBuilder;
         public LocationUnitsSpawner locationUnitsSpawner;
         public SyncStepService syncStepService;
+        public PlotsModelService plotsModelService;
 
         public ExecuteOpStepSchemeService executeOpStepService;
         public ExecuteOpGroupService executeOpGroupService;
-
 
         public GameInstaller()
         {
@@ -68,38 +67,34 @@ namespace Plugin.Installers
 
             privateModelProvider = new PrivateModelProvider(new List<IPrivateModel>
             {
-                new PlotStatesPrivateModel(),
                 new UnitsPrivateModel<IUnit>(),
                 new OpStockPrivateModel<IOpStockItem>(signalBus),
                 new SyncPrivateModel<SyncScheme>(),
-                new GridsPrivateModel<GridScheme>(),
-                new ActorsPrivateModel<ActorScheme>(signalBus),
+                new GridsPrivateModel<IGrid>(signalBus),
+                new HostsPrivateModel<IPluginHost>(signalBus),
                 new PlotsPrivateModel<IPlotModelScheme>()
             });
 
+            hostsService = new HostsService(privateModelProvider.Get<HostsPrivateModel<IPluginHost>>());
+            plotsModelService = new PlotsModelService(privateModelProvider.Get<PlotsPrivateModel<IPlotModelScheme>>());
             gridBuilder = new GridBuilder();
             unitInstanceService = new UnitInstanceService(privateModelProvider.Get<UnitsPrivateModel<IUnit>>());
             unitBuilder = new UnitBuilder(unitInstanceService);
             opStockService = new OpStockService(privateModelProvider.Get<OpStockPrivateModel<IOpStockItem>>());
-            syncService = new SyncService(privateModelProvider.Get<SyncPrivateModel<SyncScheme>>(), privateModelProvider.Get< PlotsPrivateModel<IPlotModelScheme>>());
+            syncService = new SyncService(privateModelProvider.Get<SyncPrivateModel<SyncScheme>>(), plotsModelService);
             stepSchemeBuilder = new StepSchemeBuilder(syncService);
+            syncStepService = new SyncStepService(stepSchemeBuilder, convertService, hostsService);
             moveService = new MoveService(syncService);
             unitsService = new UnitsService(privateModelProvider.Get<UnitsPrivateModel<IUnit>>(), opStockService, convertService, unitBuilder, signalBus, moveService);
             locationUnitsSpawner = new LocationUnitsSpawner(publicModelProvider, unitsService, signalBus);
-            plotService = new PlotService(privateModelProvider.Get<PlotStatesPrivateModel>());
             vipService = new VipService(syncService, unitsService);
             sortTargetOnGridService = new SortTargetOnGridService();
             actionService = new ActionService(syncService, unitsService, sortTargetOnGridService);
             additionalService = new AdditionalService(syncService, unitsService);
-            actorsService = new ActorsService(privateModelProvider.Get<ActorsPrivateModel<ActorScheme>>(), signalBus);
             gridService = new GridService(publicModelProvider, privateModelProvider, gridBuilder, signalBus);
-            broadcastProvider = new BroadcastProvider(PluginHook.Instance);
-            syncStepService = new SyncStepService(broadcastProvider, actorsService, stepSchemeBuilder, convertService);
-            notificationChangeVipService = new NotificationChangeVipService(opStockService, actorsService, signalBus, broadcastProvider);
+            notificationChangeVipService = new NotificationChangeVipService(hostsService, opStockService, signalBus);
             executeOpGroupService = new ExecuteOpGroupService(unitsService, moveService, vipService, actionService, additionalService);
             executeOpStepService = new ExecuteOpStepSchemeService(executeOpGroupService);
-
-            
         }
     }
 }

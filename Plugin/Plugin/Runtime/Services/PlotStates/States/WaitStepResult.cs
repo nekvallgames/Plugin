@@ -1,22 +1,21 @@
-﻿using Plugin.Installers;
+﻿using Photon.Hive.Plugin;
+using Plugin.Installers;
 using Plugin.Interfaces;
-using Plugin.Runtime.Services;
 using Plugin.Signals;
 using Plugin.Tools;
 
-namespace Plugin.Plugins.PVP.States
+namespace Plugin.Runtime.Services.PlotStates.States
 {
     /// <summary>
     /// Состояние, в котором мы ждем, когда игроки пришлют свой шаг действия
     /// </summary>
-    public class WaitStepResult : IState
+    public class WaitStepResult : BasePlotState, IState
     {
         public const string NAME = "WaitStepResult";
         public string Name => NAME;
 
         private SignalBus _signalBus;
         private OpStockService _opStockService;
-        private PlotService _plotService;
 
         /// <summary>
         /// Кількість гравців, котрі потрібні для старту ігрової кімнати
@@ -27,7 +26,10 @@ namespace Plugin.Plugins.PVP.States
         /// </summary>
         private string _nextState;
 
-        public WaitStepResult(int countActors, string nextState)
+        public WaitStepResult(PlotStatesService plotStatesService,
+                              IPluginHost host, 
+                              int countActors, 
+                              string nextState):base(plotStatesService, host)
         {
             _countActors = countActors;
             _nextState = nextState;
@@ -36,7 +38,6 @@ namespace Plugin.Plugins.PVP.States
 
             _signalBus = gameInstaller.signalBus;
             _opStockService = gameInstaller.opStockService;
-            _plotService = gameInstaller.plotService;
         }
 
         public void EnterState()
@@ -60,7 +61,7 @@ namespace Plugin.Plugins.PVP.States
             {
                 // Оба игрока прислали свой ход. Можно не ждать окончание таймера, 
                 // а перейти в следующее состояние
-                _plotService.ChangeState(_nextState);
+                plotStatesService.ChangeState(_nextState);
             }
         }
 

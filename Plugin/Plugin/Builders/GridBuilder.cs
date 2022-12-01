@@ -1,4 +1,5 @@
-﻿using Plugin.Schemes;
+﻿using Plugin.Interfaces;
+using Plugin.Schemes;
 using Plugin.Tools;
 
 namespace Plugin.Builders
@@ -8,7 +9,7 @@ namespace Plugin.Builders
     /// </summary>
     public class GridBuilder
     {
-        public GridScheme Create(int ownerActorId, Int2 sizeGrid, int[] gridMask)
+        public IGrid Create(int ownerActorId, Int2 sizeGrid, int[] gridMask)
         {
             int countCells = sizeGrid.x * sizeGrid.y;
             var cells = new Cell[countCells];

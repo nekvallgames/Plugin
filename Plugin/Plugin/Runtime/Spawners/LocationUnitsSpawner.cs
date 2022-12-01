@@ -22,13 +22,13 @@ namespace Plugin.Runtime.Spawners
             _unitsService = unitsService;
             _locationsPublicModel = publicModelProvider.Get<LocationsPublicModel<LocationScheme>>();
             
-            signalBus.Subscrible<ActorsPrivateModelSignal>(OnActorsModelChange);
+            signalBus.Subscrible<GridsPrivateModelSignal>(OnGridsModelChange);
         }
 
         /// <summary>
-        /// Модель із даними гравців була оновлена
+        /// Модель із даними ігрових сіток була оновлена
         /// </summary>
-        private void OnActorsModelChange(ActorsPrivateModelSignal signalData)
+        private void OnGridsModelChange(GridsPrivateModelSignal signalData)
         {
             if (signalData.Status != ModelChangeSignal.StatusType.add)
                 return;
@@ -38,7 +38,7 @@ namespace Plugin.Runtime.Spawners
 
             foreach (var unitData in scheme.LocationUnits)
             {
-                _unitsService.CreateUnit(signalData.ActorId, unitData.Item1, unitData.Item2, unitData.Item3);
+                _unitsService.CreateUnit(signalData.OwnerActorId, unitData.Item1, unitData.Item2, unitData.Item3);
             }
         }
     }

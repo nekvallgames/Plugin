@@ -1,28 +1,45 @@
 ﻿using Photon.Hive.Plugin;
 using Plugin.Installers;
 using Plugin.Runtime.Services;
+using Plugin.Runtime.Services.PlotStates;
 using Plugin.Schemes;
+using Plugin.Signals;
+using System.Collections.Generic;
 
 namespace Plugin.Plugins
 {
     /// <summary>
     /// Клас котрий буде перехвачувати сигнали Game Server
     /// </summary>
-    public class PluginHook : PluginBase
+    public abstract class PluginHook : PluginBase
     {
-        private OpStockService _opStockService;
-        private ActorsService _actorsService;
-        public static PluginHook Instance;
+        protected IPluginHost host;
+        /// <summary>
+        /// Сервіс, котрий зберігає в собі стейти для роботи ігрового сценарія
+        /// </summary>
+        protected PlotStatesService plotService;
 
-        public PluginHook()
+        private OpStockService _opStockService;
+        private SignalBus _signalBus;
+
+        public override bool SetupInstance(IPluginHost host, Dictionary<string, string> config, out string errorMsg)
         {
-            Instance = this;
+            this.host = host;
 
             var gameInstaller = GameInstaller.GetInstance();
 
             _opStockService = gameInstaller.opStockService;
-            _actorsService = gameInstaller.actorsService;
+            _signalBus = gameInstaller.signalBus;
+
+            PluginImplementation();
+
+            return base.SetupInstance(host, config, out errorMsg);
         }
+
+        /// <summary>
+        /// Реалізувати логіку плагіна
+        /// </summary>
+        protected abstract void PluginImplementation();
 
         /// <summary>
         /// Игрок на стороне клиента отправил ивент "Создать комнату" и при успешном создании комнаты на 
@@ -30,9 +47,7 @@ namespace Plugin.Plugins
         /// </summary>
         public override void OnCreateGame(ICreateGameCallInfo info)
         {
-            int actorId = !info.IsJoin ? 1 : info.Request.ActorNr;
-            _actorsService.CreateActor(info.UserId, actorId);
-
+            _signalBus.Fire(new HostsPrivateModelSignal(host, HostsPrivateModelSignal.StatusType.change));
             info.Continue();
         }
 
@@ -41,9 +56,8 @@ namespace Plugin.Plugins
         /// присоеденении к комнате на стороне GameServer выполнится текущий метод
         /// </summary>
         public override void OnJoin(IJoinGameCallInfo info)
-        {
-            _actorsService.CreateActor(info.UserId, info.ActorNr);
-
+        {            
+            _signalBus.Fire(new HostsPrivateModelSignal(host, HostsPrivateModelSignal.StatusType.change));
             info.Continue();
         }
 
@@ -60,12 +74,18 @@ namespace Plugin.Plugins
         }
 
         /// <summary>
-        /// Игрок покинул игровую комнаты на стороне GAME SERVER
+        /// Игрок покинул игровую комнаты на стороне Game Server
         /// </summary>
         public override void OnLeave(ILeaveGameCallInfo info)
         {
-            _actorsService.EnableConnected(info.ActorNr, false);
+            info.Continue();
+        }
 
+        /// <summary>
+        /// Виконається при закритті кімнати
+        /// </summary>
+        public virtual void BeforeCloseGame(IBeforeCloseGameCallInfo info)
+        {
             info.Continue();
         }
     }

@@ -7,7 +7,7 @@ namespace Plugin.Runtime.Units
     /// <summary>
     /// Обычный юнит барриер. Стенка из мешков
     /// </summary>
-    public class UnitBagBarrier : BaseUnit, IHealthComponent, IUnit
+    public class UnitBagBarrier : BaseUnit, IHealthComponent, IUnit, IIgnoreSyncComponent
     {
         public const int UnitId = 35;
 

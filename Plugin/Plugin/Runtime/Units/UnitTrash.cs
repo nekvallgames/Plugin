@@ -7,7 +7,7 @@ namespace Plugin.Runtime.Units
     /// <summary>
     /// Обычный юнит барриер. Контейнер із сміттям
     /// </summary>
-    public class UnitTrash : BaseUnit, IHealthComponent, IUnit
+    public class UnitTrash : BaseUnit, IHealthComponent, IUnit, IIgnoreSyncComponent
     {
         public const int UnitId = 7;
 

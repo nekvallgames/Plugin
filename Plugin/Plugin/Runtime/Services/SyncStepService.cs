@@ -1,6 +1,5 @@
 ﻿using Photon.Hive.Plugin;
 using Plugin.Builders;
-using Plugin.Runtime.Providers;
 using Plugin.Schemes;
 using Plugin.Tools;
 using System.Collections.Generic;
@@ -14,23 +13,20 @@ namespace Plugin.Runtime.Services
     /// </summary>
     public class SyncStepService
     {
-        private BroadcastProvider _broadcastProvider;
-        private ActorsService _actorsService;
         private StepSchemeBuilder _stepSchemeBuilder;
         private ConvertService _convertService;
+        private HostsService _hostsService;
 
-        public SyncStepService(BroadcastProvider broadcastProvider, 
-                               ActorsService actorsService, 
-                               StepSchemeBuilder stepSchemeBuilder,
-                               ConvertService convertService)
+        public SyncStepService(StepSchemeBuilder stepSchemeBuilder,
+                               ConvertService convertService,
+                               HostsService hostsService)
         {
-            _broadcastProvider = broadcastProvider;
-            _actorsService = actorsService;
             _stepSchemeBuilder = stepSchemeBuilder;
             _convertService = convertService;
+            _hostsService = hostsService;
         }
 
-        public void Sync(int[] syncSteps)
+        public void Sync(IPluginHost host, int[] syncSteps)
         {
             // Создать коллекцию, которая будет хранить в себе данные, которые нужно синхронизировать 
             // между клиентами
@@ -39,19 +35,19 @@ namespace Plugin.Runtime.Services
             var pushData = new Dictionary<byte, object> { };
 
             // Зібрати синхронізацію дій акторів і відправити результат їхній дій всім акторам в кімнаті
-            foreach (ActorScheme actor in _actorsService.Actors)
+            foreach (IActor actor in _hostsService.Actors(host))
             {
-                StepScheme scheme = _stepSchemeBuilder.Create(actor.ActorId, syncSteps);
+                StepScheme scheme = _stepSchemeBuilder.Create(actor.ActorNr, syncSteps);
                 string jsonString = _convertService.SerializeObject(scheme);
-                pushData.Add((byte)actor.ActorId, jsonString);
+                pushData.Add((byte)actor.ActorNr, jsonString);
             }
 
-            _broadcastProvider.Send(ReciverGroup.All,                   // отправить сообщение всем
-                                    0,                                  // номер актера, если нужно отправить уникальное сообщение
-                                    0,
-                                    OperationCode.stepResult,
-                                    pushData,
-                                    CacheOperations.DoNotCache);        // не кэшировать сообщение
+            host.BroadcastEvent(ReciverGroup.All,                   // отправить сообщение всем
+                                0,                                  // номер актера, если нужно отправить уникальное сообщение
+                                0,
+                                OperationCode.stepResult,
+                                pushData,
+                                CacheOperations.DoNotCache);        // не кэшировать сообщение
         }
     }
 }

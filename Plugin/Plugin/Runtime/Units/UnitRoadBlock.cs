@@ -7,7 +7,7 @@ namespace Plugin.Runtime.Units
     /// <summary>
     /// Обычный юнит барриер. Дорожня переграда
     /// </summary>
-    public class UnitRoadBlock : BaseUnit, IHealthComponent, IUnit
+    public class UnitRoadBlock : BaseUnit, IHealthComponent, IUnit, IIgnoreSyncComponent
     {
         public const int UnitId = 8;
 
