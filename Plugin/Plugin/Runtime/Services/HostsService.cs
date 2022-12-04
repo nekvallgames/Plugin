@@ -1,8 +1,6 @@
 ﻿using Photon.Hive.Plugin;
 using Plugin.Models.Private;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Plugin.Runtime.Services
 {
@@ -23,25 +21,25 @@ namespace Plugin.Runtime.Services
             _model.Add(host);
         }
 
-        public IPluginHost Get(int actorId)
+        public IPluginHost Get(string gameId)
         {
-            return _model.Items.Find(x => x.GameActorsActive.Any(y => y.ActorNr == actorId));
+            return _model.Items.Find(x => x.GameId == gameId);
         }
 
         /// <summary>
         /// Отримати акторів, котрі знаходяться в ігровій кімнаті
         /// </summary>
-        public IList<IActor> Actors(IPluginHost host)
+        public IList<IActor> Actors(string gameId)
         {
-            return host.GameActorsActive;
+            return Get(gameId).GameActorsActive;
         }
 
         /// <summary>
         /// Вказаний актор є участником даної кімнати?
         /// </summary>
-        public bool IsMemberHost(IPluginHost host, int actorId)
+        public bool IsMemberHost(IPluginHost host, string gameId)
         {
-            return host.GameActorsActive.Any(x => x.ActorNr == actorId);
+            return host.GameId == gameId;
         }
     }
 }

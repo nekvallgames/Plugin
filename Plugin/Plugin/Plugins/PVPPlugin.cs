@@ -44,8 +44,8 @@ namespace Plugin.Plugins.PVP
         /// </summary>
         public override void OnCreateGame(ICreateGameCallInfo info)
         {
-            CreatePlotModelForActor(!info.IsJoin ? 1 : info.Request.ActorNr);
-
+            CreatePlotModelForActor(host.GameId, !info.IsJoin ? 1 : info.Request.ActorNr);
+      
             base.OnCreateGame(info);
         }
 
@@ -55,7 +55,7 @@ namespace Plugin.Plugins.PVP
         /// </summary>
         public override void OnJoin(IJoinGameCallInfo info)
         {
-            CreatePlotModelForActor(info.ActorNr);
+            CreatePlotModelForActor(host.GameId, info.ActorNr);
 
             base.OnJoin(info);
         }
@@ -64,9 +64,9 @@ namespace Plugin.Plugins.PVP
         /// Створити модель даних для зберігання даних ігрового режиму,
         /// для нового гравця поточної ігрової кімнати
         /// </summary>
-        private void CreatePlotModelForActor(int actorId)
+        private void CreatePlotModelForActor(string gameId, int actorId)
         {
-            GameInstaller.GetInstance().plotsModelService.Add( new PVPPlotModelScheme(actorId) );
+            GameInstaller.GetInstance().plotsModelService.Add( new PVPPlotModelScheme(gameId, actorId) );
         }
 
         /// <summary>

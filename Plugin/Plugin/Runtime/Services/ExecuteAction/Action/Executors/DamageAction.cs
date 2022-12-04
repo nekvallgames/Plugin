@@ -46,7 +46,7 @@ namespace Plugin.Runtime.Services.ExecuteAction.Action.Executors
         /// <summary>
         /// Выполнить действие
         /// </summary>
-        public void Execute( IUnit unit, int targetActorId, int posW, int posH )
+        public void Execute( IUnit unit, string gameId, int targetActorId, int posW, int posH )
         {
             // Проверяем, может ли юнит вытсрелить?
             var damageAction = (IDamageAction)unit;
@@ -62,7 +62,7 @@ namespace Plugin.Runtime.Services.ExecuteAction.Action.Executors
                                                targetActorId,
                                                posW,
                                                posH);
-            _syncService.Add(unit.OwnerActorId, syncData);
+            _syncService.Add(gameId, unit.OwnerActorId, syncData);
 
 
             foreach (Int2 area in damageAction.DamageActionArea)
@@ -71,7 +71,7 @@ namespace Plugin.Runtime.Services.ExecuteAction.Action.Executors
                 int targetH = posH + area.y;
 
                 // Находим всех противников, в которых мы выстрелили
-                List<IUnit> targets = _sortTargetOnGridService.SortTargets(_unitsService.GetUnitsUnderThisPosition(targetActorId, targetW, targetH));
+                List<IUnit> targets = _sortTargetOnGridService.SortTargets(_unitsService.GetUnitsUnderThisPosition(gameId, targetActorId, targetW, targetH));
 
                 LogChannel.Log($"ActionService :: DamageAction() ownerId = {unit.OwnerActorId}, unitId = {unit.UnitId}, instanceId = {unit.InstanceId}, cellW = {targetW}, cellH = {targetH}");
 

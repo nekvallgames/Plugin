@@ -6,6 +6,10 @@
     public class OpStockPrivateModelSignal : ModelChangeSignal
     {
         /// <summary>
+        /// Вказати id кімнати, актор котрої прислав операцію
+        /// </summary>
+        public string GameId { get; }
+        /// <summary>
         /// Власник операції
         /// </summary>
         public int ActorId { get; }
@@ -14,8 +18,9 @@
         /// </summary>
         public byte OpCode { get; }
 
-        public OpStockPrivateModelSignal(int actorId, byte opCode, StatusType status):base(status)
+        public OpStockPrivateModelSignal(string gameId, int actorId, byte opCode, StatusType status):base(status)
         {
+            GameId = gameId;
             ActorId = actorId;
             OpCode = opCode;
         }

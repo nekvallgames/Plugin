@@ -19,7 +19,7 @@ namespace Plugin.Runtime.Units
         public abstract Int2[] DamageActionArea { get; }
 
 
-        public BaseDamageActionUnit(int ownerActorId, int unitId, int instanceUnitId) : base(ownerActorId, unitId, instanceUnitId)
+        public BaseDamageActionUnit(string gameId, int ownerActorId, int unitId, int instanceUnitId) : base(gameId, ownerActorId, unitId, instanceUnitId)
         {
             
         }

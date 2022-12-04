@@ -25,7 +25,7 @@ namespace Plugin.Plugins
         public override bool SetupInstance(IPluginHost host, Dictionary<string, string> config, out string errorMsg)
         {
             this.host = host;
-
+            
             var gameInstaller = GameInstaller.GetInstance();
 
             _opStockService = gameInstaller.opStockService;
@@ -47,7 +47,7 @@ namespace Plugin.Plugins
         /// </summary>
         public override void OnCreateGame(ICreateGameCallInfo info)
         {
-            _signalBus.Fire(new HostsPrivateModelSignal(host, HostsPrivateModelSignal.StatusType.change));
+            _signalBus.Fire(new HostsPrivateModelSignal(host.GameId, HostsPrivateModelSignal.StatusType.change));
             info.Continue();
         }
 
@@ -57,7 +57,7 @@ namespace Plugin.Plugins
         /// </summary>
         public override void OnJoin(IJoinGameCallInfo info)
         {            
-            _signalBus.Fire(new HostsPrivateModelSignal(host, HostsPrivateModelSignal.StatusType.change));
+            _signalBus.Fire(new HostsPrivateModelSignal(host.GameId, HostsPrivateModelSignal.StatusType.change));
             info.Continue();
         }
 
@@ -66,9 +66,10 @@ namespace Plugin.Plugins
         /// </summary>
         public override void OnRaiseEvent(IRaiseEventCallInfo info)
         {
-            _opStockService.Add(new OpStockItem(info.ActorNr,
-                                             info.Request.EvCode,
-                                             info.Request.Data));
+            _opStockService.Add(new OpStockItem(host.GameId,
+                                                info.ActorNr,
+                                                info.Request.EvCode,
+                                                info.Request.Data));
 
             info.Continue();
         }

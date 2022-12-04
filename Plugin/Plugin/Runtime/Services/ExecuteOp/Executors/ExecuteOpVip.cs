@@ -39,13 +39,13 @@ namespace Plugin.Runtime.Services.ExecuteOp.Executors
         /// <summary>
         /// Выполнить действие игрока. Активировать/деактивировать VIP для юнита
         /// </summary>
-        public void Execute(int actorId, List<ISyncComponent> componentsGroup)
+        public void Execute(string gameId, int actorId, List<ISyncComponent> componentsGroup)
         {
             // Вытаскиваем нужные нам компоненты из списка
             Parce(componentsGroup);
 
             // 2. Найти юнита, который выполнил действие
-            IUnit unit = _unitsService.GetUnit(actorId, _unitIdOpComponent.UnitId, _unitIdOpComponent.UnitInstance);
+            IUnit unit = _unitsService.GetUnit(gameId, actorId, _unitIdOpComponent.UnitId, _unitIdOpComponent.UnitInstance);
 
             if (unit == null){
                 Debug.Fail($"ExecuteOpGroupService :: ExecuteVip() actorID = {actorId}, unitId = {_unitIdOpComponent.UnitId}, instanceId = {_unitIdOpComponent.UnitInstance}. I don't find this unit for execute vip");

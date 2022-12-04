@@ -3,6 +3,11 @@
     public interface IOpStockItem
     {
         /// <summary>
+        /// Вказати id ігрової кімнати
+        /// </summary>
+        string GameId { get; }
+
+        /// <summary>
         /// Актор, хто прислав поточну операцію на Game Server
         /// </summary>
         int ActorId { get; }

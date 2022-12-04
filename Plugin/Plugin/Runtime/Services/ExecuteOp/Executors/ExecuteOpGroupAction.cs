@@ -41,13 +41,13 @@ namespace Plugin.Runtime.Services.ExecuteOp.Executors
         /// <summary>
         /// Выполнить действие игрока
         /// </summary>
-        public void Execute(int actorId, List<ISyncComponent> componentsGroup)
+        public void Execute(string gameId, int actorId, List<ISyncComponent> componentsGroup)
         {
             // 1. Вытаскиваем нужные нам компоненты из списка
             Parce(componentsGroup);
 
             // 2. Найти юнита, который выполнил действие
-            IUnit unit = _unitsService.GetUnit(actorId, _unitIdOpComponent.UnitId, _unitIdOpComponent.UnitInstance);
+            IUnit unit = _unitsService.GetUnit(gameId, actorId, _unitIdOpComponent.UnitId, _unitIdOpComponent.UnitInstance);
 
             if (unit == null){
                 Debug.Fail($"ExecuteOpGroupService :: ExecuteOpAction :: Execute() playerActorID = {actorId}, unitID = {_unitIdOpComponent.UnitId}, instanceID = {_unitIdOpComponent.UnitInstance}. I don't find this unit for execute actions");
@@ -56,7 +56,7 @@ namespace Plugin.Runtime.Services.ExecuteOp.Executors
 
             // 3. Отбращаемся к классу, который выполняет действия юнитов, и просим 
             // его, выполнять для текущего юнита действие
-            _actionService.ExecuteAction(unit, _targetActorIdOpComponent.aid, _actionOpComponent.w, _actionOpComponent.h);
+            _actionService.ExecuteAction(unit, gameId, _targetActorIdOpComponent.aid, _actionOpComponent.w, _actionOpComponent.h);
         }
 
         /// <summary>

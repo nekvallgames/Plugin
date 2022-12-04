@@ -91,7 +91,7 @@ namespace Plugin.Installers
             sortTargetOnGridService = new SortTargetOnGridService();
             actionService = new ActionService(syncService, unitsService, sortTargetOnGridService);
             additionalService = new AdditionalService(syncService, unitsService);
-            gridService = new GridService(publicModelProvider, privateModelProvider, gridBuilder, signalBus);
+            gridService = new GridService(publicModelProvider, privateModelProvider, gridBuilder, signalBus, hostsService);
             notificationChangeVipService = new NotificationChangeVipService(hostsService, opStockService, signalBus);
             executeOpGroupService = new ExecuteOpGroupService(unitsService, moveService, vipService, actionService, additionalService);
             executeOpStepService = new ExecuteOpStepSchemeService(executeOpGroupService);

@@ -34,7 +34,7 @@ namespace Plugin.Runtime.Services.ExecuteOp
         /// Метот принимает в себя группу из компонентов. Нужно сначала найти
         /// класс, который может выполнить действие, и после выполнить действие
         /// </summary>
-        public void Execute(int playerActorId, List<ISyncComponent> componentGroup)
+        public void Execute(string gameId, int playerActorId, List<ISyncComponent> componentGroup)
         {
             foreach (IExecuteOpGroup executor in _executors)
             {
@@ -42,7 +42,7 @@ namespace Plugin.Runtime.Services.ExecuteOp
                     continue;
                 }
 
-                executor.Execute(playerActorId, componentGroup);
+                executor.Execute(gameId, playerActorId, componentGroup);
             }
         }
     }

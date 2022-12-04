@@ -23,9 +23,9 @@ namespace Plugin.Runtime.Services.Sync
         /// <summary>
         /// Зберегти дію гравця, щоб потім синхронувати цю дію між гравцями
         /// </summary>
-        public void Add( int actorId, ISyncGroupComponent syncData )
+        public void Add(string gameId, int actorId, ISyncGroupComponent syncData )
         {
-            int plotStep = _plotsModelService.Get(actorId).SyncStep;   // витягуємо із моделі ігрового сценарія поточний крок ігрового сценарія
+            int plotStep = _plotsModelService.Get(gameId, actorId).SyncStep;   // витягуємо із моделі ігрового сценарія поточний крок ігрового сценарія
   
             var syncStep = Get(actorId, plotStep);
 

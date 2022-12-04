@@ -32,7 +32,7 @@ namespace Plugin.Runtime.Services.ExecuteAction
 
             // Синхронизировать позицию юнита на игровой сетке
             var syncData = new SyncPositionOnGridGroup(unit);
-            _syncService.Add(unit.OwnerActorId, syncData);
+            _syncService.Add(unit.GameId, unit.OwnerActorId, syncData);
         }
     }
 }

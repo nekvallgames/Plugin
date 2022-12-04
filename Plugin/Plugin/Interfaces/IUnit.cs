@@ -5,6 +5,11 @@ namespace Plugin.Interfaces
     public interface IUnit
     {
         /// <summary>
+        /// Id ігрової кімнати, до котрої поточний юніт відноситься
+        /// </summary>
+        string GameId { get; }
+
+        /// <summary>
         /// Владелец юнита
         /// </summary>
         int OwnerActorId { get; }

@@ -1,5 +1,4 @@
 ﻿using Plugin.Builders;
-using Plugin.Installers;
 using Plugin.Interfaces;
 using Plugin.Interfaces.UnitComponents;
 using Plugin.Models.Private;
@@ -7,7 +6,6 @@ using Plugin.Runtime.Services.ExecuteAction;
 using Plugin.Schemes;
 using Plugin.Signals;
 using Plugin.Tools;
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -25,12 +23,12 @@ namespace Plugin.Runtime.Services
         private UnitBuilder _unitBuilder;
         private MoveService _moveService;
 
-        public UnitsService( UnitsPrivateModel<IUnit> model, 
-                             OpStockService opStockService, 
-                             ConvertService convertService, 
-                             UnitBuilder unitBuilder, 
-                             SignalBus signalBus, 
-                             MoveService moveService)
+        public UnitsService(UnitsPrivateModel<IUnit> model, 
+                            OpStockService opStockService, 
+                            ConvertService convertService, 
+                            UnitBuilder unitBuilder, 
+                            SignalBus signalBus, 
+                            MoveService moveService)
         {
             _model = model;
 
@@ -48,28 +46,29 @@ namespace Plugin.Runtime.Services
         private void OpStockModelChange(OpStockPrivateModelSignal signalData)
         {
             // Якщо це операція choosedUnitsForGame, це означає, що потрібно для гравця створити юнітів
-            if (signalData.OpCode == OperationCode.choosedUnitsForGame && signalData.Status == OpStockPrivateModelSignal.StatusType.add)
+            if (signalData.OpCode == OperationCode.choosedUnitsForGame 
+                && signalData.Status == OpStockPrivateModelSignal.StatusType.add)
             {
                 // Отримати зі складу операцію, в якій знаходяться дані із юнітами, котрих обрав актор
-                var opChoosedUnits = _opStockService.GetOp(signalData.ActorId, signalData.OpCode);
+                var opChoosedUnits = _opStockService.GetOp(signalData.GameId, signalData.ActorId, signalData.OpCode);
 
                 var choosedUnitsScheme = _convertService.DeserializeObject<ChoosedUnitsScheme>(opChoosedUnits.Data.ToString());
 
                 foreach( int unitId in choosedUnitsScheme.unitsId ){
-                    CreateUnit(signalData.ActorId, unitId);
+                    CreateUnit(signalData.GameId, signalData.ActorId, unitId);
                 }
 
                 // Видалити оброблену операцію зі складу
-                _opStockService.TakeOp(signalData.ActorId, signalData.OpCode);
+                _opStockService.TakeOp(signalData.GameId, signalData.ActorId, signalData.OpCode);
             }
         }
 
         /// <summary>
         /// Створити юніта для актора
         /// </summary>
-        public IUnit CreateUnit(int actorId, int unitId)
+        public IUnit CreateUnit(string gameId, int actorId, int unitId)
         {
-            IUnit unit = _unitBuilder.CreateUnit(actorId, unitId);
+            IUnit unit = _unitBuilder.CreateUnit(gameId, actorId, unitId);
 
             _model.Add(unit);
 
@@ -79,9 +78,9 @@ namespace Plugin.Runtime.Services
         /// <summary>
         /// Створити юніта для актора та позиціюнювати юніта на ігровій сітці
         /// </summary>
-        public IUnit CreateUnit(int actorId, int unitId, int posW, int posH)
+        public IUnit CreateUnit(string gameId, int actorId, int unitId, int posW, int posH)
         {
-            IUnit unit = CreateUnit(actorId, unitId);
+            IUnit unit = CreateUnit(gameId, actorId, unitId);
 
             _moveService.PositionOnGrid(unit, posW, posH);
 
@@ -99,20 +98,18 @@ namespace Plugin.Runtime.Services
         /// posW - позиция на игровой сетке по ширине
         /// posH - позиция на игровой сетке по ширине
         /// </summary>
-        public List<IUnit> GetUnitsUnderThisPosition( int unitOwnerID, int posW, int posH )
+        public List<IUnit> GetUnitsUnderThisPosition(string gameId, int unitOwnerId, int posW, int posH )
         {
             var unitsUnderPos = new List<IUnit>();
 
             foreach (var unit in _model.Items)
             {
                 // 1. Проверяем, юнит принадлежит игроку unitOwnerID
-                if (unit.OwnerActorId != unitOwnerID){
-                    continue;
-                }
-
-                // 2. Проверяем, попали мы по этому юниту
-                if (IsPositionUnderUnitArea(unit, posW, posH)){
-                    unitsUnderPos.Add(unit);
+                if (unit.GameId == gameId && unit.OwnerActorId == unitOwnerId){
+                    // 2. Проверяем, попали мы по этому юниту
+                    if (IsPositionUnderUnitArea(unit, posW, posH)){
+                        unitsUnderPos.Add(unit);
+                    }
                 }
             }
 
@@ -123,27 +120,27 @@ namespace Plugin.Runtime.Services
         /// <summary>
         /// Восстановить все действия юнитов (перезарядить оружия, восстановить магию и т.д.)
         /// </summary>
-        public void ReviveAction( int actorId )
+        public void ReviveAction(string gameId, int actorId)
         {
-            List<IUnit> units = _model.Items.FindAll(x => x is IActionComponent);
+            List<IUnit> units = _model.Items.FindAll(x => x.GameId == gameId && x.OwnerActorId == actorId && x is IActionComponent);
 
             foreach (IUnit unit in units){
                 ((IActionComponent)unit).ReviveAction();
             }
         }
 
-        public IUnit GetUnit(int actorId, int unitId, int instanceId){
-            return _model.Items.Find(x => x.OwnerActorId == actorId && x.UnitId == unitId && x.InstanceId == instanceId);
+        public IUnit GetUnit(string gameId, int actorId, int unitId, int instanceId){
+            return _model.Items.Find(x => x.GameId == gameId && x.OwnerActorId == actorId && x.UnitId == unitId && x.InstanceId == instanceId);
         }
 
-        public List<IUnit> GetUnits(int actorId)
+        public List<IUnit> GetUnits(string gameId, int actorId)
         {
-            return _model.Items.FindAll(x => x.OwnerActorId == actorId);
+            return _model.Items.FindAll(x => x.GameId == gameId && x.OwnerActorId == actorId);
         }
 
-        public List<IUnit> GetUnits(int actorId, int unitId)
+        public List<IUnit> GetUnits(string gameId, int actorId, int unitId)
         {
-            return _model.Items.FindAll(x => x.OwnerActorId == actorId && x.UnitId == unitId);
+            return _model.Items.FindAll(x => x.GameId == gameId && x.OwnerActorId == actorId && x.UnitId == unitId);
         }
 
         /// <summary>
@@ -210,17 +207,17 @@ namespace Plugin.Runtime.Services
         /// <summary>
         /// Игрок имеет живых юнитов?
         /// </summary>
-        public bool HasAliveUnit(int actorId)
+        public bool HasAliveUnit(string gameId, int actorId)
         {
-            return _model.Items.Any(x => x.OwnerActorId == actorId && !x.IsDead);
+            return _model.Items.Any(x => x.GameId == gameId && x.OwnerActorId == actorId && !x.IsDead);
         }
 
         /// <summary>
         /// Перебрать всех юнитов, и вернуть истину, если есть мертвые юниты
         /// </summary>
-        public bool HasAnyDeadUnit(int actorId)
+        public bool HasAnyDeadUnit(string gameId, int actorId)
         {
-            return _model.Items.Any(x => x.OwnerActorId == actorId && x.IsDead);
+            return _model.Items.Any(x => x.GameId == gameId && x.OwnerActorId == actorId && x.IsDead);
         }
 
         /// <summary>

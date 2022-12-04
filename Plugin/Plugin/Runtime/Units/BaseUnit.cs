@@ -6,6 +6,11 @@ namespace Plugin.Runtime.Units
     public abstract class BaseUnit : IUnit
     {
         /// <summary>
+        /// Id ігрової кімнати, до котрої поточний юніт відноситься
+        /// </summary>
+        public string GameId { get; protected set; }
+
+        /// <summary>
         /// Владелец игрового юнита
         /// </summary>
         public int OwnerActorId { get; protected set; }
@@ -35,8 +40,11 @@ namespace Plugin.Runtime.Units
         /// </summary>
         public bool IsDead { get; set; }
 
-        public BaseUnit( int ownerActorId, int unitId, int instanceUnitId )
+        
+
+        public BaseUnit( string gameId, int ownerActorId, int unitId, int instanceUnitId )
         {
+            GameId = gameId;
             OwnerActorId = ownerActorId;
             UnitId = unitId;
             InstanceId = instanceUnitId;

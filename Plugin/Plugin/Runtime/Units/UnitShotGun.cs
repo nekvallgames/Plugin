@@ -24,7 +24,7 @@ namespace Plugin.Runtime.Units
 
 
 
-        public UnitShotGun(int ownerActorId, int unitId, int instanceUnitId) : base(ownerActorId, unitId, instanceUnitId)
+        public UnitShotGun(string gameId, int ownerActorId, int unitId, int instanceUnitId) : base(gameId, ownerActorId, unitId, instanceUnitId)
         {
 
         }

@@ -9,7 +9,7 @@ namespace Plugin.Builders
     /// </summary>
     public class GridBuilder
     {
-        public IGrid Create(int ownerActorId, Int2 sizeGrid, int[] gridMask)
+        public IGrid Create(string gameId, int ownerActorId, Int2 sizeGrid, int[] gridMask)
         {
             int countCells = sizeGrid.x * sizeGrid.y;
             var cells = new Cell[countCells];
@@ -47,7 +47,7 @@ namespace Plugin.Builders
                 w++;
             }
 
-            return new GridScheme(ownerActorId, sizeGrid.x, sizeGrid.y, cells);
+            return new GridScheme(gameId, ownerActorId, sizeGrid.x, sizeGrid.y, cells);
         }
 
         /// <summary>

@@ -16,7 +16,7 @@ namespace Plugin.Runtime.Units
         int IHealthComponent.Capacity { get; set; }
         int IHealthComponent.CapacityMax => 100;    // Количество жизней юнита на старте игры
 
-        public UnitRoadBlock(int ownerActorId, int unitId, int instanceUnitId) : base(ownerActorId, unitId, instanceUnitId)
+        public UnitRoadBlock(string gameId, int ownerActorId, int unitId, int instanceUnitId) : base(gameId, ownerActorId, unitId, instanceUnitId)
         {
 
         }

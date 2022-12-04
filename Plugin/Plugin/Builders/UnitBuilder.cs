@@ -17,21 +17,22 @@ namespace Plugin.Builders
 
         /// <summary>
         /// Создать юнит, указав его тип
+        /// gameId - вказати ігрову кімнату, котрій належить поточний юніт
         /// ownerActorId - владелец юнита
         /// unitId       - уникальный ID юнита
         /// </summary>
-        public IUnit CreateUnit(int ownerActorId, int unitId)
+        public IUnit CreateUnit(string gameId, int ownerActorId, int unitId)
         {
             switch (unitId)
             {
-                case UnitPistol.UnitId: return Create<UnitPistol>(ownerActorId, unitId);
-                case UnitShotGun.UnitId: return Create<UnitShotGun>(ownerActorId, unitId);
-                case UnitTrash.UnitId: return Create<UnitTrash>(ownerActorId, unitId);
-                case UnitRoadBlock.UnitId: return Create<UnitRoadBlock>(ownerActorId, unitId);
-                case UnitBarrel.UnitId: return Create<UnitBarrel>(ownerActorId, unitId);
-                case UnitLuke.UnitId: return Create<UnitLuke>(ownerActorId, unitId);
-                case UnitBagBarrier.UnitId: return Create<UnitBagBarrier>(ownerActorId, unitId);
-                case UnitIronFenceBarrier.UnitId: return Create<UnitIronFenceBarrier>(ownerActorId, unitId);
+                case UnitPistol.UnitId: return Create<UnitPistol>(gameId, ownerActorId, unitId);
+                case UnitShotGun.UnitId: return Create<UnitShotGun>(gameId, ownerActorId, unitId);
+                case UnitTrash.UnitId: return Create<UnitTrash>(gameId, ownerActorId, unitId);
+                case UnitRoadBlock.UnitId: return Create<UnitRoadBlock>(gameId, ownerActorId, unitId);
+                case UnitBarrel.UnitId: return Create<UnitBarrel>(gameId, ownerActorId, unitId);
+                case UnitLuke.UnitId: return Create<UnitLuke>(gameId, ownerActorId, unitId);
+                case UnitBagBarrier.UnitId: return Create<UnitBagBarrier>(gameId, ownerActorId, unitId);
+                case UnitIronFenceBarrier.UnitId: return Create<UnitIronFenceBarrier>(gameId, ownerActorId, unitId);
 
                 default:{
                         Debug.Fail($"UnitBuilder :: CreateUnit() I can't create unitId = {unitId}, for actorId = {ownerActorId}.");
@@ -41,11 +42,11 @@ namespace Plugin.Builders
             }
         }
 
-        private IUnit Create<T>(int actorId, int unitId) where T : IUnit
+        private IUnit Create<T>(string gameId, int actorId, int unitId) where T : IUnit
         {
-            int instance = _unitInstanceService.GetInstance(actorId, unitId);
+            int instance = _unitInstanceService.GetInstance(gameId, actorId, unitId);
 
-            return (T)Activator.CreateInstance(typeof(T), actorId, unitId, instance);
+            return (T)Activator.CreateInstance(typeof(T), gameId, actorId, unitId, instance);
         }
     }
 }

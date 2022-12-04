@@ -66,7 +66,7 @@ namespace Plugin.Runtime.Services.PlotStates.States
             if (_isIgnore)
                 return;
 
-            if (_hostsService.Actors(host).Count == _countActors)
+            if (_hostsService.Actors(host.GameId).Count == _countActors)
             {
                 plotStatesService.ChangeState(_nextState);
             }

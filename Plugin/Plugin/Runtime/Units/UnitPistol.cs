@@ -22,7 +22,7 @@ namespace Plugin.Runtime.Units
 
         bool IVipComponent.Enable { get; set; }
         
-        public UnitPistol(int ownerActorId, int unitId, int instanceUnitId) : base(ownerActorId, unitId, instanceUnitId)
+        public UnitPistol(string gameId, int ownerActorId, int unitId, int instanceUnitId) : base(gameId, ownerActorId, unitId, instanceUnitId)
         {
             
         }

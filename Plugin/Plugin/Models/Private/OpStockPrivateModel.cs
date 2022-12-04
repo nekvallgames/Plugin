@@ -1,5 +1,4 @@
-﻿using Plugin.Installers;
-using Plugin.Interfaces;
+﻿using Plugin.Interfaces;
 using Plugin.Runtime.Services;
 using Plugin.Signals;
 using Plugin.Templates;
@@ -20,14 +19,16 @@ namespace Plugin.Models.Private
 
         protected override void AfterAddHook(T item)
         {
-            _signalBus.Fire(new OpStockPrivateModelSignal(item.ActorId, 
+            _signalBus.Fire(new OpStockPrivateModelSignal(item.GameId,
+                                                          item.ActorId, 
                                                           item.OpCode, 
                                                           OpStockPrivateModelSignal.StatusType.add));
         }
 
         protected override void AfterRemoveHook(T item) 
         {
-            _signalBus.Fire(new OpStockPrivateModelSignal(item.ActorId,
+            _signalBus.Fire(new OpStockPrivateModelSignal(item.GameId,
+                                                          item.ActorId,
                                                           item.OpCode,
                                                           OpStockPrivateModelSignal.StatusType.remove));
         }

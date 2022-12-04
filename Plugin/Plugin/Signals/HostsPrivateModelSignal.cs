@@ -7,11 +7,11 @@ namespace Plugin.Signals
     /// </summary>
     public class HostsPrivateModelSignal : ModelChangeSignal
     {
-        public IPluginHost host;
+        public string GameId;
 
-        public HostsPrivateModelSignal(IPluginHost host, StatusType status) : base(status)
+        public HostsPrivateModelSignal(string gameId, StatusType status) : base(status)
         {
-            this.host = host;
+            GameId = gameId;
         }
     }
 }

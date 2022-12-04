@@ -55,7 +55,7 @@ namespace Plugin.Runtime.Services.PlotStates.States
         /// </summary>
         private void OpStockModelChanged(OpStockPrivateModelSignal signalData)
         {
-            int opStepCount = _opStockService.GetOpCount(OperationCode.syncStep);
+            int opStepCount = _opStockService.GetOpCount(host.GameId, OperationCode.syncStep);
 
             if (opStepCount == _countActors)
             {

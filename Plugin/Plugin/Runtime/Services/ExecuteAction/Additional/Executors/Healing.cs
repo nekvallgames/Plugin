@@ -47,7 +47,7 @@ namespace Plugin.Runtime.Services.ExecuteAction.Additional.Executors
         /// <summary>
         /// Выполнить действие
         /// </summary>
-        public void Execute(IUnit unit, int targetActorID, int posW, int posH)
+        public void Execute(IUnit unit, string gameId, int targetActorID, int posW, int posH)
         {
             // Проверяем, может ли юнит вылечить?
             IHealingAdditional unitMedic = (IHealingAdditional)unit;
@@ -63,7 +63,7 @@ namespace Plugin.Runtime.Services.ExecuteAction.Additional.Executors
                                                                      targetActorID,
                                                                      posW,
                                                                      posH);
-            _syncService.Add(unit.OwnerActorId, syncOnGrid);
+            _syncService.Add(gameId, unit.OwnerActorId, syncOnGrid);
 
 
             Int2[] additionalArea = unitMedic.GetAdditionalArea();
@@ -74,7 +74,8 @@ namespace Plugin.Runtime.Services.ExecuteAction.Additional.Executors
                 int targetH = posH + area.y;
 
                 // Находим всех юнитоа, в которых мы тапнули, что бы их вылечить
-                List<IUnit> unitTargets = _unitsService.GetUnitsUnderThisPosition(targetActorID,
+                List<IUnit> unitTargets = _unitsService.GetUnitsUnderThisPosition(gameId,
+                                                                                  targetActorID,
                                                                                   targetW,
                                                                                   targetH);
 

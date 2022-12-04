@@ -12,6 +12,6 @@ namespace Plugin.Interfaces
         /// <summary>
         /// Выполнить действие игрока
         /// </summary>
-        void Execute(int playerActorId, List<ISyncComponent> componentsGroup);
+        void Execute(string gameId, int playerActorId, List<ISyncComponent> componentsGroup);
     }
 }

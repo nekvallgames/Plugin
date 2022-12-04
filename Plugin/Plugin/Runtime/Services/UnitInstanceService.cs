@@ -22,9 +22,9 @@ namespace Plugin.Runtime.Services
         /// actorId - власник юніта
         /// unitId - ид юніта, котрого буде створено
         /// </summary>
-        public int GetInstance(int actorId, int unitId)
+        public int GetInstance(string gameId, int actorId, int unitId)
         {
-            List<IUnit> list = _unitsPrivateModel.Items.FindAll(x => x.OwnerActorId == actorId && x.UnitId == unitId);
+            List<IUnit> list = _unitsPrivateModel.Items.FindAll(x => x.GameId == gameId && x.OwnerActorId == actorId && x.UnitId == unitId);
             if (!list.Any())
                 return 0;
 

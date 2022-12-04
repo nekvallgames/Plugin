@@ -40,13 +40,13 @@ namespace Plugin.Runtime.Services.ExecuteOp.Executors
         /// <summary>
         /// Выполнить действие игрока. А именно позиционировать юнита на игровой сетке
         /// </summary>
-        public void Execute(int playerActorId, List<ISyncComponent> componentsGroup)
+        public void Execute(string gameId, int playerActorId, List<ISyncComponent> componentsGroup)
         {
             // Вытаскиваем нужные нам компоненты из списка
             Parce(componentsGroup);
 
             // Вытащить юнита, к которому будем применять перемещение
-            IUnit unit = _unitsService.GetUnit(playerActorId, _unitIdOpComponent.UnitId, _unitIdOpComponent.UnitInstance);
+            IUnit unit = _unitsService.GetUnit(gameId, playerActorId, _unitIdOpComponent.UnitId, _unitIdOpComponent.UnitInstance);
 
             if (unit == null){
                 Debug.Fail($"ExecuteOpGroupService :: ExecuteOpPositionOnGrid() playerActorID = {playerActorId}, unitID = {_unitIdOpComponent.UnitId}, instanceID = {_unitIdOpComponent.UnitInstance}, I don't find this unit for execute actions");

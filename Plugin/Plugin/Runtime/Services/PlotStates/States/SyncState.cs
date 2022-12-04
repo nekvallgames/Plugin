@@ -53,10 +53,10 @@ namespace Plugin.Runtime.Services.PlotStates.States
 
             var plotModels = new List<IPlotModelScheme>();
 
-            foreach (IActor actor in _hostsService.Actors(host))
+            foreach (IActor actor in _hostsService.Actors(host.GameId))
             {
-                _unitsService.ReviveAction(actor.ActorNr);  // Всiм юнітам перезарядити їхні єкшени
-                plotModels.Add(_plotsModelService.Get(actor.ActorNr));  // отримати модель даних ігрового режиму
+                _unitsService.ReviveAction(host.GameId, actor.ActorNr);  // Всiм юнітам перезарядити їхні єкшени
+                plotModels.Add(_plotsModelService.Get(host.GameId, actor.ActorNr));  // отримати модель даних ігрового режиму
             }
 
             // Десериализировать операцію StepScheme акторів, котрі вони прислали 
@@ -64,11 +64,11 @@ namespace Plugin.Runtime.Services.PlotStates.States
             DeserializeOp(ref actorSteps);
 
             // Виконати перший крок - move
-            ExecuteSteps(ref actorSteps, plotModels[0].SyncStep);
+            ExecuteSteps(host.GameId, ref actorSteps, plotModels[0].SyncStep);
             IncreaseSyncStep();
 
             // Виконати другий крок - attack
-            ExecuteSteps(ref actorSteps, plotModels[0].SyncStep);
+            ExecuteSteps(host.GameId, ref actorSteps, plotModels[0].SyncStep);
             IncreaseSyncStep();
 
 
@@ -91,12 +91,12 @@ namespace Plugin.Runtime.Services.PlotStates.States
         /// </summary>
         private void DeserializeOp(ref List<ActorStep> actorSteps)
         {
-            foreach (IActor actor in _hostsService.Actors(host))
+            foreach (IActor actor in _hostsService.Actors(host.GameId))
             {
-                if (!_opStockService.HasOp(actor.ActorNr, OperationCode.syncStep))
+                if (!_opStockService.HasOp(host.GameId, actor.ActorNr, OperationCode.syncStep))
                     continue;
 
-                var stepData = _opStockService.TakeOp(actor.ActorNr, OperationCode.syncStep);
+                var stepData = _opStockService.TakeOp(host.GameId, actor.ActorNr, OperationCode.syncStep);
 
                 var stepScheme = _convertService.DeserializeObject<StepScheme>(stepData.Data.ToString());
 
@@ -104,10 +104,10 @@ namespace Plugin.Runtime.Services.PlotStates.States
             }
         }
 
-        private void ExecuteSteps(ref List<ActorStep> actorSteps, int syncStep)
+        private void ExecuteSteps(string gameId, ref List<ActorStep> actorSteps, int syncStep)
         {
             foreach (ActorStep actorStep in actorSteps){
-                _executeOpStepService.Execute(actorStep.actorId, syncStep, actorStep.stepScheme);
+                _executeOpStepService.Execute(gameId, actorStep.actorId, syncStep, actorStep.stepScheme);
             }
         }
 

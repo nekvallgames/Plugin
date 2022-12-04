@@ -74,7 +74,7 @@ namespace Plugin.Runtime.Services.PlotStates.States
         {
             if (signalData.OpCode == OperationCode.choosedUnitsForGame 
                 && signalData.Status == OpStockPrivateModelSignal.StatusType.remove
-                && _hostsService.IsMemberHost(host, signalData.ActorId))
+                && _hostsService.IsMemberHost(host, signalData.GameId))
             {
                 _expectedCount++;
             }
@@ -100,13 +100,13 @@ namespace Plugin.Runtime.Services.PlotStates.States
             // value - это ChoosedUnitsScheme, которая имеет ID юнитов, которыми будут играть игроки
             Dictionary<byte, object> pushData = new Dictionary<byte, object> { };
 
-            foreach (IActor actor in _hostsService.Actors(host))
+            foreach (IActor actor in _hostsService.Actors(host.GameId))
             {
                 var choosedUnitsScheme = new ChoosedUnitsScheme(){
                     unitsId = new List<int>()
                 };
 
-                List<IUnit> unitsList = _unitsService.GetUnits(actor.ActorNr);
+                List<IUnit> unitsList = _unitsService.GetUnits(host.GameId, actor.ActorNr);
 
                 foreach (IUnit unit in unitsList)
                 {

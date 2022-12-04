@@ -16,7 +16,7 @@ namespace Plugin.Runtime.Services.ExecuteOp
             _executeOpGroupService = executeOpGroupService;
         }
 
-        public void Execute(int actorId, int syncStep, StepScheme stepScheme)
+        public void Execute(string gameId, int actorId, int syncStep, StepScheme stepScheme)
         {
             int groupIndex = 0;
 
@@ -33,7 +33,7 @@ namespace Plugin.Runtime.Services.ExecuteOp
                 }
 
                 // 2. Отправить группу из компонентов действий игрока на выполнение
-                _executeOpGroupService.Execute(actorId, componentGroup);
+                _executeOpGroupService.Execute(gameId, actorId, componentGroup);
 
                 // 3. Увеличиваем шаг и обращаемся к следующей группе
                 groupIndex++;

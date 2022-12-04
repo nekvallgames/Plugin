@@ -32,7 +32,7 @@ namespace Plugin.Runtime.Services.ExecuteAction.Action
         /// <param name="targetActorID"> Указать ID игрока, на сетке которого нужно выполнить действие </param>
         /// <param name="posW"> Позиция на игровой сетке </param>
         /// <param name="posH"> Позиция на игровой сетке </param>
-        public void ExecuteAction(IUnit unit, int targetActorID, int posW, int posH)
+        public void ExecuteAction(IUnit unit, string gameId, int targetActorID, int posW, int posH)
         {
             foreach ( IExecuteAction executer in _executorsActions )
             {
@@ -43,7 +43,7 @@ namespace Plugin.Runtime.Services.ExecuteAction.Action
                 }
 
                 // Текущим исполнителем выполнить действие для текущего юнита
-                executer.Execute(unit, targetActorID, posW, posH);
+                executer.Execute(unit, gameId, targetActorID, posW, posH);
                 return;
             }
 

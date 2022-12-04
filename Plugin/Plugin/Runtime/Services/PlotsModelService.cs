@@ -20,9 +20,9 @@ namespace Plugin.Runtime.Services
             _model.Add(model);
         }
 
-        public IPlotModelScheme Get(int actorId)
+        public IPlotModelScheme Get(string gameId, int actorId)
         {
-            return _model.Items.Find(x => x.OwnerActorId == actorId);
+            return _model.Items.Find(x => x.GameId == gameId && x.OwnerActorId == actorId);
         }
     }
 }

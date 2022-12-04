@@ -43,13 +43,13 @@ namespace Plugin.Runtime.Services.ExecuteOp.Executors
         /// <summary>
         /// Выполнить дополнительное (пассивное) действия юнита
         /// </summary>
-        public void Execute(int playerActorId, List<ISyncComponent> componentsGroup)
+        public void Execute(string gameId, int playerActorId, List<ISyncComponent> componentsGroup)
         {
             // Вытаскиваем нужные нам компоненты из списка
             Parce(componentsGroup);
 
             // Найти юнита, который выполнил действие
-            IUnit unit = _unitsService.GetUnit(playerActorId, _unitIdOpComponent.UnitId, _unitIdOpComponent.UnitInstance);
+            IUnit unit = _unitsService.GetUnit(gameId, playerActorId, _unitIdOpComponent.UnitId, _unitIdOpComponent.UnitInstance);
 
             if (unit == null){
                 Debug.Fail($"ExecuteOpGroupService :: ExecuteOpAdditional :: Execute() playerActorID = {playerActorId}, unitID = {_unitIdOpComponent.UnitId}, instanceID = {_unitIdOpComponent.UnitInstance}. I don't find this unit for execute actions");
@@ -58,7 +58,7 @@ namespace Plugin.Runtime.Services.ExecuteOp.Executors
 
             // Отбращаемся к классу, который выполняет действия юнитов, и просим 
             // его, выполнять для текущего юнита действие
-            _additionalService.ExecuteAdditional(unit, _targetActorIdOpComponent.aid, _additionalOpComponent.w, _additionalOpComponent.h);
+            _additionalService.ExecuteAdditional(unit, gameId, _targetActorIdOpComponent.aid, _additionalOpComponent.w, _additionalOpComponent.h);
         }
 
         /// <summary>

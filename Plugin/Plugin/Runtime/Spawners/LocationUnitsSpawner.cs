@@ -38,7 +38,7 @@ namespace Plugin.Runtime.Spawners
 
             foreach (var unitData in scheme.LocationUnits)
             {
-                _unitsService.CreateUnit(signalData.OwnerActorId, unitData.Item1, unitData.Item2, unitData.Item3);
+                _unitsService.CreateUnit(signalData.GameId, signalData.OwnerActorId, unitData.Item1, unitData.Item2, unitData.Item3);
             }
         }
     }

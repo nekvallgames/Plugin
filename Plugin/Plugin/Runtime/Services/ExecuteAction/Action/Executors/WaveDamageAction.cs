@@ -46,7 +46,7 @@ namespace Plugin.Runtime.Services.ExecuteAction.Action.Executors
         /// <summary>
         /// Выполнить действие
         /// </summary>
-        public void Execute(IUnit unit, int targetActorId, int posW, int posH)
+        public void Execute(IUnit unit, string gameId, int targetActorId, int posW, int posH)
         {
             // Проверяем, может ли юнит выстрелить?
             var waveDamageAction = (IWaveDamageAction)unit;
@@ -62,7 +62,7 @@ namespace Plugin.Runtime.Services.ExecuteAction.Action.Executors
                                                  targetActorId,
                                                  posW,
                                                  posH);
-            _syncService.Add(unit.OwnerActorId, syncOnGrid);
+            _syncService.Add(gameId, unit.OwnerActorId, syncOnGrid);
 
 
             // 2 2 2 2 2
@@ -83,7 +83,7 @@ namespace Plugin.Runtime.Services.ExecuteAction.Action.Executors
                 int targetH = posH + area.y;
 
                 // Находим всех противников, в которых мы выстрелили
-                List<IUnit> enemyTargets = _sortTargetOnGridService.SortTargets(_unitsService.GetUnitsUnderThisPosition(targetActorId, targetW, targetH));
+                List<IUnit> enemyTargets = _sortTargetOnGridService.SortTargets(_unitsService.GetUnitsUnderThisPosition(gameId, targetActorId, targetW, targetH));
 
                 LogChannel.Log($"ActionService :: WaveDamageAction() ownerId = {unit.OwnerActorId}, unitId = {unit.UnitId}, instanceId = {unit.InstanceId}, cellW = {targetW}, cellH = {targetH}");
 

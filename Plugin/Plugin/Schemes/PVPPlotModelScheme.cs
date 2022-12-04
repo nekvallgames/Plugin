@@ -9,17 +9,24 @@ namespace Plugin.Schemes
     public class PVPPlotModelScheme : IPlotModelScheme
     {
         /// <summary>
-        /// Поточний крок синхронізації ігрового сценарія
+        /// Вказати id ігрової кімнати
         /// </summary>
-        public int SyncStep { get; set; }
+        public string GameId { get; }
 
         /// <summary>
         /// Список із акторів, кому належить поточна модель
         /// </summary>
         public int OwnerActorId { get; }
 
-        public PVPPlotModelScheme(int ownerActorId)
+        /// <summary>
+        /// Поточний крок синхронізації ігрового сценарія
+        /// </summary>
+        public int SyncStep { get; set; }
+
+
+        public PVPPlotModelScheme(string gameId, int ownerActorId)
         {
+            GameId = gameId;
             OwnerActorId = ownerActorId;
         }
     }

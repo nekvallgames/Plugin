@@ -32,23 +32,24 @@ namespace Plugin.Runtime.Services
             if (signalData.OpCode == OperationCode.changeVip 
                 && signalData.Status == OpStockPrivateModelSignal.StatusType.add)
             {
-                IPluginHost plugin = _hostsService.Get(signalData.ActorId);
+                IPluginHost plugin = _hostsService.Get(signalData.GameId);
+                IList<IActor> roomActors = _hostsService.Actors(plugin.GameId);
 
-                foreach ( IActor actor in plugin.GameActorsActive )
+                foreach ( IActor actor in roomActors)
                 {
-                    if (_opStockService.HasOp(actor.ActorNr, OperationCode.changeVip))
+                    if (_opStockService.HasOp(plugin.GameId, actor.ActorNr, OperationCode.changeVip))
                     {
                         // На склад операцій упала операція OperationCode.changeVip
-
-                        _opStockService.TakeOp(actor.ActorNr, signalData.OpCode);  // видалити операцію зі складу
-
+            
+                        _opStockService.TakeOp(plugin.GameId, actor.ActorNr, signalData.OpCode);  // видалити операцію зі складу
+            
                         // Створити массив із акторів, кому ми відправимо цей івент
-                        var actors = ((List<IActor>)plugin.GameActorsActive).FindAll(x => x.ActorNr != actor.ActorNr);
+                        var actors = ((List<IActor>)roomActors).FindAll(x => x.ActorNr != actor.ActorNr);
                         var actorsId = new List<int>();
                         foreach (IActor __actor in actors){
                             actorsId.Add(__actor.ActorNr);
                         }
-
+            
                         // Відправити всім участникам цей івент
                         plugin.BroadcastEvent(actorsId,
                                              signalData.ActorId,

@@ -17,12 +17,12 @@ namespace Plugin.Models.Private
 
         protected override void AfterAddHook(T item)
         {
-            _signalBus.Fire(new HostsPrivateModelSignal(item, HostsPrivateModelSignal.StatusType.add));
+            _signalBus.Fire(new HostsPrivateModelSignal(item.GameId, HostsPrivateModelSignal.StatusType.add));
         }
 
         protected override void AfterRemoveHook(T item)
         {
-            _signalBus.Fire(new HostsPrivateModelSignal(item, HostsPrivateModelSignal.StatusType.remove));
+            _signalBus.Fire(new HostsPrivateModelSignal(item.GameId, HostsPrivateModelSignal.StatusType.remove));
         }
     }
 }

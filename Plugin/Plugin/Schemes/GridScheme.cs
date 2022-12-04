@@ -10,6 +10,11 @@ namespace Plugin.Schemes
         public Cell[] СellsList { get; }
 
         /// <summary>
+        /// Вказати id ігрової кімнати
+        /// </summary>
+        public string GameId { get; }
+
+        /// <summary>
         /// Владелец игровой сетки
         /// </summary>
         public int OwnerActorId { get; }
@@ -25,8 +30,9 @@ namespace Plugin.Schemes
         public int SizeGridH { get; }
 
 
-        public GridScheme(int ownerActorId, int sizeGridW, int sizeGridH, Cell[] cellsList)
+        public GridScheme(string gameId, int ownerActorId, int sizeGridW, int sizeGridH, Cell[] cellsList)
         {
+            GameId = gameId;
             OwnerActorId = ownerActorId;
             SizeGridW = sizeGridW;
             SizeGridH = sizeGridH;

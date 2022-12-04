@@ -10,6 +10,11 @@ namespace Plugin.Interfaces
         Cell[] СellsList { get; }
 
         /// <summary>
+        /// Вказати id ігрової кімнати
+        /// </summary>
+        string GameId { get; }
+
+        /// <summary>
         /// Владелец игровой сетки
         /// </summary>
         int OwnerActorId { get; }

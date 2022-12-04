@@ -40,7 +40,7 @@ namespace Plugin.Runtime.Services.ExecuteAction
             }
 
             // Деактивуємо vip для всих юнітів актора
-            List<IUnit> units = _unitsService.GetUnits(unitNextVip.OwnerActorId);
+            List<IUnit> units = _unitsService.GetUnits(unitNextVip.GameId, unitNextVip.OwnerActorId);
             foreach (IUnit unit in units)
             {
                 if (_unitsService.HasComponent<IVipComponent>(unit)){
@@ -53,7 +53,7 @@ namespace Plugin.Runtime.Services.ExecuteAction
 
             // Синхронизировать статус Vip для юнита
             var syncVip = new SyncVipGroup(unitNextVip);
-            _syncService.Add(unitNextVip.OwnerActorId, syncVip);
+            _syncService.Add(unitNextVip.GameId, unitNextVip.OwnerActorId, syncVip);
         }
     }
 }
