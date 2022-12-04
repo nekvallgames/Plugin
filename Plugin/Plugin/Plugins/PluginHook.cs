@@ -31,6 +31,8 @@ namespace Plugin.Plugins
             _opStockService = gameInstaller.opStockService;
             _signalBus = gameInstaller.signalBus;
 
+            gameInstaller.hostsService.Add(host);
+
             PluginImplementation();
 
             return base.SetupInstance(host, config, out errorMsg);
