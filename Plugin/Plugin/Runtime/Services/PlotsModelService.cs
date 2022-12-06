@@ -8,9 +8,9 @@ namespace Plugin.Runtime.Services
     /// </summary>
     public class PlotsModelService
     {
-        private PlotsPrivateModel<IPlotModelScheme> _model;
+        private PlotsPrivateModel _model;
 
-        public PlotsModelService(PlotsPrivateModel<IPlotModelScheme> model)
+        public PlotsModelService(PlotsPrivateModel model)
         {
             _model = model;
         }

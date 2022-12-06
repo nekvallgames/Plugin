@@ -9,9 +9,9 @@ namespace Plugin.Runtime.Services
     /// </summary>
     public class OpStockService
     {
-        private OpStockPrivateModel<IOpStockItem> _model;
+        private OpStockPrivateModel _model;
 
-        public OpStockService(OpStockPrivateModel<IOpStockItem> model)
+        public OpStockService(OpStockPrivateModel model)
         {
             _model = model;
         }

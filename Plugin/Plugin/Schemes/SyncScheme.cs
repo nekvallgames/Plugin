@@ -9,7 +9,12 @@ namespace Plugin.Schemes
     public struct SyncScheme
     {
         /// <summary>
-        /// ActorID игрока, которому принадлежит синхронизация
+        /// GameId ігрової кімнати, которому принадлежит синхронизация
+        /// </summary>
+        public string GameId { get; }
+
+        /// <summary>
+        /// ActorId игрока, которому принадлежит синхронизация
         /// </summary>
         public int ActorId { get; }
 
@@ -24,8 +29,9 @@ namespace Plugin.Schemes
         public List<ISyncGroupComponent> SyncGroups;
 
 
-        public SyncScheme( int actorId, int syncStep )
+        public SyncScheme( string gameId, int actorId, int syncStep )
         {
+            GameId = gameId;
             ActorId = actorId;
             SyncStep = syncStep;
 

@@ -17,7 +17,7 @@ namespace Plugin.Runtime.Services
     public class GridService
     {
         private LocationsPublicModel<LocationScheme> _locationsPublicModel;
-        private GridsPrivateModel<IGrid> _gridsPrivateModel;
+        private GridsPrivateModel _gridsPrivateModel;
         private GridBuilder _gridBuilder;
         private HostsService _hostsService;
 
@@ -28,7 +28,7 @@ namespace Plugin.Runtime.Services
                            HostsService hostsService)
         {
             _locationsPublicModel = publicModelProvider.Get<LocationsPublicModel<LocationScheme>>();
-            _gridsPrivateModel = privateModelProvider.Get<GridsPrivateModel<IGrid>>();
+            _gridsPrivateModel = privateModelProvider.Get<GridsPrivateModel>();
             _gridBuilder = gridBuilder;
             _hostsService = hostsService;
 

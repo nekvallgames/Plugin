@@ -8,7 +8,7 @@ namespace Plugin.Models.Private
     /// <summary>
     /// Модель із даними, котра зберігає в собі операції, котрі клієнти присилають to Game Server
     /// </summary>
-    public class OpStockPrivateModel<T> : BaseModel<T>, IPrivateModel where T : IOpStockItem
+    public class OpStockPrivateModel : BaseModel<IOpStockItem>, IPrivateModel
     {
         private SignalBus _signalBus;
 
@@ -17,7 +17,7 @@ namespace Plugin.Models.Private
             _signalBus = signalBus;
         }
 
-        protected override void AfterAddHook(T item)
+        protected override void AfterAddHook(IOpStockItem item)
         {
             _signalBus.Fire(new OpStockPrivateModelSignal(item.GameId,
                                                           item.ActorId, 
@@ -25,7 +25,7 @@ namespace Plugin.Models.Private
                                                           OpStockPrivateModelSignal.StatusType.add));
         }
 
-        protected override void AfterRemoveHook(T item) 
+        protected override void AfterRemoveHook(IOpStockItem item) 
         {
             _signalBus.Fire(new OpStockPrivateModelSignal(item.GameId,
                                                           item.ActorId,

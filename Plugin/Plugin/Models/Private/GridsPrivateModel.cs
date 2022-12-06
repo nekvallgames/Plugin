@@ -5,7 +5,7 @@ using Plugin.Templates;
 
 namespace Plugin.Models.Private
 {
-    public class GridsPrivateModel<T> : BaseModel<T>, IPrivateModel where T : IGrid
+    public class GridsPrivateModel : BaseModel<IGrid>, IPrivateModel
     {
         private SignalBus _signalBus;
 
@@ -14,12 +14,12 @@ namespace Plugin.Models.Private
             _signalBus = signalBus;
         }
 
-        protected override void AfterAddHook(T item)
+        protected override void AfterAddHook(IGrid item)
         {
             _signalBus.Fire(new GridsPrivateModelSignal(item.GameId, item.OwnerActorId, GridsPrivateModelSignal.StatusType.add));
         }
 
-        protected override void AfterRemoveHook(T item)
+        protected override void AfterRemoveHook(IGrid item)
         {
             _signalBus.Fire(new GridsPrivateModelSignal(item.GameId, item.OwnerActorId, GridsPrivateModelSignal.StatusType.remove));
         }

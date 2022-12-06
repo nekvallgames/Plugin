@@ -11,10 +11,10 @@ namespace Plugin.Runtime.Services.Sync
     /// </summary>
     public class SyncService
     {
-        private SyncPrivateModel<SyncScheme> _syncPrivateModel;
+        private SyncPrivateModel _syncPrivateModel;
         private PlotsModelService _plotsModelService;
 
-        public SyncService(SyncPrivateModel<SyncScheme> syncPrivateModel, PlotsModelService plotsModelService)
+        public SyncService(SyncPrivateModel syncPrivateModel, PlotsModelService plotsModelService)
         {
             _syncPrivateModel = syncPrivateModel;
             _plotsModelService = plotsModelService;
@@ -27,7 +27,7 @@ namespace Plugin.Runtime.Services.Sync
         {
             int plotStep = _plotsModelService.Get(gameId, actorId).SyncStep;   // витягуємо із моделі ігрового сценарія поточний крок ігрового сценарія
   
-            var syncStep = Get(actorId, plotStep);
+            var syncStep = Get(gameId, actorId, plotStep);
 
             // Нужно перебрать все компоненты в syncAction,
             // и проставить глобальный шаг и обьединить все компоненты в группу
@@ -36,17 +36,19 @@ namespace Plugin.Runtime.Services.Sync
                 syncComponent.SyncStep = plotStep;                   // глобальный шаг, которому принадлежит синхронизация
                 syncComponent.GroupIndex = syncStep.SyncGroups.Count;  // обьединить все компоненты в группу
             }
-
             syncStep.SyncGroups.Add(syncData);
         }
 
-        public SyncScheme Get(int actorId, int syncStep)
+        public SyncScheme Get(string gameId, int actorId, int syncStep)
         {
-            if (_syncPrivateModel.Items.Any(x => x.ActorId == actorId && x.SyncStep == syncStep)){
-                return _syncPrivateModel.Items.Find(x => x.ActorId == actorId && x.SyncStep == syncStep);
+            if (_syncPrivateModel.Items.Any(x => x.GameId == gameId && x.ActorId == actorId && x.SyncStep == syncStep)){
+                return _syncPrivateModel.Items.Find(x => x.GameId == gameId && x.ActorId == actorId && x.SyncStep == syncStep);
             }
 
-            return new SyncScheme(actorId, syncStep);
+            var syncScheme = new SyncScheme(gameId, actorId, syncStep);
+            _syncPrivateModel.Add(syncScheme);
+
+            return syncScheme;
         }
     }
 }

@@ -17,13 +17,13 @@ namespace Plugin.Runtime.Services
     /// </summary>
     public class UnitsService
     {
-        private UnitsPrivateModel<IUnit> _model;
+        private UnitsPrivateModel _model;
         private OpStockService _opStockService;
         private ConvertService _convertService;
         private UnitBuilder _unitBuilder;
         private MoveService _moveService;
 
-        public UnitsService(UnitsPrivateModel<IUnit> model, 
+        public UnitsService(UnitsPrivateModel model, 
                             OpStockService opStockService, 
                             ConvertService convertService, 
                             UnitBuilder unitBuilder, 

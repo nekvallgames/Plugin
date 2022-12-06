@@ -6,7 +6,7 @@ using System.Collections.Generic;
 namespace Plugin.Builders
 {
     /// <summary>
-    /// Білдер, котрий створить StepScheme дій гравця
+    /// Білдер, котрий створить StepScheme дій актора, котрі ним були виконані в вказані syncSteps
     /// </summary>
     public class StepSchemeBuilder
     {
@@ -20,18 +20,19 @@ namespace Plugin.Builders
         /// <summary>
         /// Створити StepScheme для вказаних кроків синхронізації
         /// </summary>
-        public StepScheme Create(int actorId, int[] syncSteps)
+        public StepScheme Create(string gameId, int actorId, int[] syncSteps)
         {
             var scheme = new StepScheme();
 
             for (int i = 0; i < syncSteps.Length; i++)
             {
-                int syncStep = syncSteps[i];
+                List<ISyncGroupComponent> syncGroups = _syncService.Get(gameId, actorId, syncSteps[i]).SyncGroups;
 
-                List<ISyncGroupComponent> syncGroups = _syncService.Get(actorId, syncStep).SyncGroups;
-
-                foreach ( ISyncComponent component in syncGroups ){
-                    scheme.Add(component);
+                foreach (ISyncGroupComponent syncGroup in syncGroups)
+                {
+                    foreach (ISyncComponent component in syncGroup.SyncElements){
+                        scheme.Add(component);
+                    }
                 }
             }
 

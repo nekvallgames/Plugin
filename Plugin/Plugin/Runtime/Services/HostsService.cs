@@ -9,9 +9,9 @@ namespace Plugin.Runtime.Services
     /// </summary>
     public class HostsService
     {
-        private HostsPrivateModel<IPluginHost> _model;
+        private HostsPrivateModel _model;
 
-        public HostsService(HostsPrivateModel<IPluginHost> model)
+        public HostsService(HostsPrivateModel model)
         {
             _model = model;
         }

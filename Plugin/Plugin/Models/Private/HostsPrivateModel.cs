@@ -6,7 +6,7 @@ using Plugin.Templates;
 
 namespace Plugin.Models.Private
 {
-    public class HostsPrivateModel<T> : BaseModel<T>, IPrivateModel where T : IPluginHost
+    public class HostsPrivateModel : BaseModel<IPluginHost>, IPrivateModel
     {
         private SignalBus _signalBus;
 
@@ -15,12 +15,12 @@ namespace Plugin.Models.Private
             _signalBus = signalBus;
         }
 
-        protected override void AfterAddHook(T item)
+        protected override void AfterAddHook(IPluginHost item)
         {
             _signalBus.Fire(new HostsPrivateModelSignal(item.GameId, HostsPrivateModelSignal.StatusType.add));
         }
 
-        protected override void AfterRemoveHook(T item)
+        protected override void AfterRemoveHook(IPluginHost item)
         {
             _signalBus.Fire(new HostsPrivateModelSignal(item.GameId, HostsPrivateModelSignal.StatusType.remove));
         }

@@ -10,9 +10,9 @@ namespace Plugin.Runtime.Services
     /// </summary>
     public class UnitInstanceService
     {
-        private UnitsPrivateModel<IUnit> _unitsPrivateModel;
+        private UnitsPrivateModel _unitsPrivateModel;
 
-        public UnitInstanceService(UnitsPrivateModel<IUnit> unitsPrivateModel)
+        public UnitInstanceService(UnitsPrivateModel unitsPrivateModel)
         {
             _unitsPrivateModel = unitsPrivateModel;
         }

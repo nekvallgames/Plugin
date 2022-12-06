@@ -67,25 +67,25 @@ namespace Plugin.Installers
 
             privateModelProvider = new PrivateModelProvider(new List<IPrivateModel>
             {
-                new UnitsPrivateModel<IUnit>(),
-                new OpStockPrivateModel<IOpStockItem>(signalBus),
-                new SyncPrivateModel<SyncScheme>(),
-                new GridsPrivateModel<IGrid>(signalBus),
-                new HostsPrivateModel<IPluginHost>(signalBus),
-                new PlotsPrivateModel<IPlotModelScheme>()
+                new UnitsPrivateModel(),
+                new OpStockPrivateModel(signalBus),
+                new SyncPrivateModel(),
+                new GridsPrivateModel(signalBus),
+                new HostsPrivateModel(signalBus),
+                new PlotsPrivateModel()
             });
 
-            hostsService = new HostsService(privateModelProvider.Get<HostsPrivateModel<IPluginHost>>());
-            plotsModelService = new PlotsModelService(privateModelProvider.Get<PlotsPrivateModel<IPlotModelScheme>>());
+            hostsService = new HostsService(privateModelProvider.Get<HostsPrivateModel>());
+            plotsModelService = new PlotsModelService(privateModelProvider.Get<PlotsPrivateModel>());
             gridBuilder = new GridBuilder();
-            unitInstanceService = new UnitInstanceService(privateModelProvider.Get<UnitsPrivateModel<IUnit>>());
+            unitInstanceService = new UnitInstanceService(privateModelProvider.Get<UnitsPrivateModel>());
             unitBuilder = new UnitBuilder(unitInstanceService);
-            opStockService = new OpStockService(privateModelProvider.Get<OpStockPrivateModel<IOpStockItem>>());
-            syncService = new SyncService(privateModelProvider.Get<SyncPrivateModel<SyncScheme>>(), plotsModelService);
+            opStockService = new OpStockService(privateModelProvider.Get<OpStockPrivateModel>());
+            syncService = new SyncService(privateModelProvider.Get<SyncPrivateModel>(), plotsModelService);
             stepSchemeBuilder = new StepSchemeBuilder(syncService);
             syncStepService = new SyncStepService(stepSchemeBuilder, convertService, hostsService);
             moveService = new MoveService(syncService);
-            unitsService = new UnitsService(privateModelProvider.Get<UnitsPrivateModel<IUnit>>(), opStockService, convertService, unitBuilder, signalBus, moveService);
+            unitsService = new UnitsService(privateModelProvider.Get<UnitsPrivateModel>(), opStockService, convertService, unitBuilder, signalBus, moveService);
             locationUnitsSpawner = new LocationUnitsSpawner(publicModelProvider, unitsService, signalBus);
             vipService = new VipService(syncService, unitsService);
             sortTargetOnGridService = new SortTargetOnGridService();
