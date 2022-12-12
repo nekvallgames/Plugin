@@ -11,7 +11,7 @@ namespace Plugin.Runtime.Services.ExecuteOp
     {
         private ExecuteOpGroupService _executeOpGroupService;
 
-        public ExecuteOpStepSchemeService( ExecuteOpGroupService executeOpGroupService )
+        public ExecuteOpStepSchemeService(ExecuteOpGroupService executeOpGroupService)
         {
             _executeOpGroupService = executeOpGroupService;
         }

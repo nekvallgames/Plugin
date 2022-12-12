@@ -13,17 +13,17 @@ namespace Plugin.Interfaces
         /// Может ли медик лечить? 
         /// Проверяю, есть ли у него аптечки
         /// </summary>
-        bool CanHealing();
+        bool CanExecuteAdditional();
 
         /// <summary>
-        /// Получить урон
+        /// Получить силу лечения
         /// </summary>
         Int16 GetHealthPower();
 
         /// <summary>
         /// Вылечить
         /// </summary>
-        void Healing();
+        void SpendAdditional();
 
         /// <summary>
         /// Получить рисунок экшена

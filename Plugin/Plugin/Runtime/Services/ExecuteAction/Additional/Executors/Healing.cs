@@ -36,31 +36,26 @@ namespace Plugin.Runtime.Services.ExecuteAction.Additional.Executors
         /// </summary>
         public bool CanExecute(IUnit unit)
         {
-            if (unit is IHealingAdditional)
-            {
-                return true;
-            }
-
-            return false;
+            return unit is IHealingAdditional;
         }
 
         /// <summary>
         /// Выполнить действие
         /// </summary>
-        public void Execute(IUnit unit, string gameId, int targetActorID, int posW, int posH)
+        public void Execute(IUnit unit, string gameId, int targetActorId, int posW, int posH)
         {
             // Проверяем, может ли юнит вылечить?
             IHealingAdditional unitMedic = (IHealingAdditional)unit;
 
-            if (!unitMedic.CanHealing()){
-                Debug.Fail($"ExecuteAdditionalService :: Healing :: Execute() ownerID = {unit.OwnerActorId}, unitID = {unit.UnitId}, instanceID = {unit.InstanceId}, targetActorID = {targetActorID}, posH = {posH}, I can't healing, maybe I don't have ammunition.");
+            if (!unitMedic.CanExecuteAdditional()){
+                Debug.Fail($"ExecuteAdditionalService :: Healing :: Execute() ownerId = {unit.OwnerActorId}, unitId = {unit.UnitId}, instanceId = {unit.InstanceId}, targetActorId = {targetActorId}, posH = {posH}, I can't healing, maybe I don't have ammunition.");
             }
 
-            unitMedic.Healing();     // юнит вылечил когото. Забрать 1 аптечку
+            unitMedic.SpendAdditional();     // юнит вылечил когото. Забрать 1 аптечку
 
             // Синхронизировать выполненное действие юнита на игровой сетке
             ISyncGroupComponent syncOnGrid = new SyncAdditionalGroup(unit,
-                                                                     targetActorID,
+                                                                     targetActorId,
                                                                      posW,
                                                                      posH);
             _syncService.Add(gameId, unit.OwnerActorId, syncOnGrid);
@@ -75,7 +70,7 @@ namespace Plugin.Runtime.Services.ExecuteAction.Additional.Executors
 
                 // Находим всех юнитоа, в которых мы тапнули, что бы их вылечить
                 List<IUnit> unitTargets = _unitsService.GetUnitsUnderThisPosition(gameId,
-                                                                                  targetActorID,
+                                                                                  targetActorId,
                                                                                   targetW,
                                                                                   targetH);
 
