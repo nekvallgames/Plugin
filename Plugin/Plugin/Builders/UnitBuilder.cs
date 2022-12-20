@@ -27,6 +27,9 @@ namespace Plugin.Builders
             {
                 case UnitPistol.UnitId: return Create<UnitPistol>(gameId, ownerActorId, unitId);
                 case UnitShotGun.UnitId: return Create<UnitShotGun>(gameId, ownerActorId, unitId);
+                case UnitUmp45.UnitId: return Create<UnitUmp45>(gameId, ownerActorId, unitId);
+                case UnitSniper.UnitId: return Create<UnitSniper>(gameId, ownerActorId, unitId);
+                case UnitPoison.UnitId: return Create<UnitPoison>(gameId, ownerActorId, unitId);
                 case UnitTrash.UnitId: return Create<UnitTrash>(gameId, ownerActorId, unitId);
                 case UnitRoadBlock.UnitId: return Create<UnitRoadBlock>(gameId, ownerActorId, unitId);
                 case UnitBarrel.UnitId: return Create<UnitBarrel>(gameId, ownerActorId, unitId);

@@ -10,6 +10,6 @@
         /// <summary>
         /// Получить максимальное количество брони юнита
         /// </summary>
-        int CapacityMax { get; set; }
+        int CapacityMax { get; }
     }
 }
